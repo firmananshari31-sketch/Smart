@@ -90,19 +90,31 @@ nav button.on{color:var(--accent);font-weight:700}
 
 <section id="tab-nilai" class="tab active">
   <div class="card">
-    <label for="label">Label (kelas / mata pelajaran)</label>
-    <input type="text" id="label" placeholder="Contoh: Kelas 4A - IPAS">
+    <label>Kelas dan mata pelajaran</label>
+    <div class="row">
+      <select id="kelas" style="flex:2"><option value="">Kelas</option><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option><option>VI</option></select>
+      <select id="rombel" style="flex:1"><option value="">Rombel</option><option>A</option><option>B</option><option>C</option><option>D</option></select>
+    </div>
+    <input type="text" id="mapel" placeholder="Mapel, contoh: IPAS" style="margin-top:8px">
+    <input type="text" id="bab" placeholder="Bab / materi / TP, contoh: Bab 2 Tumbuhan" style="margin-top:8px">
+    <input type="hidden" id="label">
+    <p class="hint" id="labelHint"></p>
   </div>
   <div class="card">
-    <label for="rubrik">Kunci jawaban dan rubrik</label>
-    <div class="row" style="margin-bottom:8px"><select id="pilihRubrik" style="flex:2"></select><button id="btnRubrikBaru">+ Baru</button><button id="btnRubrikHapus">Hapus</button></div>
-    <textarea id="rubrik" placeholder="Tulis kunci jawaban, atau ketuk 'Isi contoh rubrik' di bawah."></textarea>
+    <label for="rubrik">Kunci jawaban</label>
+    <div class="row" style="margin-bottom:8px"><select id="pilihRubrik" style="flex:2"></select><button id="btnRubrikBaru">+ Kunci baru</button><button id="btnRubrikHapus">Hapus kunci</button></div>
+    <textarea id="rubrik" placeholder="Tulis kunci jawaban di sini, atau unggah file."></textarea>
     <div class="row" style="margin-top:10px">
-      <button id="btnTemplate">Isi contoh rubrik</button>
       <button id="btnKunci">Unggah file kunci jawaban</button>
     </div>
     <input type="file" id="fileKunci" accept=".docx,.txt,.pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden>
     <p class="hint">Semakin jelas skor maksimal dan aturan skor sebagian per soal, semakin konsisten nilainya. Bisa diunggah dari Word (.docx), teks (.txt), PDF, atau foto. File .doc lama: simpan ulang sebagai .docx dulu.</p>
+    <details style="margin-top:12px">
+      <summary style="font-weight:600;cursor:pointer">Kebijakan penilaian (sudah berisi standar, bisa diubah)</summary>
+      <textarea id="kebijakan" rows="10" style="margin-top:8px"></textarea>
+      <div class="row" style="margin-top:8px"><button id="btnKebijakanStandar">Kembalikan ke standar</button><button id="btnJadikanStandar">Jadikan standar untuk kunci baru</button></div>
+      <p class="hint">Kebijakan berlaku untuk rubrik yang sedang dipilih. Umumnya guru cukup mengisi kunci jawaban saja.</p>
+    </details>
     <div class="msg" id="kmsg"></div>
   </div>
   <div class="card">
@@ -245,20 +257,42 @@ var uid=0;
 var stream=null;
 
 var TEMPLATE=
-'Soal 1 (skor maks 2)\n'+
-'Jawaban benar: ...\n'+
-'Skor 2: jawaban benar dan lengkap.\n'+
-'Skor 1: jawaban benar tetapi kurang lengkap.\n'+
-'Skor 0: jawaban salah atau kosong.\n\n'+
-'Soal 2 (skor maks 4)\n'+
-'Jawaban benar: ...\n'+
-'Skor 4: ...\n'+
-'Skor 2: ...\n'+
-'Skor 0: ...\n\n'+
-'Jawaban lain yang tetap benar: ...\n\n'+
-'Aturan umum:\n'+
-'- Ejaan dan kerapian tulisan tidak mengurangi nilai.\n'+
-'- Jawaban yang benar dengan kata sendiri tetap mendapat nilai penuh.';
+'1. PG (skor 1): 1-B, 2-D, 3-A\n'+
+'2. BS (skor 1 per pernyataan): 1-B, 2-S, 3-B\n'+
+'3. Menjodohkan (skor 1 per pasangan): 1-C, 2-A, 3-D, 4-B\n'+
+'4. MCMA (skor 2): A, C, E\n'+
+'5. Isian singkat (skor 2): fotosintesis, sinar matahari, air\n'+
+'6. Uraian (skor 4): tumbuhan membuat makanan sendiri dengan bantuan sinar matahari, air, dan karbon dioksida.';
+
+var KEBIJAKAN_BAWAAN=
+'ATURAN UMUM\n'+
+'- Ejaan, huruf besar-kecil, dan kerapian tulisan TIDAK mengurangi nilai.\n'+
+'- Jawaban benar dengan kata sendiri mendapat nilai penuh.\n'+
+'- Jawaban yang sebagian benar mendapat nilai sebagian, jangan langsung 0.\n'+
+'- Kosong = 0. Jawaban tidak terbaca ditandai "ragu".\n\n'+
+'PILIHAN GANDA (skor 1)\n'+
+'Benar = 1, salah = 0.\n\n'+
+'BENAR SALAH (skor 1 per pernyataan)\n'+
+'Setiap pernyataan benar = 1.\n\n'+
+'MENJODOHKAN (skor 1 per pasangan)\n'+
+'Setiap pasangan benar = 1.\n\n'+
+'PILIHAN GANDA KOMPLEKS / MCMA (skor 2)\n'+
+'- Semua benar, tanpa yang salah = 2\n'+
+'- Sebagian benar, tanpa yang salah = 1\n'+
+'- Ada pilihan yang salah = 0\n\n'+
+'ISIAN SINGKAT (skor 2)\n'+
+'- Kata kunci lengkap = 2\n'+
+'- Sebagian kata kunci = 1\n'+
+'- Sinonim yang tepat diterima.\n\n'+
+'URAIAN (skor 4)\n'+
+'Kriteria: ketepatan isi dan kelengkapan.\n'+
+'- 4: tepat dan lengkap\n'+
+'- 3: tepat, kurang satu hal\n'+
+'- 2: sebagian tepat\n'+
+'- 1: relevan tetapi belum menjawab\n'+
+'- 0: kosong atau tidak relevan.\n\n'+
+'Untuk kelas 1 sampai 2, uraian cukup 1 sampai 2 kalimat sederhana.\n'+
+'Di kolom alasan, tulis bagian yang sudah benar dan yang masih kurang.';
 
 /* ---------- Tab ---------- */
 $$('nav button').forEach(function(b){
@@ -272,7 +306,12 @@ $$('nav button').forEach(function(b){
 
 /* ---------- Pengaturan ---------- */
 function isiForm(){
-  $('#label').value=store.get('label','');
+  var ld=store.get('labelDetail',null)||{kelas:'',rombel:'',mapel:store.get('label',''),bab:''};
+  $('#kelas').value=ld.kelas||'';
+  $('#rombel').value=ld.rombel||'';
+  $('#mapel').value=ld.mapel||'';
+  $('#bab').value=ld.bab||'';
+  updateLabel();
   isiRubrikUI();
   $('#roster').value=store.get('roster','');
   $('#key').value=store.get('key','');
@@ -283,7 +322,18 @@ function setSetMsg(t,isErr){var m=$('#setmsg');m.textContent=t||'';m.className='
 function isiDaftarSiswa(){
   $('#daftarSiswa').innerHTML=parseRoster(store.get('roster','')).map(function(n){return '<option value="'+esc(n)+'">'}).join('');
 }
-$('#label').addEventListener('input',function(){store.set('label',this.value)});
+/* Label otomatis dari kelas, rombel, mapel, dan bab */
+function updateLabel(){
+  var d={kelas:$('#kelas').value,rombel:$('#rombel').value,mapel:$('#mapel').value.trim(),bab:$('#bab').value.trim()};
+  var v=[(d.kelas?'Kelas '+d.kelas+(d.rombel?' '+d.rombel:''):''),d.mapel,d.bab].filter(Boolean).join(' - ');
+  $('#label').value=v;
+  store.set('label',v);
+  store.set('labelDetail',d);
+  $('#labelHint').textContent=v?'Label: '+v:'Isi kelas dan mapel agar hasil mudah dikenali.';
+}
+['#kelas','#rombel','#mapel','#bab'].forEach(function(s){
+  $(s).addEventListener(s==='#kelas'||s==='#rombel'?'change':'input',updateLabel);
+});
 $('#rubrik').addEventListener('input',function(){simpanRubrikAktif(this.value)});
 $('#roster').addEventListener('input',function(){store.set('roster',this.value);isiDaftarSiswa()});
 $('#btnSave').addEventListener('click',function(){
@@ -291,11 +341,6 @@ $('#btnSave').addEventListener('click',function(){
   store.set('model',$('#model').value);
   setSetMsg('Pengaturan disimpan.');
   setTimeout(function(){setSetMsg('')},2500);
-});
-$('#btnTemplate').addEventListener('click',function(){
-  var ta=$('#rubrik');
-  if(ta.value.trim()&&!confirm('Ganti isi kotak rubrik dengan contoh? Isi sekarang akan hilang.'))return;
-  ta.value=TEMPLATE;simpanRubrikAktif(ta.value);
 });
 
 /* ---------- Daftar nama ---------- */
@@ -535,7 +580,9 @@ function apiText(system,content,maxTokens,attempt){
   });
 }
 function systemPrompt(){
-  var rubrik=String(ambilRubrikAktif().teks||'').trim();
+  var ra=ambilRubrikAktif();
+  var rubrik=String(ra.kunci||'').trim();
+  var kebijakan=String(ra.kebijakan||'').trim();
   return 'Kamu adalah asisten guru SD di Indonesia yang menilai lembar jawaban siswa tulisan tangan. '+
   'Baca tulisan tangan dengan teliti dan toleran terhadap ejaan serta kerapian anak SD. Nilai isi dan pemahaman, bukan kerapian atau ejaan, kecuali rubrik menyatakan lain. '+
   'Gunakan KUNCI JAWABAN dan RUBRIK dari guru di bawah. Jangan mengarang isi jawaban yang tidak terbaca; tandai bagian yang meragukan pada "ragu". '+
@@ -547,7 +594,8 @@ function systemPrompt(){
   '"perbaikan" adalah catatan perbaikan untuk siswa: hal yang perlu diperbaiki atau dipelajari lagi, dengan bahasa sederhana dan ramah untuk anak SD (1-3 kalimat); jika semua jawaban sudah baik tulis "Sudah baik, pertahankan." '+
   '"catatan" hanya untuk hal yang perlu diketahui guru dan boleh dikosongkan. '+
   'Skor harus berupa angka dan tidak boleh melebihi skor_maks. Jika lembar kosong atau bukan lembar jawaban, kembalikan {"siswa":[]}.'+
-  '\n\nKUNCI JAWABAN DAN RUBRIK:\n'+(rubrik||'(guru belum mengisi rubrik; nilai berdasarkan ketepatan jawaban saja)');
+  '\n\nKEBIJAKAN PENILAIAN (wajib diikuti):\n'+(kebijakan||'(gunakan aturan umum: nilai isi, bukan ejaan)')+
+  '\n\nKUNCI JAWABAN:\n'+(rubrik||'(guru belum mengisi kunci; nilai berdasarkan ketepatan jawaban saja)');
 }
 function parseJSON(t){
   var a=t.indexOf('{'),b=t.lastIndexOf('}');
@@ -730,10 +778,10 @@ $('#fileKunci').addEventListener('change',async function(){
     }else throw new Error('Jenis file tidak didukung. Gunakan .docx, .txt, PDF, atau foto.');
     if(!text.trim())throw new Error('Tidak ada teks yang terbaca di file ini.');
     var ta=$('#rubrik');
-    if(ta.value.trim()&&!confirm('Kotak rubrik sudah berisi teks. OK = ganti dengan isi file, Batal = tambahkan di bawahnya.'))ta.value=ta.value.replace(/\s+$/,'')+'\n\n'+text;
+    if(ta.value.trim()&&!confirm('Kotak kunci jawaban sudah berisi teks. OK = ganti dengan isi file, Batal = tambahkan di bawahnya.'))ta.value=ta.value.replace(/\s+$/,'')+'\n\n'+text;
     else ta.value=text;
     simpanRubrikAktif(ta.value);
-    kmsg('Selesai membaca "'+f.name+'". Periksa isinya di kotak rubrik dan perbaiki bila perlu.');
+    kmsg('Selesai membaca "'+f.name+'". Periksa isinya di kotak kunci jawaban dan perbaiki bila perlu.');
   }catch(e){kmsg(e.message,true)}
 });
 
@@ -871,7 +919,7 @@ $('#btnXlsx').addEventListener('click',function(){
 
 /* ---------- Cadangan ---------- */
 $('#btnBackup').addEventListener('click',function(){
-  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),daftarNama:store.get('roster',''),model:store.get('model','claude-sonnet-5-5'),hasil:hasil};
+  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),labelDetail:store.get('labelDetail',null),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),kebijakanStandar:ambilKebijakanStandar(),daftarNama:store.get('roster',''),model:store.get('model','claude-sonnet-5-5'),hasil:hasil};
   unduhFile(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),'cadangan-penilai-'+hari()+'.json');
 });
 $('#btnRestore').addEventListener('click',function(){$('#fileRestore').click()});
@@ -883,8 +931,10 @@ $('#fileRestore').addEventListener('change',async function(){
     if(data.app!==APP||!Array.isArray(data.hasil))throw new Error('File ini bukan cadangan Asisten Koreksi Guru.');
     if(!confirm('Pulihkan akan MENGGANTI data di HP ini dengan isi cadangan. Lanjutkan?'))return;
     store.set('label',data.label||'');
-    store.set('rubriks',data.rubriks||(data.rubrik!=null?{'rb-pulih':{nama:'Rubrik 1',teks:data.rubrik}}:{}));
+    store.set('labelDetail',data.labelDetail||null);
+    store.set('rubriks',data.rubriks||(data.rubrik!=null?{'rb-pulih':{nama:'Kunci 1',teks:data.rubrik}}:{}));
     store.set('rubrikAktif',data.rubrikAktif||'');
+    if(data.kebijakanStandar)store.set('kebijakanStandar',data.kebijakanStandar);
     store.set('roster',data.daftarNama||'');
     store.set('model',data.model||'claude-sonnet-5-5');
     hasil=data.hasil;store.set('hasil',hasil);
@@ -900,40 +950,65 @@ $('#resolusi').addEventListener('change',function(){store.set('resolusi',+this.v
 
 /* ---------- Beberapa rubrik ---------- */
 function ambilRubriks(){return store.get('rubriks',{})}
+function ambilKebijakanStandar(){return store.get('kebijakanStandar',KEBIJAKAN_BAWAAN)}
 function ensureRubrik(){
-  var r=ambilRubriks();
+  var r=ambilRubriks(),ubah=false;
   if(!Object.keys(r).length){
-    r={'rubrik-1':{nama:'Rubrik 1',teks:String(store.get('rubrik','')||'')}};
-    store.set('rubriks',r);store.set('rubrikAktif','rubrik-1');
+    r={'rubrik-1':{nama:'Kunci 1',kunci:String(store.get('rubrik','')||'')}};
+    ubah=true;
   }
+  Object.keys(r).forEach(function(k){
+    var x=r[k];
+    if(/^Rubrik /.test(x.nama||'')){x.nama=x.nama.replace(/^Rubrik /,'Kunci ');ubah=true}
+    if(x.teks!==undefined&&x.kunci===undefined){x.kunci=x.teks;delete x.teks;ubah=true}
+    if(x.kunci===undefined){x.kunci='';ubah=true}
+    if(x.kebijakan===undefined){x.kebijakan=ambilKebijakanStandar();ubah=true}
+  });
+  if(ubah)store.set('rubriks',r);
   if(!r[store.get('rubrikAktif','')])store.set('rubrikAktif',Object.keys(r)[0]);
 }
 function ambilRubrikAktif(){
   ensureRubrik();
   var r=ambilRubriks(),id=store.get('rubrikAktif','');
-  return {id:id,nama:r[id].nama,teks:r[id].teks||''};
+  return {id:id,nama:r[id].nama,kunci:r[id].kunci||'',kebijakan:r[id].kebijakan||''};
 }
-function simpanRubrikAktif(teks){
+function simpanRubrikAktif(kunci){
   ensureRubrik();
   var r=ambilRubriks(),id=store.get('rubrikAktif','');
-  r[id].teks=teks;store.set('rubriks',r);
+  r[id].kunci=kunci;store.set('rubriks',r);
+}
+function simpanKebijakanAktif(teks){
+  ensureRubrik();
+  var r=ambilRubriks(),id=store.get('rubrikAktif','');
+  r[id].kebijakan=teks;store.set('rubriks',r);
 }
 function isiRubrikUI(){
   ensureRubrik();
   var r=ambilRubriks(),id=store.get('rubrikAktif','');
   $('#pilihRubrik').innerHTML=Object.keys(r).map(function(k){return '<option value="'+esc(k)+'">'+esc(r[k].nama)+'</option>'}).join('');
   $('#pilihRubrik').value=id;
-  $('#rubrik').value=r[id].teks||'';
+  $('#rubrik').value=r[id].kunci||'';
+  $('#kebijakan').value=r[id].kebijakan||'';
 }
 function setRubrikTerkunci(kunci){
-  ['#pilihRubrik','#btnRubrikBaru','#btnRubrikHapus'].forEach(function(s){$(s).disabled=kunci});
+  ['#pilihRubrik','#btnRubrikBaru','#btnRubrikHapus','#kebijakan','#btnKebijakanStandar','#btnJadikanStandar'].forEach(function(s){$(s).disabled=kunci});
 }
+$('#kebijakan').addEventListener('input',function(){simpanKebijakanAktif(this.value)});
+$('#btnKebijakanStandar').addEventListener('click',function(){
+  simpanKebijakanAktif(KEBIJAKAN_BAWAAN);isiRubrikUI();
+});
+$('#btnJadikanStandar').addEventListener('click',function(){
+  var teks=$('#kebijakan').value;
+  if(!teks.trim()){alert('Kebijakan masih kosong.');return}
+  store.set('kebijakanStandar',teks);
+  alert('Kebijakan ini sekarang menjadi standar untuk kunci baru.');
+});
 $('#pilihRubrik').addEventListener('change',function(){store.set('rubrikAktif',this.value);isiRubrikUI()});
 $('#btnRubrikBaru').addEventListener('click',function(){
-  var nama=prompt('Nama rubrik baru (misalnya: IPAS Bab 2 atau Ulangan Matematika):');
+  var nama=prompt('Nama kunci jawaban baru (misalnya: IPAS Bab 2 atau Ulangan Matematika):');
   if(!nama||!nama.trim())return;
   var r=ambilRubriks(),id='rb'+Date.now();
-  r[id]={nama:nama.trim(),teks:''};
+  r[id]={nama:nama.trim(),kunci:'',kebijakan:ambilKebijakanStandar()};
   store.set('rubriks',r);store.set('rubrikAktif',id);isiRubrikUI();
 });
 $('#btnRubrikHapus').addEventListener('click',function(){
