@@ -296,6 +296,12 @@ var KEBIJAKAN_BAWAAN=
 '- 2: sebagian tepat\n'+
 '- 1: relevan tetapi belum menjawab\n'+
 '- 0: kosong atau tidak relevan.\n\n'+
+'LEMBAR GABUNG SOAL (jika siswa menjawab langsung di lembar soal)\n'+
+'- Teks soal, gambar, dan pilihan jawaban yang sudah tercetak BUKAN jawaban siswa. Abaikan semuanya.\n'+
+'- Yang dinilai hanya tanda dan tulisan siswa, misalnya huruf yang dilingkari, diberi tanda silang, atau ditulis dengan pensil.\n'+
+'- Untuk pilihan ganda, baca huruf yang ditandai siswa. Jika ada lebih dari satu tanda, anggap jawaban ganda dan tandai "ragu".\n'+
+'- Untuk isian dan uraian, baca hanya tulisan tangan siswa di kolom atau garis jawaban, bukan kalimat soal.\n'+
+'- Jika tanda pensil sangat samar, tulis "ragu" dan jangan langsung diberi nol.\n\n'+
 'Untuk kelas 1 sampai 2, uraian cukup 1 sampai 2 kalimat sederhana.\n'+
 'Di kolom alasan, tulis bagian yang sudah benar dan yang masih kurang.';
 
@@ -593,12 +599,12 @@ function systemPrompt(){
   'Gunakan KUNCI JAWABAN dan RUBRIK dari guru di bawah. Jangan mengarang isi jawaban yang tidak terbaca; tandai bagian yang meragukan pada "ragu". '+
   'Setiap permintaan berisi jawaban SATU siswa yang bisa terdiri dari beberapa halaman. Anggap semua halaman adalah satu lembar jawaban, urutkan sesuai nomor soal, dan keluarkan satu objek di array "siswa". '+
   'Jika guru menyebut nama siswa dalam pesan, pakai nama itu. '+
-  'Balas HANYA dengan JSON valid, tanpa teks lain dan tanpa markdown, dengan format: '+
+  'Gunakan nomor soal persis seperti di kunci jawaban (misalnya A1, B2, atau 1) tanpa tanda hubung. Balas HANYA dengan JSON valid, tanpa teks lain dan tanpa markdown, dengan format: '+
   '{"siswa":[{"nama":"...","jawaban":[{"no":"1","transkripsi":"...","skor":0,"skor_maks":0,"alasan":"deskripsi penilaian"}],"total":0,"maks":0,"perbaikan":"catatan perbaikan untuk siswa","catatan":"catatan untuk guru","ragu":["no 3: tulisan kurang jelas"]}]}. '+
   '"alasan" adalah deskripsi singkat (1-2 kalimat) mengapa skor itu diberikan, misalnya apa yang sudah benar dan apa yang masih kurang. '+
   '"perbaikan" adalah catatan perbaikan untuk siswa: hal yang perlu diperbaiki atau dipelajari lagi, dengan bahasa sederhana dan ramah untuk anak SD (1-3 kalimat); jika semua jawaban sudah baik tulis "Sudah baik, pertahankan." '+
   '"catatan" hanya untuk hal yang perlu diketahui guru dan boleh dikosongkan. '+
-  'Skor harus berupa angka dan tidak boleh melebihi skor_maks. Jika lembar kosong atau bukan lembar jawaban, kembalikan {"siswa":[]}.'+
+  'Jika lembar berisi soal tercetak, abaikan teks soal dan pilihan yang tercetak, dan nilai hanya tanda serta tulisan siswa. Skor harus berupa angka dan tidak boleh melebihi skor_maks. Jika lembar kosong atau bukan lembar jawaban, kembalikan {"siswa":[]}.'+
   '\n\nKEBIJAKAN PENILAIAN (wajib diikuti):\n'+(kebijakan||'(gunakan aturan umum: nilai isi, bukan ejaan)')+
   '\n\nKUNCI JAWABAN:\n'+(rubrik||'(guru belum mengisi kunci; nilai berdasarkan ketepatan jawaban saja)');
 }
@@ -619,11 +625,18 @@ async function nilaiSiswa(a){
   }
   throw new Error('Jawaban AI tidak terbaca sebagai data penilaian (biasanya karena ada tanda kutip atau baris yang rusak). Tekan Mulai untuk mencoba lagi. Detail: '+err.message);
 }
+function normNo(n){return String(n==null?'':n).toUpperCase().replace(/[^A-Z0-9]/g,'')}
+function urutNo(a,b){
+  var ma=a.match(/^([A-Z]*)(\d*)$/),mb=b.match(/^([A-Z]*)(\d*)$/);
+  var la=ma?ma[1]:a,lb=mb?mb[1]:b;
+  if(la!==lb)return la<lb?-1:1;
+  return (+((ma&&ma[2])||0))-(+((mb&&mb[2])||0));
+}
 function normalisasi(s,label,list,namaPilihan){
   var jw=(s.jawaban||[]).map(function(x){
     var maks=Number(x.skor_maks)||0,skor=Number(x.skor)||0;
     if(maks&&skor>maks)skor=maks;
-    return {no:String(x.no),transkripsi:x.transkripsi||'',skor:skor,skor_maks:maks,alasan:x.alasan||''};
+    return {no:normNo(x.no),transkripsi:x.transkripsi||'',skor:skor,skor_maks:maks,alasan:x.alasan||''};
   });
   var ragu=(s.ragu||[]).slice();
   var nama;
@@ -945,10 +958,11 @@ $('#btnPrintParent').addEventListener('click',function(){cetak(hasil,'orangtua')
 /* ---------- Ekspor ---------- */
 function buildRows(){
   var nos=[];
-  hasil.forEach(function(o){o.jawaban.forEach(function(x){if(nos.indexOf(x.no)<0)nos.push(x.no)})});
+  hasil.forEach(function(o){o.jawaban.forEach(function(x){var n=normNo(x.no);if(nos.indexOf(n)<0)nos.push(n)})});
+  nos.sort(urutNo);
   var head=['Label','Rubrik','Nama'].concat(nos.map(function(n){return 'Soal '+n}),['Total','Maks','Nilai (0-100)'],nos.map(function(n){return 'Deskripsi Soal '+n}),['Catatan perbaikan','Catatan untuk guru','Perlu dicek']);
   var rekap=[head].concat(hasil.map(function(o){
-    var map={},des={};o.jawaban.forEach(function(x){map[x.no]=x.skor;des[x.no]=x.alasan});
+    var map={},des={};o.jawaban.forEach(function(x){var n=normNo(x.no);map[n]=x.skor;des[n]=x.alasan});
     return [o.label,o.rubrik||'',o.nama].concat(nos.map(function(n){return map[n]!==undefined?map[n]:''}),
       [o.total,o.maks,nilai100(o)],
       nos.map(function(n){return des[n]!==undefined?des[n]:''}),
@@ -957,7 +971,7 @@ function buildRows(){
   var detail=[['Label','Rubrik','Nama','No soal','Skor','Skor maks','Tulisan siswa (hasil baca)','Deskripsi penilaian','Catatan perbaikan','Perlu dicek']];
   hasil.forEach(function(o){
     o.jawaban.forEach(function(x){
-      detail.push([o.label,o.rubrik||'',o.nama,x.no,x.skor,x.skor_maks,x.transkripsi,x.alasan,o.perbaikan||'',(o.ragu||[]).join('; ')]);
+      detail.push([o.label,o.rubrik||'',o.nama,normNo(x.no),x.skor,x.skor_maks,x.transkripsi,x.alasan,o.perbaikan||'',(o.ragu||[]).join('; ')]);
     });
   });
   return {rekap:rekap,detail:detail};
