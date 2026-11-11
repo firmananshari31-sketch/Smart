@@ -612,8 +612,12 @@ async function nilaiSiswa(a){
     return {type:'image',source:{type:'base64',media_type:'image/jpeg',data:d.split(',')[1]}};
   });
   content.push({type:'text',text:'Nama siswa: '+a.nama+'. Lembar ini terdiri dari '+a.pages.length+' halaman, semuanya jawaban siswa yang sama. Nilai sesuai rubrik.'});
-  var text=await apiText(systemPrompt(),content,8000,0);
-  return parseJSON(text);
+  var err=null;
+  for(var k=0;k<2;k++){
+    var text=await apiText(systemPrompt(),content,8000,0);
+    try{return parseJSON(text)}catch(e){err=e}
+  }
+  throw new Error('Jawaban AI tidak terbaca sebagai data penilaian (biasanya karena ada tanda kutip atau baris yang rusak). Tekan Mulai untuk mencoba lagi. Detail: '+err.message);
 }
 function normalisasi(s,label,list,namaPilihan){
   var jw=(s.jawaban||[]).map(function(x){
