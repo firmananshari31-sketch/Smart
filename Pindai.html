@@ -106,8 +106,13 @@ nav button.on{color:var(--accent);font-weight:700}
     <textarea id="rubrik" placeholder="Tulis kunci jawaban di sini, atau unggah file."></textarea>
     <div class="row" style="margin-top:10px">
       <button id="btnKunci">Unggah file kunci jawaban</button>
+      <button id="btnBuatKunci">Tambah foto soal</button>
+      <button id="btnBuatDraf">Buat draf kunci</button>
+      <button id="btnKosongSoal">Kosongkan foto</button>
     </div>
+    <input type="file" id="fileSoal" accept="image/*,application/pdf" multiple hidden>
     <input type="file" id="fileKunci" accept=".docx,.txt,.pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden>
+    <p class="hint" id="soalInfo"></p>
     <p class="hint">Semakin jelas skor maksimal dan aturan skor sebagian per soal, semakin konsisten nilainya. Bisa diunggah dari Word (.docx), teks (.txt), PDF, atau foto. File .doc lama: simpan ulang sebagai .docx dulu.</p>
     <details style="margin-top:12px">
       <summary style="font-weight:600;cursor:pointer">Kebijakan penilaian (sudah berisi standar, bisa diubah)</summary>
@@ -173,8 +178,8 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="card">
     <label for="model">Model</label>
     <select id="model">
-      <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (seimbang, disarankan)</option>
-      <option value="claude-haiku-5-5">Claude Haiku 5.5 (lebih murah dan cepat)</option>
+      <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (lebih teliti, biaya lebih besar)</option>
+      <option value="claude-haiku-5-5">Claude Haiku 5.5 (disarankan, paling hemat)</option>
       <option value="claude-opus-5-5">Claude Opus 5.5 (paling teliti, lebih mahal)</option>
     </select>
     <p class="hint">Biaya dihitung per siswa yang dinilai, dibayar dari saldo API Anda.</p>
@@ -315,7 +320,7 @@ function isiForm(){
   isiRubrikUI();
   $('#roster').value=store.get('roster','');
   $('#key').value=store.get('key','');
-  $('#model').value=store.get('model','claude-sonnet-5-5');
+  $('#model').value=store.get('model','claude-haiku-5-5');
   isiDaftarSiswa();
 }
 function setSetMsg(t,isErr){var m=$('#setmsg');m.textContent=t||'';m.className='msg'+(isErr?' err':'')}
@@ -560,15 +565,15 @@ $('#antrean').addEventListener('click',function(e){
 });
 
 /* ---------- Panggil Claude ---------- */
-function apiText(system,content,maxTokens,attempt){
+function apiText(system,content,maxTokens,attempt,model){
   attempt=attempt||0;
   var key=store.get('key','');
   return fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:store.get('model','claude-sonnet-5-5'),max_tokens:maxTokens,system:system,messages:[{role:'user',content:content}]})
+    body:JSON.stringify({model:model||store.get('model','claude-haiku-5-5'),max_tokens:maxTokens,system:system,messages:[{role:'user',content:content}]})
   }).then(async function(r){
-    if((r.status===429||r.status===529||r.status>=500)&&attempt<2){await sleep(2500*(attempt+1));return apiText(system,content,maxTokens,attempt+1)}
+    if((r.status===429||r.status===529||r.status>=500)&&attempt<2){await sleep(2500*(attempt+1));return apiText(system,content,maxTokens,attempt+1,model)}
     var j;try{j=await r.json()}catch(e){throw new Error('Respons server tidak terbaca ('+r.status+')')}
     if(!r.ok){
       var m=(j&&j.error&&j.error.message)||('Error '+r.status);
@@ -652,7 +657,7 @@ $('#btnGo').addEventListener('click',async function(){
       var out=await nilaiSiswa(a);
       var siswa=(out.siswa||[]);
       if(!siswa.length)throw new Error('AI tidak menemukan jawaban di lembar ini. Coba foto ulang dengan lebih terang.');
-      var ob=normalisasi(siswa[0],label,list,a.nama);ob.rubrik=ambilRubrikAktif().nama;ob.waktu=new Date().toISOString();ob.model=store.get('model','claude-sonnet-5-5');hasil.push(ob);
+      var ob=normalisasi(siswa[0],label,list,a.nama);ob.rubrik=ambilRubrikAktif().nama;ob.waktu=new Date().toISOString();ob.model=store.get('model','claude-haiku-5-5');hasil.push(ob);
       store.set('hasil',hasil);
       antrean=antrean.filter(function(x){return x!==a});
       done++;
@@ -750,6 +755,67 @@ function docxText(xml){
   return lines.join('\n').replace(/\n{3,}/g,'\n\n').trim();
 }
 $('#btnKunci').addEventListener('click',function(){$('#fileKunci').click()});
+
+/* ---------- Buat draf kunci dari foto soal ---------- */
+var soalBlok=[];
+function updateSoalInfo(){
+  $('#soalInfo').textContent=soalBlok.length?soalBlok.length+' foto soal siap. Tambah foto lagi, atau tekan Buat draf kunci.':'Belum ada foto soal. Pilih satu atau beberapa foto sekaligus.';
+  $('#btnBuatDraf').disabled=!soalBlok.length;
+  $('#btnKosongSoal').disabled=!soalBlok.length;
+}
+updateSoalInfo();
+$('#btnBuatKunci').addEventListener('click',function(){
+  if(!store.get('key','')){kmsg('Isi API key dulu di tab Pengaturan.',true);return}
+  $('#fileSoal').click();
+});
+$('#fileSoal').addEventListener('change',async function(){
+  var files=Array.from(this.files||[]);this.value='';
+  if(!files.length)return;
+  kmsg('Membaca '+files.length+' foto...');
+  try{
+    for(var i=0;i<files.length;i++){
+      var f=files[i],blk;
+      if(f.type==='application/pdf'){
+        if(f.size>25*1024*1024)throw new Error('PDF terlalu besar (maks 25 MB).');
+        blk={type:'document',source:{type:'base64',media_type:'application/pdf',data:(await readDataURL(f)).split(',')[1]}};
+      }else if(f.type.indexOf('image/')===0){
+        blk={type:'image',source:{type:'base64',media_type:'image/jpeg',data:(await readBlobURL(f,1568)).split(',')[1]}};
+      }else throw new Error('Gunakan foto atau PDF soal.');
+      soalBlok.push(blk);
+    }
+    updateSoalInfo();
+    kmsg('');
+  }catch(e){kmsg(e.message,true);updateSoalInfo()}
+});
+$('#btnKosongSoal').addEventListener('click',function(){soalBlok=[];updateSoalInfo();kmsg('')});
+$('#btnBuatDraf').addEventListener('click',async function(){
+  if(!soalBlok.length)return;
+  var kelas=$('#kelas').value,label=$('#label').value.trim();
+  var sys='Kamu membuat draf kunci jawaban untuk guru SD dari foto soal. Foto yang diberikan bisa berupa beberapa halaman dari satu lembar soal; gabungkan dan urutkan menjadi satu kunci bernomor. Baca soal dengan teliti. Tulis satu baris per soal dengan format persis seperti contoh:\n'+
+    '- PG: "<no>. PG (skor N): B"\n'+
+    '- BS: "<no>. BS (skor N): 1-B, 2-S, 3-B"\n'+
+    '- Menjodohkan: "<no>. Menjodohkan (skor N): 1-C, 2-A, 3-D, 4-B"\n'+
+    '- MCMA: "<no>. MCMA (skor N): A, C, E"\n'+
+    '- Isian singkat: "<no>. Isian (skor N): kata1, kata2"\n'+
+    '- Uraian: "<no>. Uraian (skor N): <poin jawaban yang diharapkan>"\n'+
+    'Ambil N dari skor yang tertulis di soal. Jika tidak tertulis, pakai 1 untuk PG, BS, dan menjodohkan; 2 untuk MCMA dan isian; 4 untuk uraian. '+
+    'Untuk uraian, tulis poin jawaban dengan kalimat sederhana sesuai anak SD'+(kelas?' kelas '+kelas:'')+'. '+
+    'Jika soal tidak terbaca atau jawaban tidak pasti, tambahkan "(ragu: alasan singkat)" di akhir baris itu. Jangan menambah komentar, judul, atau markdown.';
+  var btn=this;btn.disabled=true;
+  try{
+    kmsg('Claude sedang membuat draf kunci dari '+soalBlok.length+' foto...');
+    var content=soalBlok.concat([{type:'text',text:'Label: '+(label||'-')+'. Buatkan draf kunci jawaban untuk soal ini.'}]);
+    var draf=(await apiText(sys,content,4000,0,'claude-sonnet-5-5')).trim();
+    if(!draf)throw new Error('Draf kunci tidak terbentuk. Coba foto yang lebih jelas.');
+    var ta=$('#rubrik');
+    if(ta.value.trim()&&!confirm('Kotak kunci jawaban sudah berisi teks. OK = ganti dengan draf baru, Batal = tambahkan di bawahnya.'))ta.value=ta.value.replace(/\s+$/,'')+'\n\n'+draf;
+    else ta.value=draf;
+    simpanRubrikAktif(ta.value);
+    soalBlok=[];updateSoalInfo();
+    kmsg('Draf kunci dibuat. Periksa setiap baris, terutama yang bertanda "ragu", sebelum dipakai menilai.');
+  }catch(e){kmsg(e.message,true)}
+  finally{btn.disabled=!soalBlok.length}
+});
 $('#fileKunci').addEventListener('change',async function(){
   var f=this.files[0];this.value='';
   if(!f)return;
@@ -919,7 +985,7 @@ $('#btnXlsx').addEventListener('click',function(){
 
 /* ---------- Cadangan ---------- */
 $('#btnBackup').addEventListener('click',function(){
-  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),labelDetail:store.get('labelDetail',null),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),kebijakanStandar:ambilKebijakanStandar(),daftarNama:store.get('roster',''),model:store.get('model','claude-sonnet-5-5'),hasil:hasil};
+  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),labelDetail:store.get('labelDetail',null),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),kebijakanStandar:ambilKebijakanStandar(),daftarNama:store.get('roster',''),model:store.get('model','claude-haiku-5-5'),hasil:hasil};
   unduhFile(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),'cadangan-penilai-'+hari()+'.json');
 });
 $('#btnRestore').addEventListener('click',function(){$('#fileRestore').click()});
@@ -936,7 +1002,7 @@ $('#fileRestore').addEventListener('change',async function(){
     store.set('rubrikAktif',data.rubrikAktif||'');
     if(data.kebijakanStandar)store.set('kebijakanStandar',data.kebijakanStandar);
     store.set('roster',data.daftarNama||'');
-    store.set('model',data.model||'claude-sonnet-5-5');
+    store.set('model',data.model||'claude-haiku-5-5');
     hasil=data.hasil;store.set('hasil',hasil);
     isiForm();renderHasil();
     setSetMsg('Cadangan dipulihkan: '+hasil.length+' hasil.');
@@ -944,7 +1010,7 @@ $('#fileRestore').addEventListener('change',async function(){
 });
 
 /* ---------- Ukuran foto ---------- */
-function maxSisi(){return +store.get('resolusi',1568)||1568}
+function maxSisi(){return +store.get('resolusi',1200)||1200}
 $('#resolusi').value=String(maxSisi());
 $('#resolusi').addEventListener('change',function(){store.set('resolusi',+this.value)});
 
@@ -1072,7 +1138,7 @@ var HARGA_PER_SISWA={'claude-haiku-5-5':0.0015,'claude-sonnet-5-5':0.02};
 function renderBiaya(){
   var bulan=new Date().toISOString().slice(0,7);
   var n=hasil.filter(function(h){return (h.waktu||'').slice(0,7)===bulan}).length;
-  var est=HARGA_PER_SISWA[store.get('model','claude-sonnet-5-5')];
+  var est=HARGA_PER_SISWA[store.get('model','claude-haiku-5-5')];
   $('#biaya').textContent='Bulan ini: '+n+' siswa dinilai. '+
     (est!==undefined?'Perkiraan biaya dengan model ini (lembar 2 halaman): sekitar $'+(n*est).toFixed(3)+'. Ini perkiraan kasar, bukan tagihan resmi.':'Perkiraan biaya untuk model ini belum tersedia.');
 }
