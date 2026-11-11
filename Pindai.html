@@ -62,6 +62,10 @@ nav button.on{color:var(--accent);font-weight:700}
 .ov-bar{display:flex;gap:10px;padding:14px;width:100%}
 .ov-bar button{flex:1}
 .ov-hint{color:#fff;margin:8px;font-size:14px}
+.ov-ctrl{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;padding:0 14px;width:100%}
+.ov-ctrl button{padding:8px 12px}
+.ov-zoom{color:#fff;font-weight:400;margin:0;display:flex;gap:8px;align-items:center}
+.ov-zoom input{width:160px}
 #print-area{display:none;color:#000;background:#fff}
 #print-area table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
 #print-area th,#print-area td{border:1px solid #888;padding:6px;vertical-align:top;text-align:left}
@@ -165,6 +169,12 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="msg" id="setmsg"></div>
 
   <div class="card" style="margin-top:14px">
+    <label for="pilihKamera">Kamera untuk memfoto lembar</label>
+    <select id="pilihKamera"></select>
+    <div class="row" style="margin-top:10px"><button id="btnMuatKamera">Muat ulang daftar kamera</button></div>
+    <p class="hint">Kalau hasil fotonya terlalu lebar atau kecil, pilih kamera lain (misalnya yang bukan "ultra wide" atau "0.5"). Senter dan zoom juga bisa diatur di layar kamera jika HP mendukung.</p>
+  </div>
+  <div class="card">
     <label>Cadangan data</label>
     <p class="hint" style="margin-top:0">Data di browser bisa hilang kalau cache atau data situs dibersihkan. Simpan cadangan secara berkala ke file, lalu pulihkan kapan saja. Cadangan berisi rubrik, daftar nama, label, dan hasil nilai. API key sengaja tidak ikut disimpan.</p>
     <div class="row" style="margin-top:10px">
@@ -181,6 +191,10 @@ nav button.on{color:var(--accent);font-weight:700}
 <div id="kamera" class="overlay" hidden>
   <video id="video" playsinline autoplay muted></video>
   <p class="ov-hint" id="kamHint">Halaman terfoto: 0</p>
+  <div class="ov-ctrl">
+    <button id="btnSenter" hidden>Senter: mati</button>
+    <label class="ov-zoom" id="zoomWrap" hidden>Zoom <input type="range" id="zoomRange" min="1" max="1" step="0.1" value="1"></label>
+  </div>
   <div class="ov-bar">
     <button class="primary" id="btnJepret">Ambil foto</button>
     <button id="btnSelesaiKamera">Selesai</button>
@@ -313,17 +327,57 @@ function cocokkanNama(nama,list){
 /* ---------- Kamera belakang ---------- */
 function setMsgSiswa(t,isErr){var m=$('#msgSiswa');m.textContent=t||'';m.className='msg'+(isErr?' err':'')}
 function updateKamHint(){$('#kamHint').textContent='Halaman terfoto: '+pages.length+' dari '+MAX_HAL}
+var kameraTerpilih=store.get('kameraId','');
+var torchOn=false;
+async function daftarKamera(diam){
+  var sel=$('#pilihKamera');
+  try{
+    var devs=(await navigator.mediaDevices.enumerateDevices()).filter(function(d){return d.kind==='videoinput'});
+    var daftar=devs.map(function(d,i){return {id:d.deviceId,label:d.label||('Kamera '+(i+1))}});
+    sel.innerHTML='';
+    if(!daftar.length){sel.innerHTML='<option value="">Tidak ada kamera terdeteksi</option>';return}
+    daftar.forEach(function(p){var o=document.createElement('option');o.value=p.id;o.textContent=p.label;sel.appendChild(o)});
+    if(!kameraTerpilih||!daftar.some(function(p){return p.id===kameraTerpilih}))kameraTerpilih=kameraUtama(daftar);
+    sel.value=kameraTerpilih;
+    if(!diam&&devs.every(function(d){return !d.label}))
+      setSetMsg('Nama kamera belum terbaca. Pilih kamera dulu, lalu buka kamera di tab Nilai dan muat ulang daftar.');
+  }catch(e){if(!diam)setSetMsg('Daftar kamera tidak bisa dibaca.',true)}
+}
+function kameraUtama(list){
+  var belakang=list.filter(function(p){return !/front|depan|user|selfie/i.test(p.label)});
+  var utama=belakang.filter(function(p){return !/ultra|wide|0\.5|tele|macro|depth/i.test(p.label)});
+  var pick=utama[0]||belakang[0]||list[0];
+  return pick?pick.id:'';
+}
+async function mulaiStream(id){
+  if(id){try{return await navigator.mediaDevices.getUserMedia({video:{deviceId:{exact:id}},audio:false})}catch(e){}}
+  try{return await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:'environment'}},audio:false})}
+  catch(e){return navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false})}
+}
+function siapkanKontrol(){
+  var track=stream&&stream.getVideoTracks()[0];
+  var caps=(track&&track.getCapabilities)?track.getCapabilities():{};
+  torchOn=false;
+  $('#btnSenter').textContent='Senter: mati';
+  $('#btnSenter').hidden=!caps.torch;
+  if(caps.zoom){
+    var r=$('#zoomRange');
+    r.min=caps.zoom.min;r.max=caps.zoom.max;r.step=caps.zoom.step||0.1;
+    r.value=(track.getSettings().zoom)||caps.zoom.min;
+    $('#zoomWrap').hidden=false;
+  }else $('#zoomWrap').hidden=true;
+}
 async function bukaKamera(){
   if(pages.length>=MAX_HAL){setMsgSiswa('Sudah '+MAX_HAL+' halaman. Tambahkan siswa ini ke antrean dulu.',true);return}
   if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){$('#fileKameraCadangan').click();return}
   try{
-    try{
-      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:'environment'}},audio:false});
-    }catch(e){
-      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
-    }
+    stream=await mulaiStream($('#pilihKamera').value||kameraTerpilih);
+    var track=stream.getVideoTracks()[0];
+    if(track&&track.getSettings().deviceId){kameraTerpilih=track.getSettings().deviceId;store.set('kameraId',kameraTerpilih)}
     $('#video').srcObject=stream;
     $('#kamera').hidden=false;
+    siapkanKontrol();
+    daftarKamera(true);
     updateKamHint();
   }catch(e){
     setMsgSiswa('Kamera dalam aplikasi tidak bisa dibuka. Memakai kamera bawaan HP.',true);
@@ -333,8 +387,27 @@ async function bukaKamera(){
 function tutupKamera(){
   if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}
   $('#video').srcObject=null;
+  torchOn=false;
   $('#kamera').hidden=true;
 }
+$('#btnSenter').addEventListener('click',async function(){
+  var track=stream&&stream.getVideoTracks()[0];if(!track)return;
+  var nyala=!torchOn;
+  try{
+    await track.applyConstraints({advanced:[{torch:nyala}]});
+    torchOn=nyala;this.textContent='Senter: '+(torchOn?'nyala':'mati');
+  }catch(e){setMsgSiswa('Senter tidak bisa dinyalakan di kamera ini.',true)}
+});
+$('#zoomRange').addEventListener('input',async function(){
+  var track=stream&&stream.getVideoTracks()[0];if(!track)return;
+  try{await track.applyConstraints({advanced:[{zoom:+this.value}]})}catch(e){}
+});
+$('#pilihKamera').addEventListener('change',function(){
+  kameraTerpilih=this.value;store.set('kameraId',kameraTerpilih);
+  setSetMsg('Kamera dipilih. Berlaku saat kamera dibuka berikutnya.');
+  setTimeout(function(){setSetMsg('')},2500);
+});
+$('#btnMuatKamera').addEventListener('click',function(){daftarKamera(false)});
 $('#btnKamera').addEventListener('click',bukaKamera);
 $('#btnJepret').addEventListener('click',function(){
   var v=$('#video');
@@ -805,6 +878,7 @@ $('#fileRestore').addEventListener('change',async function(){
 /* ---------- Awal ---------- */
 $('#logo').src=LOGO;
 isiForm();
+daftarKamera(true);
 renderThumbs();
 renderAntrean();
 renderHasil();
