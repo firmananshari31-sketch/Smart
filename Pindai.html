@@ -95,6 +95,7 @@ nav button.on{color:var(--accent);font-weight:700}
   </div>
   <div class="card">
     <label for="rubrik">Kunci jawaban dan rubrik</label>
+    <div class="row" style="margin-bottom:8px"><select id="pilihRubrik" style="flex:2"></select><button id="btnRubrikBaru">+ Baru</button><button id="btnRubrikHapus">Hapus</button></div>
     <textarea id="rubrik" placeholder="Tulis kunci jawaban, atau ketuk 'Isi contoh rubrik' di bawah."></textarea>
     <div class="row" style="margin-top:10px">
       <button id="btnTemplate">Isi contoh rubrik</button>
@@ -147,6 +148,7 @@ nav button.on{color:var(--accent);font-weight:700}
     <button id="btnClear">Hapus semua</button>
   </div>
   <p class="small" style="margin:0 0 12px">Excel berisi dua lembar kerja: <b>Rekap</b> (satu baris per siswa) dan <b>Detail</b> (satu baris per soal). Ketuk kartu untuk melihat detail. Semua isian bisa diubah sebelum diunduh atau dicetak.</p>
+  <p class="small" id="biaya" style="margin:0 0 12px"></p>
   <div id="hasil"></div>
 </section>
 
@@ -164,6 +166,15 @@ nav button.on{color:var(--accent);font-weight:700}
       <option value="claude-opus-5-5">Claude Opus 5.5 (paling teliti, lebih mahal)</option>
     </select>
     <p class="hint">Biaya dihitung per siswa yang dinilai, dibayar dari saldo API Anda.</p>
+  </div>
+  <div class="card">
+    <label for="resolusi">Ukuran foto</label>
+    <select id="resolusi">
+      <option value="1568">Tinggi (paling jelas, biaya lebih besar)</option>
+      <option value="1200">Sedang (seimbang)</option>
+      <option value="900">Hemat (cek dulu tulisannya masih terbaca)</option>
+    </select>
+    <p class="hint">Foto dikecilkan sebelum dikirim. Makin kecil, makin sedikit token dan biaya per siswa, tetapi tulisan tangan bisa sulit dibaca. Coba dulu dengan beberapa lembar.</p>
   </div>
   <button class="primary" id="btnSave" style="width:100%">Simpan pengaturan</button>
   <div class="msg" id="setmsg"></div>
@@ -262,7 +273,7 @@ $$('nav button').forEach(function(b){
 /* ---------- Pengaturan ---------- */
 function isiForm(){
   $('#label').value=store.get('label','');
-  $('#rubrik').value=store.get('rubrik','');
+  isiRubrikUI();
   $('#roster').value=store.get('roster','');
   $('#key').value=store.get('key','');
   $('#model').value=store.get('model','claude-sonnet-5-5');
@@ -273,7 +284,7 @@ function isiDaftarSiswa(){
   $('#daftarSiswa').innerHTML=parseRoster(store.get('roster','')).map(function(n){return '<option value="'+esc(n)+'">'}).join('');
 }
 $('#label').addEventListener('input',function(){store.set('label',this.value)});
-$('#rubrik').addEventListener('input',function(){store.set('rubrik',this.value)});
+$('#rubrik').addEventListener('input',function(){simpanRubrikAktif(this.value)});
 $('#roster').addEventListener('input',function(){store.set('roster',this.value);isiDaftarSiswa()});
 $('#btnSave').addEventListener('click',function(){
   store.set('key',$('#key').value.trim());
@@ -284,7 +295,7 @@ $('#btnSave').addEventListener('click',function(){
 $('#btnTemplate').addEventListener('click',function(){
   var ta=$('#rubrik');
   if(ta.value.trim()&&!confirm('Ganti isi kotak rubrik dengan contoh? Isi sekarang akan hilang.'))return;
-  ta.value=TEMPLATE;store.set('rubrik',ta.value);
+  ta.value=TEMPLATE;simpanRubrikAktif(ta.value);
 });
 
 /* ---------- Daftar nama ---------- */
@@ -413,7 +424,7 @@ $('#btnJepret').addEventListener('click',function(){
   var v=$('#video');
   if(!v.videoWidth)return;
   if(pages.length>=MAX_HAL){setMsgSiswa('Maksimal '+MAX_HAL+' halaman per siswa.',true);return}
-  var s=Math.min(1,1800/Math.max(v.videoWidth,v.videoHeight));
+  var s=Math.min(1,maxSisi()/Math.max(v.videoWidth,v.videoHeight));
   var c=document.createElement('canvas');
   c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
   c.getContext('2d').drawImage(v,0,0,c.width,c.height);
@@ -445,7 +456,7 @@ async function tambahHalaman(list){
   for(var i=0;i<list.length;i++){
     if(pages.length>=MAX_HAL){setMsgSiswa('Maksimal '+MAX_HAL+' halaman per siswa. Sisanya tidak ditambahkan.',true);break}
     try{
-      var d=await readBlobURL(list[i],1800);
+      var d=await readBlobURL(list[i],maxSisi());
       pages.push({id:++uid,dataURL:d});
     }catch(e){setMsgSiswa(e.message,true)}
   }
@@ -474,6 +485,9 @@ $('#btnTambahSiswa').addEventListener('click',function(){
   var nama=$('#namaSiswa').value.trim();
   if(!nama){setMsgSiswa('Isi atau pilih nama siswa dulu.',true);return}
   if(!pages.length){setMsgSiswa('Foto atau pilih halaman lembar siswa ini dulu.',true);return}
+  var rbNama=ambilRubrikAktif().nama,lbl=$('#label').value.trim();
+  var pernah=hasil.some(function(h){return h.nama.toLowerCase()===nama.toLowerCase()&&(h.rubrik||'')===rbNama&&(h.label||'')===lbl});
+  if(pernah&&!confirm('"'+nama+'" sudah pernah dinilai dengan rubrik "'+rbNama+'". Tetap nilai lagi?'))return;
   var sama=antrean.some(function(a){return a.nama.toLowerCase()===nama.toLowerCase()});
   if(sama&&!confirm('"'+nama+'" sudah ada di antrean. Tetap tambahkan sebagai siswa lagi?'))return;
   antrean.push({id:++uid,nama:nama,pages:pages.map(function(p){return p.dataURL})});
@@ -482,6 +496,7 @@ $('#btnTambahSiswa').addEventListener('click',function(){
   setMsgSiswa('"'+nama+'" masuk antrean. Pilih siswa berikutnya.');
 });
 function renderAntrean(){
+  simpanAntrean();
   var box=$('#antrean');
   if(!antrean.length){
     box.innerHTML='<div class="empty" style="padding:14px">Belum ada siswa di antrean.</div>';
@@ -520,7 +535,7 @@ function apiText(system,content,maxTokens,attempt){
   });
 }
 function systemPrompt(){
-  var rubrik=String(store.get('rubrik','')||'').trim();
+  var rubrik=String(ambilRubrikAktif().teks||'').trim();
   return 'Kamu adalah asisten guru SD di Indonesia yang menilai lembar jawaban siswa tulisan tangan. '+
   'Baca tulisan tangan dengan teliti dan toleran terhadap ejaan serta kerapian anak SD. Nilai isi dan pemahaman, bukan kerapian atau ejaan, kecuali rubrik menyatakan lain. '+
   'Gunakan KUNCI JAWABAN dan RUBRIK dari guru di bawah. Jangan mengarang isi jawaban yang tidak terbaca; tandai bagian yang meragukan pada "ragu". '+
@@ -577,7 +592,7 @@ function setMsg(t,isErr){var m=$('#msg');m.textContent=t||'';m.className='msg'+(
 $('#btnGo').addEventListener('click',async function(){
   if(!store.get('key','')){setMsg('Isi API key dulu di tab Pengaturan.',true);return}
   if(!antrean.length){setMsg('Antrean masih kosong.',true);return}
-  var btn=this;btn.disabled=true;setMsg('');
+  var btn=this;btn.disabled=true;setMsg('');sedangNilai=true;setRubrikTerkunci(true);
   var bar=$('#bar');bar.hidden=false;var fill=bar.firstElementChild;fill.style.width='0';
   var label=$('#label').value.trim();
   var list=parseRoster(store.get('roster',''));
@@ -589,7 +604,7 @@ $('#btnGo').addEventListener('click',async function(){
       var out=await nilaiSiswa(a);
       var siswa=(out.siswa||[]);
       if(!siswa.length)throw new Error('AI tidak menemukan jawaban di lembar ini. Coba foto ulang dengan lebih terang.');
-      hasil.push(normalisasi(siswa[0],label,list,a.nama));
+      var ob=normalisasi(siswa[0],label,list,a.nama);ob.rubrik=ambilRubrikAktif().nama;ob.waktu=new Date().toISOString();ob.model=store.get('model','claude-sonnet-5-5');hasil.push(ob);
       store.set('hasil',hasil);
       antrean=antrean.filter(function(x){return x!==a});
       done++;
@@ -600,6 +615,7 @@ $('#btnGo').addEventListener('click',async function(){
     fill.style.width=Math.round((i+1)/total*100)+'%';
     renderAntrean();
   }
+  sedangNilai=false;setRubrikTerkunci(false);
   renderAntrean();
   if(!gagal){setMsg('Selesai. '+done+' siswa dinilai. Lihat tab Hasil.');setTimeout(function(){bar.hidden=true},800)}
   else setMsg(done+' berhasil, '+gagal+' gagal. Yang gagal tetap di antrean. Tekan Mulai untuk mencoba lagi.',true);
@@ -716,7 +732,7 @@ $('#fileKunci').addEventListener('change',async function(){
     var ta=$('#rubrik');
     if(ta.value.trim()&&!confirm('Kotak rubrik sudah berisi teks. OK = ganti dengan isi file, Batal = tambahkan di bawahnya.'))ta.value=ta.value.replace(/\s+$/,'')+'\n\n'+text;
     else ta.value=text;
-    store.set('rubrik',ta.value);
+    simpanRubrikAktif(ta.value);
     kmsg('Selesai membaca "'+f.name+'". Periksa isinya di kotak rubrik dan perbaiki bila perlu.');
   }catch(e){kmsg(e.message,true)}
 });
@@ -724,6 +740,7 @@ $('#fileKunci').addEventListener('change',async function(){
 /* ---------- Hasil ---------- */
 function nilai100(o){return o.maks?Math.round(o.total/o.maks*1000)/10:0}
 function renderHasil(){
+  renderBiaya();
   var box=$('#hasil');
   if(!hasil.length){box.innerHTML='<div class="empty">Belum ada hasil. Nilai lembar jawaban di tab Nilai.</div>';return}
   box.innerHTML=hasil.map(function(o,idx){
@@ -811,18 +828,18 @@ $('#btnPrintParent').addEventListener('click',function(){cetak(hasil,'orangtua')
 function buildRows(){
   var nos=[];
   hasil.forEach(function(o){o.jawaban.forEach(function(x){if(nos.indexOf(x.no)<0)nos.push(x.no)})});
-  var head=['Label','Nama'].concat(nos.map(function(n){return 'Soal '+n}),['Total','Maks','Nilai (0-100)'],nos.map(function(n){return 'Deskripsi Soal '+n}),['Catatan perbaikan','Catatan untuk guru','Perlu dicek']);
+  var head=['Label','Rubrik','Nama'].concat(nos.map(function(n){return 'Soal '+n}),['Total','Maks','Nilai (0-100)'],nos.map(function(n){return 'Deskripsi Soal '+n}),['Catatan perbaikan','Catatan untuk guru','Perlu dicek']);
   var rekap=[head].concat(hasil.map(function(o){
     var map={},des={};o.jawaban.forEach(function(x){map[x.no]=x.skor;des[x.no]=x.alasan});
-    return [o.label,o.nama].concat(nos.map(function(n){return map[n]!==undefined?map[n]:''}),
+    return [o.label,o.rubrik||'',o.nama].concat(nos.map(function(n){return map[n]!==undefined?map[n]:''}),
       [o.total,o.maks,nilai100(o)],
       nos.map(function(n){return des[n]!==undefined?des[n]:''}),
       [o.perbaikan||'',o.catatan||'',(o.ragu||[]).join('; ')]);
   }));
-  var detail=[['Label','Nama','No soal','Skor','Skor maks','Tulisan siswa (hasil baca)','Deskripsi penilaian','Catatan perbaikan','Perlu dicek']];
+  var detail=[['Label','Rubrik','Nama','No soal','Skor','Skor maks','Tulisan siswa (hasil baca)','Deskripsi penilaian','Catatan perbaikan','Perlu dicek']];
   hasil.forEach(function(o){
     o.jawaban.forEach(function(x){
-      detail.push([o.label,o.nama,x.no,x.skor,x.skor_maks,x.transkripsi,x.alasan,o.perbaikan||'',(o.ragu||[]).join('; ')]);
+      detail.push([o.label,o.rubrik||'',o.nama,x.no,x.skor,x.skor_maks,x.transkripsi,x.alasan,o.perbaikan||'',(o.ragu||[]).join('; ')]);
     });
   });
   return {rekap:rekap,detail:detail};
@@ -854,7 +871,7 @@ $('#btnXlsx').addEventListener('click',function(){
 
 /* ---------- Cadangan ---------- */
 $('#btnBackup').addEventListener('click',function(){
-  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),rubrik:store.get('rubrik',''),daftarNama:store.get('roster',''),model:store.get('model','claude-sonnet-5-5'),hasil:hasil};
+  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),daftarNama:store.get('roster',''),model:store.get('model','claude-sonnet-5-5'),hasil:hasil};
   unduhFile(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),'cadangan-penilai-'+hari()+'.json');
 });
 $('#btnRestore').addEventListener('click',function(){$('#fileRestore').click()});
@@ -866,7 +883,8 @@ $('#fileRestore').addEventListener('change',async function(){
     if(data.app!==APP||!Array.isArray(data.hasil))throw new Error('File ini bukan cadangan Asisten Koreksi Guru.');
     if(!confirm('Pulihkan akan MENGGANTI data di HP ini dengan isi cadangan. Lanjutkan?'))return;
     store.set('label',data.label||'');
-    store.set('rubrik',data.rubrik||'');
+    store.set('rubriks',data.rubriks||(data.rubrik!=null?{'rb-pulih':{nama:'Rubrik 1',teks:data.rubrik}}:{}));
+    store.set('rubrikAktif',data.rubrikAktif||'');
     store.set('roster',data.daftarNama||'');
     store.set('model',data.model||'claude-sonnet-5-5');
     hasil=data.hasil;store.set('hasil',hasil);
@@ -875,12 +893,121 @@ $('#fileRestore').addEventListener('change',async function(){
   }catch(e){setSetMsg(e.message||'Cadangan tidak bisa dibaca.',true)}
 });
 
+/* ---------- Ukuran foto ---------- */
+function maxSisi(){return +store.get('resolusi',1568)||1568}
+$('#resolusi').value=String(maxSisi());
+$('#resolusi').addEventListener('change',function(){store.set('resolusi',+this.value)});
+
+/* ---------- Beberapa rubrik ---------- */
+function ambilRubriks(){return store.get('rubriks',{})}
+function ensureRubrik(){
+  var r=ambilRubriks();
+  if(!Object.keys(r).length){
+    r={'rubrik-1':{nama:'Rubrik 1',teks:String(store.get('rubrik','')||'')}};
+    store.set('rubriks',r);store.set('rubrikAktif','rubrik-1');
+  }
+  if(!r[store.get('rubrikAktif','')])store.set('rubrikAktif',Object.keys(r)[0]);
+}
+function ambilRubrikAktif(){
+  ensureRubrik();
+  var r=ambilRubriks(),id=store.get('rubrikAktif','');
+  return {id:id,nama:r[id].nama,teks:r[id].teks||''};
+}
+function simpanRubrikAktif(teks){
+  ensureRubrik();
+  var r=ambilRubriks(),id=store.get('rubrikAktif','');
+  r[id].teks=teks;store.set('rubriks',r);
+}
+function isiRubrikUI(){
+  ensureRubrik();
+  var r=ambilRubriks(),id=store.get('rubrikAktif','');
+  $('#pilihRubrik').innerHTML=Object.keys(r).map(function(k){return '<option value="'+esc(k)+'">'+esc(r[k].nama)+'</option>'}).join('');
+  $('#pilihRubrik').value=id;
+  $('#rubrik').value=r[id].teks||'';
+}
+function setRubrikTerkunci(kunci){
+  ['#pilihRubrik','#btnRubrikBaru','#btnRubrikHapus'].forEach(function(s){$(s).disabled=kunci});
+}
+$('#pilihRubrik').addEventListener('change',function(){store.set('rubrikAktif',this.value);isiRubrikUI()});
+$('#btnRubrikBaru').addEventListener('click',function(){
+  var nama=prompt('Nama rubrik baru (misalnya: IPAS Bab 2 atau Ulangan Matematika):');
+  if(!nama||!nama.trim())return;
+  var r=ambilRubriks(),id='rb'+Date.now();
+  r[id]={nama:nama.trim(),teks:''};
+  store.set('rubriks',r);store.set('rubrikAktif',id);isiRubrikUI();
+});
+$('#btnRubrikHapus').addEventListener('click',function(){
+  ensureRubrik();
+  var r=ambilRubriks(),id=store.get('rubrikAktif','');
+  if(Object.keys(r).length<=1){alert('Minimal harus ada satu rubrik.');return}
+  if(!confirm('Hapus rubrik "'+r[id].nama+'"? Hasil yang sudah dinilai tidak ikut terhapus.'))return;
+  delete r[id];store.set('rubriks',r);store.set('rubrikAktif','');
+  ensureRubrik();isiRubrikUI();
+});
+
+/* ---------- Antrean tersimpan di browser (IndexedDB) ---------- */
+var dbP=null;
+function dbOpen(){
+  if(dbP)return dbP;
+  dbP=new Promise(function(res,rej){
+    if(!window.indexedDB)return rej(new Error('IndexedDB tidak tersedia'));
+    var q=indexedDB.open('penilai',1);
+    q.onupgradeneeded=function(){q.result.createObjectStore('kv')};
+    q.onsuccess=function(){res(q.result)};
+    q.onerror=function(){rej(q.error)};
+  });
+  return dbP;
+}
+async function dbSet(k,v){
+  try{
+    var db=await dbOpen();
+    await new Promise(function(res,rej){
+      var t=db.transaction('kv','readwrite');
+      t.objectStore('kv').put(v,k);
+      t.oncomplete=res;t.onerror=function(){rej(t.error)};
+    });
+  }catch(e){}
+}
+async function dbGet(k){
+  try{
+    var db=await dbOpen();
+    return await new Promise(function(res,rej){
+      var r=db.transaction('kv').objectStore('kv').get(k);
+      r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)};
+    });
+  }catch(e){return undefined}
+}
+function simpanAntrean(){dbSet('antrean',antrean)}
+async function loadAntrean(){
+  var v=await dbGet('antrean');
+  if(Array.isArray(v)&&v.length&&!antrean.length){
+    antrean=v;renderAntrean();
+    setMsg('Antrean sebelumnya dipulihkan: '+v.length+' siswa.');
+  }else renderAntrean();
+}
+
+/* ---------- Peringatan saat masih menilai ---------- */
+var sedangNilai=false;
+window.addEventListener('beforeunload',function(e){
+  if(sedangNilai){e.preventDefault();e.returnValue='';}
+});
+
+/* ---------- Perkiraan biaya bulan ini ---------- */
+var HARGA_PER_SISWA={'claude-haiku-5-5':0.0015,'claude-sonnet-5-5':0.02};
+function renderBiaya(){
+  var bulan=new Date().toISOString().slice(0,7);
+  var n=hasil.filter(function(h){return (h.waktu||'').slice(0,7)===bulan}).length;
+  var est=HARGA_PER_SISWA[store.get('model','claude-sonnet-5-5')];
+  $('#biaya').textContent='Bulan ini: '+n+' siswa dinilai. '+
+    (est!==undefined?'Perkiraan biaya dengan model ini (lembar 2 halaman): sekitar $'+(n*est).toFixed(3)+'. Ini perkiraan kasar, bukan tagihan resmi.':'Perkiraan biaya untuk model ini belum tersedia.');
+}
+
 /* ---------- Awal ---------- */
 $('#logo').src=LOGO;
 isiForm();
 daftarKamera(true);
 renderThumbs();
-renderAntrean();
+loadAntrean();
 renderHasil();
 if(!store.get('key','')){$('nav button[data-tab=set]').click()}
 })();
