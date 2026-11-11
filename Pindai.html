@@ -649,7 +649,7 @@ $('#btnGo').addEventListener('click',async function(){
   var bar=$('#bar');bar.hidden=false;var fill=bar.firstElementChild;fill.style.width='0';
   var label=$('#label').value.trim();
   var list=parseRoster(store.get('roster',''));
-  var todo=antrean.slice(),total=todo.length,gagal=0,done=0;
+  var todo=antrean.slice(),total=todo.length,gagal=0,done=0,pesanGagal='';
   for(var i=0;i<todo.length;i++){
     var a=todo[i];
     setMsg('Menilai '+(i+1)+' dari '+total+': '+a.nama+'...');
@@ -662,7 +662,7 @@ $('#btnGo').addEventListener('click',async function(){
       antrean=antrean.filter(function(x){return x!==a});
       done++;
     }catch(e){
-      gagal++;setMsg('Gagal pada "'+a.nama+'": '+e.message,true);
+      gagal++;pesanGagal='Gagal pada "'+a.nama+'": '+e.message+'.';setMsg(pesanGagal,true);
       if(/API key|Saldo/.test(e.message))break;
     }
     fill.style.width=Math.round((i+1)/total*100)+'%';
@@ -671,7 +671,7 @@ $('#btnGo').addEventListener('click',async function(){
   sedangNilai=false;setRubrikTerkunci(false);
   renderAntrean();
   if(!gagal){setMsg('Selesai. '+done+' siswa dinilai. Lihat tab Hasil.');setTimeout(function(){bar.hidden=true},800)}
-  else setMsg(done+' berhasil, '+gagal+' gagal. Yang gagal tetap di antrean. Tekan Mulai untuk mencoba lagi.',true);
+  else setMsg(done+' berhasil, '+gagal+' gagal. '+pesanGagal+' Yang gagal tetap di antrean. Tekan Mulai untuk mencoba lagi.',true);
 });
 
 /* ---------- Unggah kunci jawaban ---------- */
