@@ -477,10 +477,25 @@ $('#pilihKamera').addEventListener('change',function(){
 });
 $('#btnMuatKamera').addEventListener('click',function(){daftarKamera(false)});
 $('#btnKamera').addEventListener('click',bukaKamera);
+/* Bunyi jepretan: dibuat langsung di browser, tanpa file tambahan */
+function bunyiJepret(){
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return;
+    if(!window._acJepret)window._acJepret=new AC();
+    var ac=window._acJepret;
+    if(ac.state==='suspended')ac.resume();
+    var n=Math.floor(ac.sampleRate*0.12),buf=ac.createBuffer(1,n,ac.sampleRate),d=buf.getChannelData(0);
+    for(var i=0;i<n;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/n,6)}
+    var src=ac.createBufferSource(),g=ac.createGain();
+    g.gain.value=0.8;src.buffer=buf;src.connect(g);g.connect(ac.destination);src.start();
+  }catch(e){}
+}
 $('#btnJepret').addEventListener('click',function(){
   var v=$('#video');
   if(!v.videoWidth)return;
   if(pages.length>=MAX_HAL){setMsgSiswa('Maksimal '+MAX_HAL+' halaman per siswa.',true);return}
+  bunyiJepret();
   var s=Math.min(1,maxSisi()/Math.max(v.videoWidth,v.videoHeight));
   var c=document.createElement('canvas');
   c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
