@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#1e3fae">
 <title>Intelligent Grading Assistant</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--text:#1b1f24;--muted:#667085;--line:#e2e5ea;--accent:#1f9a3a;--accent-text:#fff;--warn:#b54708;--warn-bg:#fff4e5;--ok:#067647;--danger:#c0362c}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111418;--card:#1a1f26;--text:#e8ebef;--muted:#9aa4b2;--line:#2b323c;--accent:#4ccb6a;--accent-text:#0b1220;--warn:#f5b266;--warn-bg:#2d2315;--ok:#4ade80;--danger:#f07167}}
@@ -77,6 +78,12 @@ nav button.on{color:var(--accent);font-weight:700}
 .ov-zoom{color:#fff;font-weight:400;margin:0;display:flex;gap:8px;align-items:center}
 .ov-zoom input{width:160px}
 #print-area{display:none;color:#000;background:#fff}
+.pdf-tmp{color:#000;background:#fff;font-family:sans-serif;width:680px;padding:16px}
+.pdf-tmp table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+.pdf-tmp th,.pdf-tmp td{border:1px solid #888;padding:6px;vertical-align:top;text-align:left}
+.pdf-tmp h2{font-size:20px;margin:0 0 6px}
+.pdf-tmp p{margin:6px 0}
+
 #print-area table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
 #print-area th,#print-area td{border:1px solid #888;padding:6px;vertical-align:top;text-align:left}
 #print-area h2{font-size:20px;margin:0 0 6px}
@@ -113,7 +120,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v30</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v31</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -260,7 +267,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 30 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 31 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -306,6 +313,11 @@ nav button.on{color:var(--accent);font-weight:700}
   <button data-tab="set">⚙ Pengaturan</button>
 </nav>
 <div id="print-area"></div>
+<div id="bagikanBox" class="card" hidden style="position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:8;box-shadow:0 8px 24px rgba(0,0,0,.3);margin:0">
+  <b>Bagikan hasil sebagai PDF</b>
+  <div class="row" style="margin-top:10px"><button class="primary" id="bagGuru">Versi guru</button><button class="primary" id="bagOrtu">Versi orang tua</button></div>
+  <button id="bagBatal" style="margin-top:8px;width:100%">Batal</button>
+</div>
 
 <script>
 (function(){
@@ -1260,7 +1272,7 @@ function renderHasil(){
         '<div class="row" style="margin-top:10px">'+
           '<button class="pr">Cetak (guru)</button>'+
           '<button class="pr2">Cetak (orang tua)</button>'+
-          '<button class="wa">Kirim ke WA</button>'+
+          '<button class="bag">📤 Bagikan PDF</button> <button class="wa">Kirim ke WA</button>'+
           '<button class="del" style="color:var(--danger)">Hapus siswa ini</button>'+
         '</div>'+
       '</div></div>';
@@ -1272,6 +1284,7 @@ $('#hasil').addEventListener('click',function(e){
   if(e.target.closest('.tg')){card.classList.toggle('open');return}
   if(e.target.closest('.pr')){cetak([hasil[i]],'guru');return}
   if(e.target.closest('.pr2')){cetak([hasil[i]],'orangtua');return}
+  if(e.target.closest('.bag')){pilihBagikan(hasil[i]);return}
   if(e.target.closest('.wa')){kirimWa(hasil[i]);return}
   if(e.target.closest('.ulang')){siapkanUlang(hasil[i]);return}
   if(e.target.closest('.jdk')){jadikanContoh(i,+e.target.closest('.item').dataset.j);return}
@@ -1413,6 +1426,33 @@ function waTeks(o){
   baris.push('');
   baris.push(SEKOLAH+(namaGuru()?' · Guru: '+namaGuru():''));
   return baris.join('\n');
+}
+var bagiTarget=null;
+function pilihBagikan(o){bagiTarget=o;$('#bagikanBox').hidden=false}
+$('#bagBatal').addEventListener('click',function(){$('#bagikanBox').hidden=true});
+$('#bagGuru').addEventListener('click',function(){$('#bagikanBox').hidden=true;bagikanPdf(bagiTarget,'guru')});
+$('#bagOrtu').addEventListener('click',function(){$('#bagikanBox').hidden=true;bagikanPdf(bagiTarget,'orangtua')});
+async function bagikanPdf(o,mode){
+  if(!o)return;
+  if(typeof html2pdf==='undefined'){alert('Pembuat PDF belum termuat. Periksa koneksi internet, lalu coba lagi.');return}
+  var wrap=document.createElement('div');
+  wrap.className='pdf-tmp';
+  wrap.style.position='absolute';wrap.style.left='-10000px';wrap.style.top='0';
+  wrap.innerHTML=sheetHTML(o,mode);
+  document.body.appendChild(wrap);
+  var fn='Hasil_'+String(o.nama||'siswa').replace(/[^\w]+/g,'_')+(mode==='guru'?'_guru':'_orangtua')+'.pdf';
+  try{
+    var blob=await html2pdf().set({margin:10,filename:fn,image:{type:'jpeg',quality:0.95},html2canvas:{scale:2,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(wrap).outputPdf('blob');
+    var file=new File([blob],fn,{type:'application/pdf'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:fn});return}
+      catch(e){if(e&&e.name==='AbortError')return}
+    }
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href)},60000);
+    toast('PDF diunduh. Bagikan dari folder Unduhan.');
+  }catch(e){alert('Gagal membuat PDF: '+(e&&e.message?e.message:e))}
+  finally{wrap.remove()}
 }
 async function kirimWa(o){
   if(!o.diperiksa&&!confirm('Hasil ini belum ditandai sudah diperiksa guru. Tetap kirim?'))return;
