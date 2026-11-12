@@ -97,9 +97,6 @@ nav button.on{color:var(--accent);font-weight:700}
 .stat b{display:block;font-size:22px;line-height:1.2}
 .stat span{font-size:12px;color:var(--muted)}
 .stat.ok b{color:var(--ok)}.stat.warn b{color:var(--warn)}.stat.no b{color:var(--danger)}
-.stepper{display:flex;gap:6px;margin-bottom:14px}
-.stepper span{flex:1;text-align:center;font-size:12px;padding:8px 2px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--muted)}
-.stepper span.done{background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:600}
 .pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;margin:0 0 4px}
 .pill-ok{background:var(--ok);color:#fff}.pill-warn{background:var(--warn);color:#fff}.pill-no{background:var(--danger);color:#fff}
 .sis.st-ok{border-left:6px solid var(--ok)}.sis.st-warn{border-left:6px solid var(--warn)}.sis.st-no{border-left:6px solid var(--danger)}
@@ -114,7 +111,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v26</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v27</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -130,7 +127,6 @@ nav button.on{color:var(--accent);font-weight:700}
 <section id="tab-nilai" class="tab active">
   <span class="ctx-line" id="hdrCtx">Belum ada kelas dan mapel</span>
   <div class="stats" id="statNilai"></div>
-  <div class="stepper" id="stepper"><span data-s="1">1 Kelas</span><span data-s="2">2 Siswa</span><span data-s="3">3 Foto</span><span data-s="4">4 Nilai</span></div>
   <div class="card">
     <label>Kelas dan mata pelajaran</label>
     <div class="row">
@@ -262,7 +258,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 26 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 27 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -764,11 +760,6 @@ function renderStats(){
     '<div class="stat ok"><b>'+persen+'%</b><span>Tuntas (KKM '+KKM()+')</span></div>'+
     '<div class="stat warn"><b>'+d.perlu.length+'</b><span>Perlu dicek guru</span></div>';
 }
-function updateStepper(){
-  var st=$('#stepper');if(!st)return;
-  var done={1:$('#label').value.trim()!=='',2:$('#namaSiswa').value.trim()!=='',3:pages.length>0,4:antrean.length>0};
-  st.querySelectorAll('span').forEach(function(sp){sp.classList.toggle('done',!!done[sp.dataset.s])});
-}
 function toast(t){
   var el=$('#toast');if(!el)return;
   el.textContent=t;el.hidden=false;
@@ -790,10 +781,9 @@ $('#btnTema').addEventListener('click',function(){
   store.set('tema',t);$('#tema').value=t;terapkanTema();updIkonTema();
 });
 updIkonTema();
-$('#namaSiswa').addEventListener('input',updateStepper);
 function renderAntrean(){
   simpanAntrean();
-  renderStats();updateStepper();
+  renderStats();
   var box=$('#antrean');
   if(!antrean.length){
     box.innerHTML='<div class="empty" style="padding:14px">Belum ada siswa di antrean.</div>';
