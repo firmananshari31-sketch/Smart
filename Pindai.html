@@ -25,6 +25,8 @@ header .hbtns{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 header .hbtns button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:999px;width:34px;height:34px;font-size:16px;padding:0;cursor:pointer}
 header .badge{font-size:11px;background:#f0d020;color:#1e3fae;border-radius:999px;padding:2px 7px;font-weight:700}
 #bantuan{font-size:14px;line-height:1.5}
+.rekapTbl{width:100%;border-collapse:collapse;font-size:13px}
+.rekapTbl td,.rekapTbl th{padding:6px;border-bottom:1px solid var(--line);text-align:left}
 details.card summary{font-weight:600;cursor:pointer}
 details.card[open] summary{margin-bottom:4px}
 .foot{text-align:center;font-size:12px;color:var(--muted);padding:16px 16px 96px}
@@ -120,7 +122,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v35</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v39</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -219,7 +221,8 @@ nav button.on{color:var(--accent);font-weight:700}
   <div id="tulisOpsi" style="margin-top:8px"></div>
   <div class="row" style="margin-top:6px"><button id="tulisLewati">Lewati</button><button id="tulisBatal">Berhenti</button></div>
 </div>
-  <div class="row" style="margin-bottom:8px"><select id="filterHasil" style="flex:1"></select></div>
+  <div class="row" style="margin-bottom:8px"><select id="filterHasil" style="flex:1"></select><select id="filterMapel" style="flex:1"></select></div>
+  <div class="card" id="rekapBab" style="margin-bottom:12px" hidden></div>
   <div class="row">
     <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button> <button id="btnIslami">✨ Tambahkan kalimat islami</button> <button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button>
     <button id="btnCsv">📄 Unduh CSV</button>
@@ -269,11 +272,12 @@ nav button.on{color:var(--accent);font-weight:700}
   </div>
   <button class="primary" id="btnSave" style="width:100%">Simpan pengaturan</button>
   <div class="card" style="margin-bottom:12px"><label for="kkm">KKM (nilai tuntas, 0 sampai 100)</label><input type="number" id="kkm" min="0" max="100" step="1"></div>
+  <div class="card" style="margin-bottom:12px"><label for="hargaMasuk">Harga API (USD per 1 juta token)</label><div class="row"><input type="number" step="0.01" min="0" id="hargaMasuk" placeholder="Token masuk"><input type="number" step="0.01" min="0" id="hargaKeluar" placeholder="Token keluar"></div><p class="hint">Isi sesuai halaman harga Anthropic untuk model yang dipakai. Kosongkan kalau tidak ingin melihat perkiraan biaya.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="tema">Tampilan</label><select id="tema"><option value="">Ikuti pengaturan HP</option><option value="light">Terang</option><option value="dark">Gelap</option></select></div>
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 35 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 39 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -474,6 +478,8 @@ function isiForm(){
   isiRubrikUI();
   $('#kkm').value=KKM();
   $('#tema').value=store.get('tema','');
+  $('#hargaMasuk').value=store.get('hargaMasuk','');
+  $('#hargaKeluar').value=store.get('hargaKeluar','');
   $('#namaGuru').value=store.get('namaGuru','');
   $('#ulangSonnet').checked=store.get('ulangSonnet',true);
   isiRosterUI();
@@ -483,10 +489,14 @@ function isiForm(){
 }
 function setSetMsg(t,isErr){var m=$('#setmsg');m.textContent=t||'';m.className='msg'+(isErr?' err':'')}
 function isiDaftarSiswa(){syncPilihSiswa()}
+function sudahDinilai(nama){
+  var lab=$('#label').value||'';
+  return hasil.some(function(o){return o.nama===nama&&(o.label||'')===lab});
+}
 function syncPilihSiswa(){
   var names=parseRoster(rosterAktif()),sel=$('#pilihSiswa'),inp=$('#namaSiswa'),cur=inp.value.trim();
   if(!names.length){sel.hidden=true;sel.innerHTML='';inp.hidden=false;return}
-  sel.innerHTML='<option value="">— pilih nama —</option>'+names.map(function(n){return '<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join('')+'<option value="__lain__">Nama lain (ketik)</option>';
+  sel.innerHTML='<option value="">— pilih nama —</option>'+names.map(function(n){return '<option value="'+esc(n)+'">'+(sudahDinilai(n)?'✓ ':'')+esc(n)+'</option>'}).join('')+'<option value="__lain__">Nama lain (ketik)</option>';
   sel.hidden=false;
   if(!cur){sel.value='';inp.hidden=true}
   else if(names.indexOf(cur)>=0){sel.value=cur;inp.hidden=true}
@@ -527,7 +537,8 @@ function updateRosterInfo(){
   var k=kunciKelasAktif();
   var n=parseRoster(rosterUntuk(k)).length;
   $('#rosterInfo').textContent=n+' nama tersimpan untuk '+namaKelasDari(k)+'.';
-  $('#rosterSum').textContent='Daftar nama siswa: '+n+' nama tersimpan ▾';
+  var sudah=parseRoster(rosterUntuk(k)).filter(sudahDinilai).length;
+  $('#rosterSum').textContent='Daftar nama siswa: '+n+' nama · sudah dinilai '+sudah+' ▾';
 }
 $('#rosterKelas').addEventListener('change',function(){
   $('#roster').value=rosterUntuk(this.value);updateRosterInfo();
@@ -816,6 +827,8 @@ function updIkonTema(){
   $('#btnTema').textContent=gelap?'☀':'🌙';
 }
 $('#tema').addEventListener('change',function(){store.set('tema',this.value);terapkanTema();updIkonTema()});
+$('#hargaMasuk').addEventListener('input',function(){store.set('hargaMasuk',this.value);renderBiaya()});
+$('#hargaKeluar').addEventListener('input',function(){store.set('hargaKeluar',this.value);renderBiaya()});
 $('#btnTema').addEventListener('click',function(){
   var gelap=document.documentElement.getAttribute('data-theme')==='dark'||(!document.documentElement.getAttribute('data-theme')&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
   var t=gelap?'light':'dark';
@@ -843,6 +856,13 @@ $('#antrean').addEventListener('click',function(e){
 });
 
 /* ---------- Panggil Claude ---------- */
+function catatPakai(masuk,keluar){
+  var bulan=new Date().toISOString().slice(0,7);
+  var p=store.get('pakai',{});
+  var b=p[bulan]||{masuk:0,keluar:0,panggilan:0};
+  b.masuk+=masuk||0;b.keluar+=keluar||0;b.panggilan+=1;
+  p[bulan]=b;store.set('pakai',p);
+}
 function apiText(system,content,maxTokens,attempt,model){
   attempt=attempt||0;
   var key=store.get('key','');
@@ -859,6 +879,7 @@ function apiText(system,content,maxTokens,attempt,model){
       if(r.status===400&&/credit/i.test(m))m='Saldo API habis. Isi saldo di console.anthropic.com.';
       throw new Error(m);
     }
+    if(j.usage)catatPakai(j.usage.input_tokens,j.usage.output_tokens);
     return (j.content||[]).filter(function(b){return b.type==='text'}).map(function(b){return b.text}).join('');
   });
 }
@@ -1185,7 +1206,45 @@ function nilai100(o){return o.maks?Math.round(o.total/o.maks*1000)/10:0}
 var filterAktif=null;
 function KKM(){return +store.get('kkm',70)||70}
 function labelDaftar(){var l=[];hasil.forEach(function(o){var k=o.label||'';if(l.indexOf(k)<0)l.push(k)});return l}
-function filteredHasil(){return filterAktif===null?hasil:hasil.filter(function(o){return (o.label||'')===filterAktif})}
+var filterMapel=null;
+function mapelDari(o){var p=(o.label||'').split(' - ');return p.length>1&&p[1]?p[1]:'(tanpa mapel)'}
+function babDari(o){var p=(o.label||'').split(' - ');return p.length>2?p.slice(2).join(' - '):'(tanpa bab)'}
+function filteredHasil(){
+  return hasil.filter(function(o){
+    return (filterAktif===null||(o.label||'')===filterAktif)&&(filterMapel===null||mapelDari(o)===filterMapel);
+  });
+}
+function isiFilterMapel(){
+  var daftar=[];
+  hasil.forEach(function(o){var m=mapelDari(o);if(daftar.indexOf(m)<0)daftar.push(m)});
+  if(filterMapel!==null&&daftar.indexOf(filterMapel)<0)filterMapel=null;
+  $('#filterMapel').innerHTML='<option value="__semua__">Semua mapel</option>'+daftar.map(function(m){
+    var n=hasil.filter(function(o){return mapelDari(o)===m}).length;
+    return '<option value="'+esc(m)+'">'+esc(m)+' ('+n+')</option>';
+  }).join('');
+  $('#filterMapel').value=filterMapel===null?'__semua__':filterMapel;
+}
+$('#filterMapel').addEventListener('change',function(){filterMapel=this.value==='__semua__'?null:this.value;renderHasil()});
+function renderRekapBab(){
+  var box=$('#rekapBab');
+  if(!hasil.length){box.hidden=true;box.innerHTML='';return}
+  var g={},urut=[];
+  hasil.forEach(function(o){
+    var k=mapelDari(o)+'\u0001'+babDari(o);
+    if(!g[k]){g[k]={mapel:mapelDari(o),bab:babDari(o),n:0,sum:0,tuntas:0};urut.push(k)}
+    var nv=nilai100(o);
+    g[k].n++;g[k].sum+=nv;if(nv>=KKM())g[k].tuntas++;
+  });
+  urut.sort(function(a,b){return g[a].mapel.localeCompare(g[b].mapel)||g[a].bab.localeCompare(g[b].bab)});
+  var baris=urut.map(function(k){
+    var r=g[k];
+    return '<tr><td>'+esc(r.mapel)+'</td><td>'+esc(r.bab)+'</td><td>'+r.n+'</td><td>'+(r.sum/r.n).toFixed(1)+'</td><td>'+Math.round(r.tuntas/r.n*100)+'%</td></tr>';
+  }).join('');
+  box.hidden=false;
+  box.innerHTML='<b>Rekap per mapel dan bab</b><div class="small" style="margin-bottom:6px">Tuntas = nilai di atas atau sama dengan KKM '+KKM()+'.</div>'+
+    '<div style="overflow-x:auto"><table class="rekapTbl"><tr><th>Mapel</th><th>Bab</th><th>Siswa</th><th>Rata-rata</th><th>Tuntas</th></tr>'+baris+'</table></div>';
+}
+
 function isiFilterHasil(){
   var labels=labelDaftar();
   if(filterAktif!==null&&labels.indexOf(filterAktif)<0)filterAktif=null;
@@ -1241,6 +1300,8 @@ function analisisHtml(list){
 function renderHasil(){
   renderBiaya();
   isiFilterHasil();
+  isiFilterMapel();
+  renderRekapBab();
   renderKalibrasi();
   var box=$('#hasil');
   if(!hasil.length){box.innerHTML='<div class="empty"><div class="emo">📝</div><b>Yuk, nilai lembar pertama!</b><div class="small">Buka tab Nilai, pilih siswa, lalu foto lembarnya.</div></div>';renderStats();return}
@@ -1475,21 +1536,25 @@ var tulisQueue=[],tulisIdx=0,tulisVar=[];
 function kalimatStatus(o){return statusSiswa(o)==='ok'?'Masya Allah, pertahankan ya.':'Insya Allah, dengan latihan pasti bisa.'}
 async function buatVarianCatatan(o){
   var pembaca=$('#tulisPembaca').value==='siswa'
-    ?'siswa (sapaan "kamu", kalimat sederhana dan ramah)'
-    :'orang tua (sapaan "Ananda", bahasa netral, tanpa istilah penilaian)';
+    ?'siswa (sapaan kamu, kalimat sederhana dan ramah)'
+    :'orang tua (sapaan Ananda, bahasa netral, tanpa istilah penilaian)';
   var sys='Kamu menulis catatan perbaikan untuk hasil belajar siswa SD dengan gaya hangat. '+
     'Mulai dengan hal yang sudah benar, lalu satu hal yang perlu diperbaiki, lalu satu langkah latihan yang konkret. '+
-    'Maksimal 3 kalimat per varian. Pembaca: '+pembaca+'. '+
+    'Maksimal 3 kalimat per versi. Pembaca: '+pembaca+'. '+
     'Jangan menulis doa, kutipan ayat atau hadits, maupun angka skor. Gunakan bahasa Indonesia. '+
-    'Jawab HANYA dengan JSON: {"varian":["...","...","..."]} berisi tiga versi yang berbeda.';
+    'Tulis TIGA versi yang berbeda. Pisahkan tiap versi dengan satu baris yang hanya berisi ###. '+
+    'Jangan menulis judul, nomor, atau penjelasan lain.';
   var rinci=o.jawaban.map(function(x){return 'Soal '+x.no+': skor '+(x.skor==null?'belum diputuskan':x.skor)+' dari '+x.skor_maks+'. Alasan: '+(x.alasan||'-')}).join('\n');
   var isi='Nama: '+o.nama+'\nMateri: '+(o.label||'-')+'\nRincian per soal:\n'+rinci+
     '\nCatatan perbaikan sebelumnya: '+(o.perbaikan||'-')+
     (o.ragu&&o.ragu.length?'\nHal yang ragu: '+o.ragu.join('; '):'');
-  var text=await apiText(sys,isi,1200,0,store.get('model','claude-haiku-5-5'));
-  var j=parseJSON(text);
-  var v=(j.varian||[]).map(function(x){return String(x).trim()}).filter(Boolean);
-  if(!v.length)throw new Error('AI tidak memberi pilihan catatan.');
+  var model=store.get('model','claude-haiku-5-5');
+  var v=[];
+  for(var k=0;k<2&&!v.length;k++){
+    var text=await apiText(sys,isi,1500,0,model)||'';
+    v=text.split(/^\s*#{3}\s*$/m).map(function(x){return x.replace(/^\s*\d+[.)]\s*/,'').replace(/^["'\s]+|["'\s]+$/g,'').trim()}).filter(function(x){return x.length>10});
+  }
+  if(!v.length)throw new Error('Jawaban AI kosong atau tidak terbaca. Lewati siswa ini atau coba lagi.');
   return v.slice(0,3);
 }
 async function tulisNext(){
@@ -1958,9 +2023,16 @@ var HARGA_PER_SISWA={'claude-haiku-5-5':0.0015,'claude-sonnet-5-5':0.02};
 function renderBiaya(){
   var bulan=new Date().toISOString().slice(0,7);
   var n=hasil.filter(function(h){return (h.waktu||'').slice(0,7)===bulan}).length;
-  var est=HARGA_PER_SISWA[store.get('model','claude-haiku-5-5')];
-  $('#biaya').textContent='Bulan ini: '+n+' siswa dinilai. '+
-    (est!==undefined?'Perkiraan biaya dengan model ini (lembar 2 halaman): sekitar $'+(n*est).toFixed(3)+'. Ini perkiraan kasar, bukan tagihan resmi.':'Perkiraan biaya untuk model ini belum tersedia.');
+  var b=(store.get('pakai',{})||{})[bulan]||{masuk:0,keluar:0,panggilan:0};
+  var hm=parseFloat(store.get('hargaMasuk',''))||0,hk=parseFloat(store.get('hargaKeluar',''))||0;
+  var teks='Bulan ini: '+n+' siswa dinilai, '+b.panggilan+' panggilan AI, '+b.masuk.toLocaleString('id-ID')+' token masuk, '+b.keluar.toLocaleString('id-ID')+' token keluar.';
+  if(hm||hk){
+    var biaya=(b.masuk/1000000)*hm+(b.keluar/1000000)*hk;
+    teks+=' Perkiraan biaya: $'+biaya.toFixed(3)+' (memakai harga yang Anda isi di Pengaturan).';
+  }else{
+    teks+=' Isi harga di Pengaturan untuk melihat perkiraan biaya.';
+  }
+  $('#biaya').textContent=teks;
 }
 
 /* ---------- Awal ---------- */
