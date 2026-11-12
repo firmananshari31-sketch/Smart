@@ -270,41 +270,95 @@ var TEMPLATE=
 '5. Isian singkat (skor 2): fotosintesis, sinar matahari, air\n'+
 '6. Uraian (skor 4): tumbuhan membuat makanan sendiri dengan bantuan sinar matahari, air, dan karbon dioksida.';
 
-var KEBIJAKAN_BAWAAN=
-'ATURAN UMUM\n'+
-'- Ejaan, huruf besar-kecil, dan kerapian tulisan TIDAK mengurangi nilai.\n'+
-'- Jawaban benar dengan kata sendiri mendapat nilai penuh.\n'+
-'- Jawaban yang sebagian benar mendapat nilai sebagian, jangan langsung 0.\n'+
-'- Kosong = 0. Jawaban tidak terbaca ditandai "ragu".\n\n'+
-'PILIHAN GANDA (skor 1)\n'+
-'Benar = 1, salah = 0.\n\n'+
-'BENAR SALAH (skor 1 per pernyataan)\n'+
-'Setiap pernyataan benar = 1.\n\n'+
-'MENJODOHKAN (skor 1 per pasangan)\n'+
-'Setiap pasangan benar = 1.\n\n'+
-'PILIHAN GANDA KOMPLEKS / MCMA (skor 2)\n'+
-'- Semua benar, tanpa yang salah = 2\n'+
-'- Sebagian benar, tanpa yang salah = 1\n'+
-'- Ada pilihan yang salah = 0\n\n'+
-'ISIAN SINGKAT (skor 2)\n'+
-'- Kata kunci lengkap = 2\n'+
-'- Sebagian kata kunci = 1\n'+
-'- Sinonim yang tepat diterima.\n\n'+
-'URAIAN (skor 4)\n'+
-'Kriteria: ketepatan isi dan kelengkapan.\n'+
-'- 4: tepat dan lengkap\n'+
-'- 3: tepat, kurang satu hal\n'+
-'- 2: sebagian tepat\n'+
-'- 1: relevan tetapi belum menjawab\n'+
-'- 0: kosong atau tidak relevan.\n\n'+
-'LEMBAR GABUNG SOAL (jika siswa menjawab langsung di lembar soal)\n'+
-'- Teks soal, gambar, dan pilihan jawaban yang sudah tercetak BUKAN jawaban siswa. Abaikan semuanya.\n'+
-'- Yang dinilai hanya tanda dan tulisan siswa, misalnya huruf yang dilingkari, diberi tanda silang, atau ditulis dengan pensil.\n'+
-'- Untuk pilihan ganda, baca huruf yang ditandai siswa. Jika ada lebih dari satu tanda, anggap jawaban ganda dan tandai "ragu".\n'+
-'- Untuk isian dan uraian, baca hanya tulisan tangan siswa di kolom atau garis jawaban, bukan kalimat soal.\n'+
-'- Jika tanda pensil sangat samar, tulis "ragu" dan jangan langsung diberi nol.\n\n'+
-'Untuk kelas 1 sampai 2, uraian cukup 1 sampai 2 kalimat sederhana.\n'+
-'Di kolom alasan, tulis bagian yang sudah benar dan yang masih kurang.';
+var KEBIJAKAN_BAWAAN=["ATURAN UMUM",
+"- Ejaan, huruf besar-kecil, dan kerapian tulisan tidak mengurangi nilai.",
+"- Jawaban benar dengan kata sendiri mendapat nilai penuh.",
+"- Jawaban yang sebagian benar mendapat nilai sebagian, jangan langsung 0 (kecuali pilihan ganda dan menjodohkan, yang tidak ada nilai sebagian).",
+"- Kosong = 0.",
+"- Jawaban tidak terbaca ditandai \"ragu\".",
+"",
+"SKOR PER JENIS SOAL",
+"- Pilihan ganda: skor maks 2. Nilai sebagian: tidak ada.",
+"- Menjodohkan: skor maks 2 per pasangan. Nilai sebagian: tidak ada.",
+"- Benar salah: skor maks 2 per pernyataan. Nilai sebagian: ada (lihat kriteria).",
+"- Pilihan ganda kompleks (MCMA): skor maks 4. Nilai sebagian: ada.",
+"- Isian singkat: skor maks 4. Nilai sebagian: ada.",
+"- Uraian: skor maks 8. Nilai sebagian: ada.",
+"",
+"KRITERIA PILIHAN GANDA DAN MENJODOHKAN (tanpa kompensasi)",
+"- Pilihan ganda: benar = 2, salah = 0.",
+"- Menjodohkan: setiap pasangan benar = 2, pasangan salah = 0. Pasangan yang salah tidak mengurangi pasangan lain.",
+"- Tidak ada nilai sebagian, termasuk untuk jawaban yang hampir benar.",
+"- Jika ada lebih dari satu tanda, ikuti aturan Lembar Gabung Soal (tandai \"ragu\").",
+"",
+"KRITERIA BENAR SALAH (2 per pernyataan)",
+"- Tanda benar/salah yang tepat = 2, tidak tepat = 0.",
+"- Jika soal juga meminta siswa memperbaiki pernyataan yang salah: tanda tepat = 1 dan perbaikan tepat = 1.",
+"- Setiap pernyataan dinilai sendiri, satu pernyataan salah tidak mengurangi pernyataan lain.",
+"",
+"KRITERIA MCMA (skor 4)",
+"- 4: semua pilihan benar dipilih, tanpa pilihan yang salah.",
+"- 3: lebih dari separuh pilihan benar dipilih, tanpa pilihan yang salah.",
+"- 2: separuh atau kurang dari pilihan benar dipilih (minimal satu), tanpa pilihan yang salah.",
+"- 0: ada pilihan yang salah, atau kosong.",
+"",
+"KRITERIA ISIAN SINGKAT (skor 4)",
+"- 4: semua kata kunci lengkap dan tepat.",
+"- 3: kurang satu kata kunci.",
+"- 2: sebagian kata kunci (sekitar separuh).",
+"- 1: relevan, tetapi belum menyebut kata kunci.",
+"- 0: kosong atau tidak relevan.",
+"- Sinonim yang tepat diterima sebagai kata kunci.",
+"",
+"KRITERIA URAIAN (skor 8)",
+"Nilai 7, 5, atau 3 diberikan bila jawaban melebihi level di bawahnya tetapi belum memenuhi level di atasnya.",
+"- 8: tepat dan lengkap.",
+"- 6: tepat, kurang satu hal.",
+"- 4: sebagian tepat.",
+"- 2: relevan, tetapi belum menjawab.",
+"- 0: kosong atau tidak relevan.",
+"",
+"LEMBAR GABUNG SOAL",
+"Berlaku jika siswa menjawab langsung di lembar soal.",
+"- Teks soal, gambar, dan pilihan jawaban yang sudah tercetak bukan jawaban siswa. Abaikan semuanya.",
+"- Yang dinilai hanya tanda dan tulisan siswa, misalnya huruf yang dilingkari, diberi tanda silang, atau ditulis dengan pensil.",
+"- Pilihan ganda: baca huruf yang ditandai siswa. Jika ada lebih dari satu tanda, anggap jawaban ganda dan tandai \"ragu\".",
+"- Isian dan uraian: baca hanya tulisan tangan siswa di kolom atau garis jawaban, bukan kalimat soal.",
+"- Tanda pensil yang sangat samar: tulis \"ragu\", jangan langsung diberi nol.",
+"",
+"KEBIJAKAN TAMBAHAN",
+"1. Jawaban ganda dan coretan",
+"- Jika siswa mencoret jawaban lalu menandai jawaban lain, nilai jawaban akhir (yang tidak dicoret).",
+"- Jika tidak jelas mana jawaban akhir, tandai \"ragu\".",
+"",
+"2. Isian singkat dan uraian",
+"- Jawaban benar dengan kalimat yang berbeda dari kunci tetap diberi nilai penuh.",
+"- Jawaban benar yang disertai pernyataan salah yang bertentangan tidak mendapat nilai penuh. Nilai maksimal 2 (isian) atau 4 (uraian).",
+"- Jika jawaban siswa benar tetapi kunci tampaknya keliru, tandai \"ragu\" untuk ditinjau guru.",
+"",
+"3. Satuan dan angka",
+"- Satuan yang hilang tidak mengurangi nilai, kecuali soal memang menanyakan satuan.",
+"- Hasil akhir benar tanpa langkah: nilai penuh, kecuali soal meminta cara pengerjaan.",
+"- Langkah benar tetapi hasil akhir salah karena salah hitung kecil: beri nilai sebagian.",
+"",
+"4. Soal bergambar dan tabel",
+"- Jika siswa menjawab dengan menggambar atau melengkapi tabel, nilai isi dan ketepatannya, bukan kerapiannya.",
+"",
+"5. Kelas rendah (1-2)",
+"- Tulisan terbalik atau huruf tidak sempurna tetap dinilai benar jika maksudnya terbaca.",
+"- Jawaban uraian cukup 1-2 kalimat sederhana atau satu kata kunci yang tepat.",
+"",
+"6. Penandaan \"ragu\"",
+"- Gunakan \"ragu\" untuk: tulisan tidak terbaca, tanda ganda, pensil samar, atau kunci yang dipertanyakan.",
+"- Jawaban \"ragu\" tidak langsung diberi 0. Skor sementara dikosongkan sampai guru memutuskan, dan kolom alasan diisi penyebab keraguan.",
+"",
+"7. Kolom alasan",
+"- Tulis singkat: bagian yang sudah benar, lalu bagian yang masih kurang.",
+"- Untuk jawaban yang benar penuh, cukup tulis \"Tepat dan lengkap\".",
+"",
+"8. Konsistensi",
+"- Jawaban serupa dari siswa berbeda diberi nilai yang sama.",
+"- Jangan mengurangi nilai karena jawaban lebih pendek atau lebih panjang dari kunci, selama kata kunci terpenuhi."].join('\n');
 
 /* ---------- Tab ---------- */
 $$('nav button').forEach(function(b){
