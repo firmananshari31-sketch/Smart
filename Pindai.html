@@ -120,7 +120,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v31</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v32</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -263,11 +263,12 @@ nav button.on{color:var(--accent);font-weight:700}
   </div>
   <button class="primary" id="btnSave" style="width:100%">Simpan pengaturan</button>
   <div class="card" style="margin-bottom:12px"><label for="kkm">KKM (nilai tuntas, 0 sampai 100)</label><input type="number" id="kkm" min="0" max="100" step="1"></div>
+  <div class="card" style="margin-bottom:12px"><label for="tingkatIslami">Kalimat islami pada catatan</label><select id="tingkatIslami"><option value="ringan">Ringan (tanpa kalimat islami)</option><option value="sedang">Sedang (satu kalimat)</option><option value="kental">Kental (dua kalimat)</option></select><label for="kalimatIslami" style="margin-top:10px">Daftar kalimat (satu per baris)</label><textarea id="kalimatIslami" rows="6"></textarea><p class="hint">Kalimat dipilih otomatis dan tetap sama untuk tiap siswa setiap kali dicetak atau dibagikan. Kosongkan daftar untuk mematikan fitur ini.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="tema">Tampilan</label><select id="tema"><option value="">Ikuti pengaturan HP</option><option value="light">Terang</option><option value="dark">Gelap</option></select></div>
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 31 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 32 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -468,6 +469,8 @@ function isiForm(){
   isiRubrikUI();
   $('#kkm').value=KKM();
   $('#tema').value=store.get('tema','');
+  $('#tingkatIslami').value=store.get('tingkatIslami','ringan');
+  $('#kalimatIslami').value=store.get('kalimatIslami',KALIMAT_BAWAAN);
   $('#namaGuru').value=store.get('namaGuru','');
   $('#ulangSonnet').checked=store.get('ulangSonnet',true);
   isiRosterUI();
@@ -810,6 +813,8 @@ function updIkonTema(){
   $('#btnTema').textContent=gelap?'☀':'🌙';
 }
 $('#tema').addEventListener('change',function(){store.set('tema',this.value);terapkanTema();updIkonTema()});
+$('#tingkatIslami').addEventListener('change',function(){store.set('tingkatIslami',this.value)});
+$('#kalimatIslami').addEventListener('input',function(){store.set('kalimatIslami',this.value)});
 $('#btnTema').addEventListener('click',function(){
   var gelap=document.documentElement.getAttribute('data-theme')==='dark'||(!document.documentElement.getAttribute('data-theme')&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
   var t=gelap?'light':'dark';
@@ -1423,6 +1428,7 @@ function waTeks(o){
     'Ketuntasan: '+tuntas+' (KKM '+KKM()+')'];
   if(o.pending)baris.push('Sebagian soal masih diperiksa guru.');
   if(o.perbaikan)baris.push('Yang perlu diperbaiki: '+o.perbaikan);
+  kalimatIslamiUntuk(o).forEach(function(k){baris.push(k)});
   baris.push('');
   baris.push(SEKOLAH+(namaGuru()?' · Guru: '+namaGuru():''));
   return baris.join('\n');
@@ -1464,6 +1470,25 @@ async function kirimWa(o){
   try{await navigator.clipboard.writeText(t);alert('Teks disalin. Buka WhatsApp dan tempel ke chat orang tua.')}
   catch(e){prompt('Salin teks ini lalu tempel di WhatsApp:',t)}
 }
+var KALIMAT_BAWAAN=[
+  'Barakallahu fiik, semoga terus semangat belajar.',
+  'Masya Allah, terus pertahankan ya.',
+  'Insya Allah, dengan latihan pasti bisa lebih baik.',
+  'Alhamdulillah, ikhtiarmu sudah baik.',
+  'Semoga Allah memudahkan langkahmu dalam belajar.',
+  'Teruslah berdoa dan berusaha.'
+].join('\n');
+function kalimatIslamiUntuk(o){
+  var t=store.get('tingkatIslami','ringan');
+  if(t==='ringan')return [];
+  var daftar=String(store.get('kalimatIslami',KALIMAT_BAWAAN)||'').split('\n').map(function(x){return x.trim()}).filter(Boolean);
+  if(!daftar.length)return [];
+  var teks=String(o.nama||'')+'|'+String(o.label||''),h=0;
+  for(var i=0;i<teks.length;i++){h=(h*31+teks.charCodeAt(i))>>>0}
+  var n=t==='kental'?2:1,out=[];
+  for(var j=0;j<n&&j<daftar.length;j++){out.push(daftar[(h+j)%daftar.length])}
+  return out;
+}
 function sheetHTML(o,mode){
   var parent=mode==='orangtua';
   var head='<img class="pa-logo" src="'+LOGO+'" alt="">'+(parent?'<p class="pa-sekolah">'+esc(SEKOLAH)+'</p><h2>Hasil Penilaian</h2>':'<h2>Hasil Penilaian (untuk guru)</h2>');
@@ -1479,6 +1504,7 @@ function sheetHTML(o,mode){
     '<table><thead><tr>'+th+'</tr></thead><tbody>'+rows+'</tbody></table>'+
     '<p>Total: <b>'+o.total+' / '+o.maks+'</b> ('+nilai100(o)+'%)</p>'+
     (o.perbaikan?'<p><b>'+(parent?'Yang perlu diperbaiki':'Catatan perbaikan')+':</b> '+esc(o.perbaikan)+'</p>':'')+
+    (kalimatIslamiUntuk(o).length?'<p><i>'+esc(kalimatIslamiUntuk(o).join(' '))+'</i></p>':'')+
     '<p class="pa-ttd">'+(parent?'Tanda tangan orang tua: ____________________ &nbsp;&nbsp; Guru: ____________________':'Paraf guru: ______________________')+'</p>'+
     '<p class="pa-credit">'+esc(CREDIT)+'</p>'+
   '</section>';
