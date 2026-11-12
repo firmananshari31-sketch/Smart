@@ -24,6 +24,8 @@ header .hbtns{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 header .hbtns button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:999px;width:34px;height:34px;font-size:16px;padding:0;cursor:pointer}
 header .badge{font-size:11px;background:#f0d020;color:#1e3fae;border-radius:999px;padding:2px 7px;font-weight:700}
 #bantuan{font-size:14px;line-height:1.5}
+details.card summary{font-weight:600;cursor:pointer}
+details.card[open] summary{margin-bottom:4px}
 .foot{text-align:center;font-size:12px;color:var(--muted);padding:16px 16px 96px}
 #bantuan ol{margin:6px 0 0 18px;padding:0}
 main{padding:16px;max-width:720px;margin:0 auto}
@@ -111,7 +113,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v27</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v29</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -169,14 +171,14 @@ nav button.on{color:var(--accent);font-weight:700}
     </details>
     <div class="msg" id="kmsg"></div>
   </div>
-  <div class="card">
-    <label for="rosterKelas">Daftar nama per kelas</label>
-    <select id="rosterKelas"></select>
-    <textarea id="roster" rows="6" style="margin-top:8px" placeholder="Siti Aniya&#10;Budi Santoso&#10;..."></textarea>
-    <p class="hint" id="rosterInfo"></p>
-    <p class="hint">Tempel kolom nama dari Excel atau Word, satu nama per baris. Nomor urut di depan nama dibersihkan otomatis. Daftar tiap kelas disimpan sendiri, jadi cukup diisi sekali.</p>
-  </div>
 
+  <details class="card" id="rosterBox">
+    <summary id="rosterSum">Daftar nama siswa</summary>
+    <select id="rosterKelas" hidden></select>
+    <textarea id="roster" rows="5" style="margin-top:8px" placeholder="Siti Aniya&#10;Budi Santoso&#10;..."></textarea>
+    <p class="hint" id="rosterInfo"></p>
+    <p class="hint">Tempel kolom nama dari Excel atau Word, satu nama per baris. Daftar disimpan untuk kelas yang dipilih di atas.</p>
+  </details>
   <div class="card">
     <label for="namaSiswa">Nama siswa</label>
     <input type="text" id="namaSiswa" list="daftarSiswa" placeholder="Ketik atau pilih dari daftar">
@@ -258,7 +260,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 27 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 29 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -488,19 +490,28 @@ function isiRosterUI(){
   });
   $('#rosterKelas').innerHTML=opsi.map(function(o){return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>'}).join('');
   $('#rosterKelas').value=kunciKelasAktif();
-  $('#roster').value=rosterUntuk($('#rosterKelas').value);
+  $('#roster').value=rosterUntuk(kunciKelasAktif());
   updateRosterInfo();
 }
 function updateRosterInfo(){
-  var k=$('#rosterKelas').value;
+  var k=kunciKelasAktif();
   var n=parseRoster(rosterUntuk(k)).length;
   $('#rosterInfo').textContent=n+' nama tersimpan untuk '+namaKelasDari(k)+'.';
+  $('#rosterSum').textContent='Daftar nama siswa: '+n+' nama tersimpan ▾';
 }
 $('#rosterKelas').addEventListener('change',function(){
   $('#roster').value=rosterUntuk(this.value);updateRosterInfo();
 });
 $('#kelas').addEventListener('change',isiDaftarSiswa);
 $('#rombel').addEventListener('change',isiDaftarSiswa);
+function syncRoster(){
+  $('#rosterKelas').value=kunciKelasAktif();
+  $('#roster').value=rosterUntuk(kunciKelasAktif());
+  $('#rosterBox').open=parseRoster(rosterUntuk(kunciKelasAktif())).length===0;
+  updateRosterInfo();
+}
+$('#kelas').addEventListener('change',syncRoster);
+$('#rombel').addEventListener('change',syncRoster);
 /* Label otomatis dari kelas, rombel, mapel, dan bab */
 function updateLabel(){
   var d={kelas:$('#kelas').value,rombel:$('#rombel').value,mapel:$('#mapel').value.trim(),bab:$('#bab').value.trim(),tp:$('#tp').value.trim()};
@@ -521,7 +532,7 @@ $('#ulangSonnet').addEventListener('change',function(){store.set('ulangSonnet',t
 $('#namaGuru').addEventListener('input',function(){store.set('namaGuru',this.value.trim())});
 $('#kkm').addEventListener('change',function(){store.set('kkm',Math.max(0,Math.min(100,+this.value||70)));renderHasil()});
 $('#roster').addEventListener('input',function(){
-  var m=rosterKelasObj();m[$('#rosterKelas').value]=this.value;store.set('rosterKelas',m);
+  var m=rosterKelasObj();m[kunciKelasAktif()]=this.value;store.set('rosterKelas',m);
   isiDaftarSiswa();updateRosterInfo();
 });
 $('#btnSave').addEventListener('click',function(){
