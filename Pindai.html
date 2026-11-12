@@ -120,7 +120,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v32</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v35</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -213,9 +213,15 @@ nav button.on{color:var(--accent);font-weight:700}
 </section>
 
 <section id="tab-hasil" class="tab">
+<div id="tulisBox" class="card" hidden>
+  <select id="tulisPembaca" style="margin-bottom:8px"><option value="ortu">Pembaca: orang tua</option><option value="siswa">Pembaca: siswa</option></select>
+  <div class="small" id="tulisHead"></div>
+  <div id="tulisOpsi" style="margin-top:8px"></div>
+  <div class="row" style="margin-top:6px"><button id="tulisLewati">Lewati</button><button id="tulisBatal">Berhenti</button></div>
+</div>
   <div class="row" style="margin-bottom:8px"><select id="filterHasil" style="flex:1"></select></div>
   <div class="row">
-    <button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button>
+    <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button> <button id="btnIslami">✨ Tambahkan kalimat islami</button> <button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button>
     <button id="btnCsv">📄 Unduh CSV</button>
   </div>
   <div class="row" style="margin-top:8px;margin-bottom:12px">
@@ -263,12 +269,11 @@ nav button.on{color:var(--accent);font-weight:700}
   </div>
   <button class="primary" id="btnSave" style="width:100%">Simpan pengaturan</button>
   <div class="card" style="margin-bottom:12px"><label for="kkm">KKM (nilai tuntas, 0 sampai 100)</label><input type="number" id="kkm" min="0" max="100" step="1"></div>
-  <div class="card" style="margin-bottom:12px"><label for="tingkatIslami">Kalimat islami pada catatan</label><select id="tingkatIslami"><option value="ringan">Ringan (tanpa kalimat islami)</option><option value="sedang">Sedang (satu kalimat)</option><option value="kental">Kental (dua kalimat)</option></select><label for="kalimatIslami" style="margin-top:10px">Daftar kalimat (satu per baris)</label><textarea id="kalimatIslami" rows="6"></textarea><p class="hint">Kalimat dipilih otomatis dan tetap sama untuk tiap siswa setiap kali dicetak atau dibagikan. Kosongkan daftar untuk mematikan fitur ini.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="tema">Tampilan</label><select id="tema"><option value="">Ikuti pengaturan HP</option><option value="light">Terang</option><option value="dark">Gelap</option></select></div>
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 32 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 35 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -469,8 +474,6 @@ function isiForm(){
   isiRubrikUI();
   $('#kkm').value=KKM();
   $('#tema').value=store.get('tema','');
-  $('#tingkatIslami').value=store.get('tingkatIslami','ringan');
-  $('#kalimatIslami').value=store.get('kalimatIslami',KALIMAT_BAWAAN);
   $('#namaGuru').value=store.get('namaGuru','');
   $('#ulangSonnet').checked=store.get('ulangSonnet',true);
   isiRosterUI();
@@ -813,8 +816,6 @@ function updIkonTema(){
   $('#btnTema').textContent=gelap?'☀':'🌙';
 }
 $('#tema').addEventListener('change',function(){store.set('tema',this.value);terapkanTema();updIkonTema()});
-$('#tingkatIslami').addEventListener('change',function(){store.set('tingkatIslami',this.value)});
-$('#kalimatIslami').addEventListener('input',function(){store.set('kalimatIslami',this.value)});
 $('#btnTema').addEventListener('click',function(){
   var gelap=document.documentElement.getAttribute('data-theme')==='dark'||(!document.documentElement.getAttribute('data-theme')&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
   var t=gelap?'light':'dark';
@@ -1470,25 +1471,74 @@ async function kirimWa(o){
   try{await navigator.clipboard.writeText(t);alert('Teks disalin. Buka WhatsApp dan tempel ke chat orang tua.')}
   catch(e){prompt('Salin teks ini lalu tempel di WhatsApp:',t)}
 }
-var KALIMAT_BAWAAN=[
-  'Barakallahu fiik, semoga terus semangat belajar.',
-  'Masya Allah, terus pertahankan ya.',
-  'Insya Allah, dengan latihan pasti bisa lebih baik.',
-  'Alhamdulillah, ikhtiarmu sudah baik.',
-  'Semoga Allah memudahkan langkahmu dalam belajar.',
-  'Teruslah berdoa dan berusaha.'
-].join('\n');
-function kalimatIslamiUntuk(o){
-  var t=store.get('tingkatIslami','ringan');
-  if(t==='ringan')return [];
-  var daftar=String(store.get('kalimatIslami',KALIMAT_BAWAAN)||'').split('\n').map(function(x){return x.trim()}).filter(Boolean);
-  if(!daftar.length)return [];
-  var teks=String(o.nama||'')+'|'+String(o.label||''),h=0;
-  for(var i=0;i<teks.length;i++){h=(h*31+teks.charCodeAt(i))>>>0}
-  var n=t==='kental'?2:1,out=[];
-  for(var j=0;j<n&&j<daftar.length;j++){out.push(daftar[(h+j)%daftar.length])}
-  return out;
+var tulisQueue=[],tulisIdx=0,tulisVar=[];
+function kalimatStatus(o){return statusSiswa(o)==='ok'?'Masya Allah, pertahankan ya.':'Insya Allah, dengan latihan pasti bisa.'}
+async function buatVarianCatatan(o){
+  var pembaca=$('#tulisPembaca').value==='siswa'
+    ?'siswa (sapaan "kamu", kalimat sederhana dan ramah)'
+    :'orang tua (sapaan "Ananda", bahasa netral, tanpa istilah penilaian)';
+  var sys='Kamu menulis catatan perbaikan untuk hasil belajar siswa SD dengan gaya hangat. '+
+    'Mulai dengan hal yang sudah benar, lalu satu hal yang perlu diperbaiki, lalu satu langkah latihan yang konkret. '+
+    'Maksimal 3 kalimat per varian. Pembaca: '+pembaca+'. '+
+    'Jangan menulis doa, kutipan ayat atau hadits, maupun angka skor. Gunakan bahasa Indonesia. '+
+    'Jawab HANYA dengan JSON: {"varian":["...","...","..."]} berisi tiga versi yang berbeda.';
+  var rinci=o.jawaban.map(function(x){return 'Soal '+x.no+': skor '+(x.skor==null?'belum diputuskan':x.skor)+' dari '+x.skor_maks+'. Alasan: '+(x.alasan||'-')}).join('\n');
+  var isi='Nama: '+o.nama+'\nMateri: '+(o.label||'-')+'\nRincian per soal:\n'+rinci+
+    '\nCatatan perbaikan sebelumnya: '+(o.perbaikan||'-')+
+    (o.ragu&&o.ragu.length?'\nHal yang ragu: '+o.ragu.join('; '):'');
+  var text=await apiText(sys,isi,1200,0,store.get('model','claude-haiku-5-5'));
+  var j=parseJSON(text);
+  var v=(j.varian||[]).map(function(x){return String(x).trim()}).filter(Boolean);
+  if(!v.length)throw new Error('AI tidak memberi pilihan catatan.');
+  return v.slice(0,3);
 }
+async function tulisNext(){
+  if(tulisIdx>=tulisQueue.length){
+    $('#tulisBox').hidden=true;tulisQueue=[];renderHasil();toast('Selesai meninjau catatan');return;
+  }
+  var o=tulisQueue[tulisIdx];
+  $('#tulisHead').textContent='Siswa '+(tulisIdx+1)+' dari '+tulisQueue.length+': '+o.nama;
+  $('#tulisOpsi').innerHTML='<p class="small">Menyusun pilihan catatan...</p>';
+  try{
+    tulisVar=await buatVarianCatatan(o);
+    $('#tulisOpsi').innerHTML=tulisVar.map(function(t,i){
+      return '<button class="tulisPilih" data-i="'+i+'" style="display:block;width:100%;text-align:left;margin-bottom:8px;white-space:normal">'+(i+1)+'. '+esc(t)+'</button>';
+    }).join('');
+  }catch(e){
+    $('#tulisOpsi').innerHTML='<p class="msg">Gagal menyusun catatan: '+esc(e.message)+'</p>';
+  }
+}
+$('#btnTulis').addEventListener('click',async function(){
+  if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+  var list=filteredHasil().filter(function(o){return o.jawaban&&o.jawaban.length});
+  if(!list.length){alert('Belum ada hasil.');return}
+  if(!confirm('Catatan akan ditulis ulang untuk '+list.length+' hasil. Tiap siswa akan diberi tiga pilihan, dan catatan lama tetap sampai Anda memilih. Lanjut?'))return;
+  tulisQueue=list;tulisIdx=0;
+  $('#tulisBox').hidden=false;
+  tulisNext();
+});
+$('#tulisOpsi').addEventListener('click',function(e){
+  var b=e.target.closest('.tulisPilih');if(!b)return;
+  var o=tulisQueue[tulisIdx];
+  o.perbaikan=tulisVar[+b.dataset.i];
+  o.islami=kalimatStatus(o);
+  store.set('hasil',hasil);
+  tulisIdx++;tulisNext();
+});
+$('#tulisLewati').addEventListener('click',function(){tulisIdx++;tulisNext()});
+$('#tulisBatal').addEventListener('click',function(){$('#tulisBox').hidden=true;tulisQueue=[];tulisIdx=0;renderHasil()});
+
+function kalimatIslamiUntuk(o){
+  return o.islami?[o.islami]:[];
+}
+$('#btnIslami').addEventListener('click',function(){
+  var list=filteredHasil();
+  if(!list.length){alert('Belum ada hasil.');return}
+  list.forEach(function(o){o.islami=kalimatStatus(o)});
+  store.set('hasil',hasil);
+  renderHasil();
+  toast('Kalimat islami ditambahkan ke '+list.length+' hasil');
+});
 function sheetHTML(o,mode){
   var parent=mode==='orangtua';
   var head='<img class="pa-logo" src="'+LOGO+'" alt="">'+(parent?'<p class="pa-sekolah">'+esc(SEKOLAH)+'</p><h2>Hasil Penilaian</h2>':'<h2>Hasil Penilaian (untuk guru)</h2>');
@@ -1523,13 +1573,13 @@ function buildRows(list){
   var nos=[];
   list.forEach(function(o){o.jawaban.forEach(function(x){var n=normNo(x.no);if(nos.indexOf(n)<0)nos.push(n)})});
   nos.sort(urutNo);
-  var head=['Label','Kunci','Nama'].concat(nos.map(function(n){return 'Soal '+n}),['Total','Maks','Nilai (0-100)'],nos.map(function(n){return 'Deskripsi Soal '+n}),['Catatan perbaikan','Catatan untuk guru','Perlu dicek','Sudah diperiksa']);
+  var head=['Label','Kunci','Nama'].concat(nos.map(function(n){return 'Soal '+n}),['Total','Maks','Nilai (0-100)'],nos.map(function(n){return 'Deskripsi Soal '+n}),['Catatan perbaikan','Kalimat islami','Catatan untuk guru','Perlu dicek','Sudah diperiksa']);
   var rekap=[head].concat(list.map(function(o){
     var map={},des={};o.jawaban.forEach(function(x){var n=normNo(x.no);map[n]=x.skor;des[n]=x.alasan});
     return [o.label,o.rubrik||'',o.nama].concat(nos.map(function(n){return map[n]!==undefined&&map[n]!==null?map[n]:''}),
       [o.total,o.maks,nilai100(o)],
       nos.map(function(n){return des[n]!==undefined?des[n]:''}),
-      [o.perbaikan||'',o.catatan||'',(o.ragu||[]).join('; '),o.diperiksa?'Ya':'Belum']);
+      [o.perbaikan||'',o.islami||'',o.catatan||'',(o.ragu||[]).join('; '),o.diperiksa?'Ya':'Belum']);
   }));
   var detail=[['Label','Kunci','Nama','No soal','Skor','Skor maks','Tulisan siswa (hasil baca)','Deskripsi penilaian','Catatan perbaikan','Perlu dicek']];
   list.forEach(function(o){
