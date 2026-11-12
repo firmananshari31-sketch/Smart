@@ -113,7 +113,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v29</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v30</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -181,8 +181,8 @@ nav button.on{color:var(--accent);font-weight:700}
   </details>
   <div class="card">
     <label for="namaSiswa">Nama siswa</label>
-    <input type="text" id="namaSiswa" list="daftarSiswa" placeholder="Ketik atau pilih dari daftar">
-    <datalist id="daftarSiswa"></datalist>
+    <select id="pilihSiswa" hidden style="margin-bottom:8px"></select>
+    <input type="text" id="namaSiswa" placeholder="Ketik nama siswa">
     <p class="hint">Pilih nama dulu, lalu foto semua halaman lembar siswa ini (maksimal 5 halaman).</p>
     <div class="row" style="margin-top:10px">
       <button class="primary" id="btnKamera">Foto dengan kamera belakang</button>
@@ -260,7 +260,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 29 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 30 (12 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -464,9 +464,21 @@ function isiForm(){
   isiDaftarSiswa();
 }
 function setSetMsg(t,isErr){var m=$('#setmsg');m.textContent=t||'';m.className='msg'+(isErr?' err':'')}
-function isiDaftarSiswa(){
-  $('#daftarSiswa').innerHTML=parseRoster(rosterAktif()).map(function(n){return '<option value="'+esc(n)+'">'}).join('');
+function isiDaftarSiswa(){syncPilihSiswa()}
+function syncPilihSiswa(){
+  var names=parseRoster(rosterAktif()),sel=$('#pilihSiswa'),inp=$('#namaSiswa'),cur=inp.value.trim();
+  if(!names.length){sel.hidden=true;sel.innerHTML='';inp.hidden=false;return}
+  sel.innerHTML='<option value="">— pilih nama —</option>'+names.map(function(n){return '<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join('')+'<option value="__lain__">Nama lain (ketik)</option>';
+  sel.hidden=false;
+  if(!cur){sel.value='';inp.hidden=true}
+  else if(names.indexOf(cur)>=0){sel.value=cur;inp.hidden=true}
+  else{sel.value='__lain__';inp.hidden=false}
 }
+$('#pilihSiswa').addEventListener('change',function(){
+  var inp=$('#namaSiswa');
+  if(this.value==='__lain__'){inp.hidden=false;inp.value='';inp.focus()}
+  else{inp.value=this.value;inp.hidden=true}
+});
 function kunciKelasDari(k,r){return k?(k+(r?'-'+r:'')):''}
 function kunciKelasAktif(){return kunciKelasDari($('#kelas').value,$('#rombel').value)}
 function rosterKelasObj(){return store.get('rosterKelas',{})}
@@ -752,7 +764,7 @@ $('#btnTambahSiswa').addEventListener('click',function(){
   if(sama&&!confirm('"'+nama+'" sudah ada di antrean. Tetap tambahkan sebagai siswa lagi?'))return;
   var ganti=!!(gantiTarget&&gantiTarget.nama===nama);gantiTarget=null;
   antrean.push({id:++uid,nama:nama,ganti:ganti,pages:pages.map(function(p){return p.dataURL})});
-  pages=[];$('#namaSiswa').value='';
+  pages=[];$('#namaSiswa').value='';syncPilihSiswa();
   renderThumbs();renderAntrean();
   setMsgSiswa('"'+nama+'" masuk antrean. Pilih siswa berikutnya.');
 });
@@ -1374,7 +1386,7 @@ $('#hasil').addEventListener('change',function(e){
 });
 function siapkanUlang(o){
   gantiTarget={nama:o.nama};
-  $('#namaSiswa').value=o.nama;
+  $('#namaSiswa').value=o.nama;syncPilihSiswa();
   document.querySelector('nav button[data-tab=nilai]').click();
   setMsgSiswa('Foto ulang lembar "'+o.nama+'", lalu tekan Tambah siswa ini ke antrean. Hasil lama akan diganti.');
   window.scrollTo(0,0);
