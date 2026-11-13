@@ -25,6 +25,8 @@ header .hbtns{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 header .hbtns button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:999px;width:34px;height:34px;font-size:16px;padding:0;cursor:pointer}
 header .badge{font-size:11px;background:#f0d020;color:#1e3fae;border-radius:999px;padding:2px 7px;font-weight:700}
 #bantuan{font-size:14px;line-height:1.5}
+.latPilih{margin-top:6px}
+
 .rekapTbl{width:100%;border-collapse:collapse;font-size:13px}
 .rekapTbl td,.rekapTbl th{padding:6px;border-bottom:1px solid var(--line);text-align:left}
 details.card summary{font-weight:600;cursor:pointer}
@@ -122,7 +124,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v40</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v41</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -215,6 +217,22 @@ nav button.on{color:var(--accent);font-weight:700}
 </section>
 
 <section id="tab-hasil" class="tab">
+<div id="latihanBox" class="card" hidden>
+  <div id="latihanPilih">
+    <label for="latihanJenis">Jenis lembar</label>
+    <select id="latihanJenis"><option value="remedial">Remedial (siswa di bawah KKM)</option><option value="pengayaan">Pengayaan (siswa di atas batas pengayaan)</option></select>
+    <div class="row latPilih"><button class="primary" id="latihanMulai">Mulai</button><button id="latihanTutup">Tutup</button></div>
+  </div>
+  <div id="latihanEdit" hidden>
+    <div class="small" id="latihanHead"></div>
+    <label style="margin-top:8px">Soal (boleh diedit)</label>
+    <textarea id="latihanSoal" rows="8"></textarea>
+    <label style="margin-top:8px">Kunci jawaban (untuk guru)</label>
+    <textarea id="latihanKunci" rows="5"></textarea>
+    <div class="msg" id="latihanMsg"></div>
+    <div class="row" style="margin-top:8px"><button class="primary" id="latihanSimpan">Simpan dan lanjut</button><button id="latihanLewati">Lewati</button><button id="latihanBatal">Berhenti</button></div>
+  </div>
+</div>
 <div id="tulisBox" class="card" hidden>
   <select id="tulisPembaca" style="margin-bottom:8px"><option value="ortu">Pembaca: orang tua</option><option value="siswa">Pembaca: siswa</option></select>
   <div class="small" id="tulisHead"></div>
@@ -224,7 +242,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="row" style="margin-bottom:8px"><select id="filterHasil" style="flex:1"></select><select id="filterMapel" style="flex:1"></select></div>
   <div class="card" id="rekapBab" style="margin-bottom:12px" hidden></div>
   <div class="row">
-    <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button> <button id="btnIslami">✨ Tambahkan kalimat islami</button> <button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button>
+    <button id="btnLatihan">📝 Lembar latihan (AI)</button> <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button> <button id="btnIslami">✨ Tambahkan kalimat islami</button> <button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button>
     <button id="btnCsv">📄 Unduh CSV</button>
   </div>
   <div class="row" style="margin-top:8px;margin-bottom:12px">
@@ -273,11 +291,12 @@ nav button.on{color:var(--accent);font-weight:700}
   <button class="primary" id="btnSave" style="width:100%">Simpan pengaturan</button>
   <div class="card" style="margin-bottom:12px"><label for="kkm">KKM (nilai tuntas, 0 sampai 100)</label><input type="number" id="kkm" min="0" max="100" step="1"></div>
   <div class="card" style="margin-bottom:12px"><label for="hargaMasuk">Harga API (USD per 1 juta token)</label><div class="row"><input type="number" step="0.01" min="0" id="hargaMasuk" placeholder="Token masuk"><input type="number" step="0.01" min="0" id="hargaKeluar" placeholder="Token keluar"></div><p class="hint">Isi sesuai halaman harga Anthropic untuk model yang dipakai. Kosongkan kalau tidak ingin melihat perkiraan biaya.</p></div>
+  <div class="card" style="margin-bottom:12px"><label for="batasPengayaan">Batas nilai pengayaan (%)</label><input type="number" id="batasPengayaan" min="0" max="100" step="1"><p class="hint">Siswa dengan nilai sama dengan atau di atas angka ini masuk daftar pengayaan. Yang di bawah KKM masuk daftar remedial.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="tema">Tampilan</label><select id="tema"><option value="">Ikuti pengaturan HP</option><option value="light">Terang</option><option value="dark">Gelap</option></select></div>
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 40 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 41 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -480,6 +499,7 @@ function isiForm(){
   $('#tema').value=store.get('tema','');
   $('#hargaMasuk').value=store.get('hargaMasuk','');
   $('#hargaKeluar').value=store.get('hargaKeluar','');
+  $('#batasPengayaan').value=store.get('batasPengayaan',90);
   $('#namaGuru').value=store.get('namaGuru','');
   $('#ulangSonnet').checked=store.get('ulangSonnet',true);
   isiRosterUI();
@@ -829,6 +849,7 @@ function updIkonTema(){
 $('#tema').addEventListener('change',function(){store.set('tema',this.value);terapkanTema();updIkonTema()});
 $('#hargaMasuk').addEventListener('input',function(){store.set('hargaMasuk',this.value);renderBiaya()});
 $('#hargaKeluar').addEventListener('input',function(){store.set('hargaKeluar',this.value);renderBiaya()});
+$('#batasPengayaan').addEventListener('input',function(){store.set('batasPengayaan',parseFloat(this.value)||90)});
 $('#btnTema').addEventListener('click',function(){
   var gelap=document.documentElement.getAttribute('data-theme')==='dark'||(!document.documentElement.getAttribute('data-theme')&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
   var t=gelap?'light':'dark';
@@ -1339,7 +1360,7 @@ function renderHasil(){
         '<div class="row" style="margin-top:10px">'+
           '<button class="pr">Cetak (guru)</button>'+
           '<button class="pr2">Cetak (orang tua)</button>'+
-          '<button class="bag">📤 Bagikan PDF</button> <button class="wa">Kirim ke WA</button>'+
+          '<button class="bag">📤 Bagikan PDF</button> <button class="lat">📝 Latihan</button> <button class="kun">🔑 Kunci</button> <button class="wa">Kirim ke WA</button>'+
           '<button class="del" style="color:var(--danger)">Hapus siswa ini</button>'+
         '</div>'+
       '</div></div>';
@@ -1351,6 +1372,8 @@ $('#hasil').addEventListener('click',function(e){
   if(e.target.closest('.tg')){card.classList.toggle('open');return}
   if(e.target.closest('.pr')){cetak([hasil[i]],'guru');return}
   if(e.target.closest('.pr2')){cetak([hasil[i]],'orangtua');return}
+  if(e.target.closest('.lat')){tombolLatihan(hasil[i]);return}
+  if(e.target.closest('.kun')){tombolKunci(hasil[i]);return}
   if(e.target.closest('.bag')){pilihBagikan(hasil[i]);return}
   if(e.target.closest('.wa')){kirimWa(hasil[i]);return}
   if(e.target.closest('.ulang')){siapkanUlang(hasil[i]);return}
@@ -1496,6 +1519,123 @@ function waTeks(o){
   return baris.join('\n');
 }
 var bagiTarget=null;
+/* ---------- Lembar latihan remedial dan pengayaan (AI) ---------- */
+var latQueue=[],latIdx=0,latJenis='remedial';
+function batasPengayaan(){return parseFloat(store.get('batasPengayaan',90))||90}
+function jenisOtomatis(o){return nilai100(o)<KKM()?'remedial':'pengayaan'}
+function mulaiLatihan(list,jenis){
+  latQueue=list;latIdx=0;latJenis=jenis;
+  $('#latihanBox').hidden=false;$('#latihanPilih').hidden=true;$('#latihanEdit').hidden=false;
+  latihanNext();
+}
+async function latihanNext(){
+  if(latIdx>=latQueue.length){
+    $('#latihanBox').hidden=true;latQueue=[];renderHasil();toast('Selesai membuat lembar latihan');return;
+  }
+  var o=latQueue[latIdx];
+  $('#latihanHead').textContent='Siswa '+(latIdx+1)+' dari '+latQueue.length+': '+o.nama+' · '+(latJenis==='remedial'?'Remedial':'Pengayaan');
+  $('#latihanSoal').value='';$('#latihanKunci').value='';
+  $('#latihanMsg').textContent='Menyusun soal...';
+  $('#latihanSimpan').disabled=true;
+  try{
+    var r=await buatLatihan(o,latJenis);
+    $('#latihanSoal').value=r.soal;$('#latihanKunci').value=r.kunci;$('#latihanMsg').textContent='';
+  }catch(e){
+    $('#latihanMsg').textContent='Gagal menyusun soal: '+e.message+'. Anda bisa melewati siswa ini.';
+  }
+  $('#latihanSimpan').disabled=false;
+}
+async function buatLatihan(o,jenis){
+  var tp=(store.get('labelDetail',null)||{}).tp||'';
+  var salah=(o.jawaban||[]).filter(function(x){return x.skor==null||x.skor<x.skor_maks}).map(function(x){
+    return 'Soal '+x.no+': '+(x.alasan||'belum tepat');
+  }).join('\n');
+  var tugas=jenis==='remedial'
+    ?'Buat 3 soal latihan remedial yang menarget bagian yang masih belum tepat. Tingkat kesulitannya lebih sederhana dari soal asli, dengan bahasa yang sesuai untuk anak SD.'
+    :'Buat 3 soal pengayaan yang lebih menantang dari materi yang sama, misalnya soal penerapan atau berpikir kritis. Jangan mengulang soal asli.';
+  var sys='Kamu menyusun lembar latihan untuk siswa SD di Indonesia. '+tugas+' '+
+    'Gunakan bahasa Indonesia dan jangan memakai tanda kutip ganda. '+
+    'Tulis dengan format persis seperti ini dan tidak ada teks lain di luar format:\n### SOAL\n1. ...\n2. ...\n3. ...\n### KUNCI\n1. ...\n2. ...\n3. ...';
+  var isi='Nama: '+o.nama+'\nKelas dan materi: '+(o.label||'-')+
+    (tp?'\nTujuan pembelajaran: '+tp:'')+
+    (salah?'\nBagian yang belum tepat:\n'+salah:'\nSemua jawaban sudah tepat.');
+  var model=store.get('model','claude-haiku-5-5');
+  for(var k=0;k<2;k++){
+    var text=await apiText(sys,isi,1500,0,model)||'';
+    var m=text.match(/#{3}\s*SOAL\s*\n([\s\S]*?)\n\s*#{3}\s*KUNCI\s*\n([\s\S]*)/i);
+    if(m&&m[1].trim().length>10&&m[2].trim().length>5)return {soal:m[1].trim(),kunci:m[2].trim()};
+  }
+  throw new Error('format jawaban AI tidak sesuai');
+}
+function latihanInner(o,kind){
+  var J=o.latihan.jenis==='remedial'?'Remedial':'Pengayaan';
+  var head='<img class="pa-logo" src="'+LOGO+'" alt=""><p class="pa-sekolah">'+esc(SEKOLAH)+'</p>';
+  var info='<p>'+(o.label?esc(o.label)+' · ':'')+'Nama: <b>'+esc(o.nama)+'</b></p>';
+  if(kind==='kunci'){
+    return head+'<h2>Kunci Lembar Latihan '+J+' (untuk guru)</h2>'+info+'<div style="white-space:pre-wrap">'+esc(o.latihan.kunci)+'</div>';
+  }
+  var isi=o.latihan.soal.split('\n').map(function(l){
+    if(!l.trim())return '';
+    if(/^\s*\d+[.)]/.test(l))return '<p style="margin:12px 0 4px"><b>'+esc(l.trim())+'</b></p><div style="border-bottom:1px solid #888;height:24px"></div><div style="border-bottom:1px solid #888;height:24px"></div>';
+    return '<p>'+esc(l.trim())+'</p>';
+  }).join('');
+  return head+'<h2>Lembar Latihan '+J+'</h2>'+info+'<p>Tanggal: '+esc(tglIndo(o.latihan.waktu))+'</p>'+isi;
+}
+function namaFile(o,kind){
+  var J=o.latihan.jenis==='remedial'?'Remedial':'Pengayaan';
+  return 'Latihan_'+J+'_'+String(o.nama||'siswa').replace(/[^\w]+/g,'_')+(kind==='kunci'?'_kunci':'')+'.pdf';
+}
+async function pdfDanBagikan(inner,fn){
+  if(typeof html2pdf==='undefined'){alert('Pembuat PDF belum termuat. Periksa koneksi internet, lalu coba lagi.');return}
+  var html='<div class="pdf-tmp" style="width:680px;padding:16px;background:#fff;color:#000">'+inner+'</div>';
+  try{
+    var blob=await html2pdf().set({margin:10,filename:fn,image:{type:'jpeg',quality:0.95},html2canvas:{scale:2,backgroundColor:'#ffffff',scrollX:0,scrollY:0,x:0,y:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(html,'string').outputPdf('blob');
+    var file=new File([blob],fn,{type:'application/pdf'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:fn});return}
+      catch(e){if(e&&e.name==='AbortError')return}
+    }
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href)},60000);
+  }catch(e){alert('Gagal membuat PDF: '+(e&&e.message?e.message:e))}
+}
+function tombolLatihan(o){
+  if(o.latihan){pdfDanBagikan(latihanInner(o,'soal'),namaFile(o,'soal'));return}
+  var box=$('#latihanBox');
+  mulaiLatihan([o],jenisOtomatis(o));
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function tombolKunci(o){
+  if(!o.latihan){alert('Belum ada lembar latihan untuk siswa ini. Tekan Latihan dulu.');return}
+  pdfDanBagikan(latihanInner(o,'kunci'),namaFile(o,'kunci'));
+}
+$('#btnLatihan').addEventListener('click',function(){
+  $('#latihanBox').hidden=false;$('#latihanPilih').hidden=false;$('#latihanEdit').hidden=true;
+  $('#latihanBox').scrollIntoView({behavior:'smooth',block:'start'});
+});
+$('#latihanTutup').addEventListener('click',function(){$('#latihanBox').hidden=true});
+$('#latihanMulai').addEventListener('click',function(){
+  var jenis=$('#latihanJenis').value;
+  if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+  var list=filteredHasil().filter(function(o){
+    if(!o.jawaban||!o.jawaban.length)return false;
+    return jenis==='remedial'?nilai100(o)<KKM():nilai100(o)>=batasPengayaan();
+  });
+  if(!list.length){alert(jenis==='remedial'?'Tidak ada siswa di bawah KKM pada hasil ini.':'Tidak ada siswa di atas batas pengayaan pada hasil ini.');return}
+  if(!confirm('Akan dibuat lembar latihan untuk '+list.length+' siswa. Setiap siswa ditinjau dulu sebelum disimpan. Lanjut?'))return;
+  mulaiLatihan(list,jenis);
+});
+$('#latihanSimpan').addEventListener('click',function(){
+  var o=latQueue[latIdx];if(!o)return;
+  var soal=$('#latihanSoal').value.trim(),kunci=$('#latihanKunci').value.trim();
+  if(!soal||!kunci){alert('Soal dan kunci harus diisi.');return}
+  o.latihan={jenis:latJenis,soal:soal,kunci:kunci,waktu:new Date().toISOString()};
+  store.set('hasil',hasil);
+  latIdx++;latihanNext();
+});
+$('#latihanLewati').addEventListener('click',function(){latIdx++;latihanNext()});
+$('#latihanBatal').addEventListener('click',function(){latQueue=[];latIdx=0;$('#latihanBox').hidden=true;renderHasil()});
+
 function pilihBagikan(o){bagiTarget=o;$('#bagikanBox').hidden=false}
 $('#bagBatal').addEventListener('click',function(){$('#bagikanBox').hidden=true});
 $('#bagGuru').addEventListener('click',function(){$('#bagikanBox').hidden=true;bagikanPdf(bagiTarget,'guru')});
