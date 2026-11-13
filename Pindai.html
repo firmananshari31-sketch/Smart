@@ -124,7 +124,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v41</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v43</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -242,7 +242,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="row" style="margin-bottom:8px"><select id="filterHasil" style="flex:1"></select><select id="filterMapel" style="flex:1"></select></div>
   <div class="card" id="rekapBab" style="margin-bottom:12px" hidden></div>
   <div class="row">
-    <button id="btnLatihan">📝 Lembar latihan (AI)</button> <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button> <button id="btnIslami">✨ Tambahkan kalimat islami</button> <button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button>
+    <button id="btnPdfSemuaGuru">📤 PDF semua (guru)</button> <button id="btnPdfSemuaOrtu">📤 PDF semua (orang tua)</button> <button id="btnLatihan">📝 Lembar latihan (AI)</button> <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button> <button id="btnIslami">✨ Tambahkan kalimat islami</button> <button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button>
     <button id="btnCsv">📄 Unduh CSV</button>
   </div>
   <div class="row" style="margin-top:8px;margin-bottom:12px">
@@ -296,7 +296,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 41 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 43 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -807,11 +807,15 @@ $('#btnTambahSiswa').addEventListener('click',function(){
   if(!nama){setMsgSiswa('Isi atau pilih nama siswa dulu.',true);return}
   if(!pages.length){setMsgSiswa('Foto atau pilih halaman lembar siswa ini dulu.',true);return}
   var rbNama=ambilRubrikAktif().nama,lbl=$('#label').value.trim();
-  var pernah=hasil.some(function(h){return h.nama.toLowerCase()===nama.toLowerCase()&&(h.rubrik||'')===rbNama&&(h.label||'')===lbl});
-  if(pernah&&!gantiTarget&&!confirm('"'+nama+'" sudah pernah dinilai dengan rubrik "'+rbNama+'". Tetap nilai lagi?'))return;
+  var pernah=hasil.some(function(h){return h.nama.toLowerCase()===nama.toLowerCase()&&(h.label||'')===lbl});
+  var ganti=!!(gantiTarget&&gantiTarget.nama===nama);
+  if(pernah&&!ganti){
+    if(!confirm('"'+nama+'" sudah pernah dinilai untuk materi ini. Hasil lama akan DIHAPUS dan diganti dengan hasil baru. Lanjut?'))return;
+    ganti=true;
+  }
   var sama=antrean.some(function(a){return a.nama.toLowerCase()===nama.toLowerCase()});
   if(sama&&!confirm('"'+nama+'" sudah ada di antrean. Tetap tambahkan sebagai siswa lagi?'))return;
-  var ganti=!!(gantiTarget&&gantiTarget.nama===nama);gantiTarget=null;
+  gantiTarget=null;
   antrean.push({id:++uid,nama:nama,ganti:ganti,pages:pages.map(function(p){return p.dataURL})});
   pages=[];$('#namaSiswa').value='';syncPilihSiswa();
   renderThumbs();renderAntrean();
@@ -1017,8 +1021,17 @@ $('#btnGo').addEventListener('click',async function(){
         }catch(e2){ob.ragu.push('nilai ulang Sonnet gagal: '+e2.message)}
       }
       ob.rubrikId=ambilRubrikAktif().id;ob.fp=fpRubrik(ob.rubrikId);ob.diperiksa=false;
-      var idxGanti=a.ganti?hasil.findIndex(function(h){return h.nama===ob.nama&&(h.label||'')===(ob.label||'')&&h.rubrikId===ob.rubrikId}):-1;
-      if(idxGanti>=0)hasil[idxGanti]=ob;else hasil.push(ob);
+      if(a.ganti){
+        var samaSiswa=function(h){return String(h.nama||'').toLowerCase()===String(ob.nama||'').toLowerCase()&&(h.label||'')===(ob.label||'')};
+        var baru=[],sudahDiganti=false;
+        hasil.forEach(function(h){
+          if(samaSiswa(h)){if(!sudahDiganti){baru.push(ob);sudahDiganti=true}}
+          else baru.push(h);
+        });
+        if(!sudahDiganti)baru.push(ob);
+        hasil.splice(0,hasil.length);
+        Array.prototype.push.apply(hasil,baru);
+      }else hasil.push(ob);
       store.set('hasil',hasil);
       antrean=antrean.filter(function(x){return x!==a});
       done++;
@@ -1609,6 +1622,44 @@ function tombolKunci(o){
   if(!o.latihan){alert('Belum ada lembar latihan untuk siswa ini. Tekan Latihan dulu.');return}
   pdfDanBagikan(latihanInner(o,'kunci'),namaFile(o,'kunci'));
 }
+
+/* ---------- PDF gabungan untuk semua siswa ---------- */
+async function pdfSemua(mode){
+  var list=filteredHasil();
+  if(!list.length){alert('Belum ada hasil.');return}
+  if(typeof html2pdf==='undefined'){alert('Pembuat PDF belum termuat. Periksa koneksi internet, lalu coba lagi.');return}
+  var kelas=(($('#label').value||'hasil').replace(/[^\w]+/g,'_')).replace(/^_+|_+$/g,'')||'hasil';
+  var fn='Hasil_'+kelas+'_'+(mode==='guru'?'guru':'orangtua')+'.pdf';
+  var opt={margin:10,image:{type:'jpeg',quality:0.92},html2canvas:{scale:2,backgroundColor:'#ffffff',scrollX:0,scrollY:0,x:0,y:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
+  var doc=null;
+  try{
+    for(var i=0;i<list.length;i++){
+      toast('Menyusun PDF '+(i+1)+' dari '+list.length+'...');
+      var html='<div class="pdf-tmp" style="width:680px;padding:16px;background:#fff;color:#000">'+sheetHTML(list[i],mode)+'</div>';
+      var w=html2pdf().set(opt).from(html,'string');
+      if(!doc){
+        doc=await w.toPdf().get('pdf');
+      }else{
+        var c=await w.toCanvas().get('canvas');
+        doc.addPage();
+        doc.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',10,10,190,c.height*190/c.width);
+      }
+    }
+    var blob=doc.output('blob');
+    var file=new File([blob],fn,{type:'application/pdf'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:fn});return}
+      catch(e){if(e&&e.name==='AbortError')return}
+    }
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href)},60000);
+    toast('PDF siap: '+list.length+' siswa');
+  }catch(e){alert('Gagal membuat PDF: '+(e&&e.message?e.message:e))}
+}
+$('#btnPdfSemuaGuru').addEventListener('click',function(){pdfSemua('guru')});
+$('#btnPdfSemuaOrtu').addEventListener('click',function(){
+  if(confirm('PDF ini memuat hasil semua siswa dalam satu berkas. Gunakan untuk arsip atau cetak. Jangan dibagikan ke satu orang tua karena memuat data anak lain. Lanjut?')) pdfSemua('orangtua');
+});
 $('#btnLatihan').addEventListener('click',function(){
   $('#latihanBox').hidden=false;$('#latihanPilih').hidden=false;$('#latihanEdit').hidden=true;
   $('#latihanBox').scrollIntoView({behavior:'smooth',block:'start'});
