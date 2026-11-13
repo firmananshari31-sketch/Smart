@@ -134,7 +134,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v45</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v46</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -315,7 +315,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 45 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 46 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1314,23 +1314,37 @@ function isiFilterMapel(){
 $('#filterMapel').addEventListener('change',function(){filterMapel=this.value==='__semua__'?null:this.value;renderHasil()});
 function renderRekapBab(){
   var box=$('#rekapBab');
-  if(!hasil.length){box.hidden=true;box.innerHTML='';return}
+  var sumber=(rekapMode==='ikuti'&&filterAktif!==null)?hasil.filter(function(o){return (o.label||'')===filterAktif}):hasil;
+  if(!sumber.length){box.hidden=true;box.innerHTML='';return}
+  var semua=rekapMode==='semua';
   var g={},urut=[];
-  hasil.forEach(function(o){
-    var k=mapelDari(o)+'\u0001'+babDari(o);
-    if(!g[k]){g[k]={mapel:mapelDari(o),bab:babDari(o),n:0,sum:0,tuntas:0};urut.push(k)}
+  sumber.forEach(function(o){
+    var k=(semua?kelasDari(o)+'\u0001':'')+mapelDari(o)+'\u0001'+babDari(o);
+    if(!g[k]){g[k]={kelas:kelasDari(o),mapel:mapelDari(o),bab:babDari(o),n:0,sum:0,tuntas:0};urut.push(k)}
     var nv=nilai100(o);
     g[k].n++;g[k].sum+=nv;if(nv>=KKM())g[k].tuntas++;
   });
-  urut.sort(function(a,b){return g[a].mapel.localeCompare(g[b].mapel)||g[a].bab.localeCompare(g[b].bab)});
+  urut.sort(function(a,b){
+    var A=g[a],B=g[b];
+    return (semua?A.kelas.localeCompare(B.kelas):0)||A.mapel.localeCompare(B.mapel)||A.bab.localeCompare(B.bab);
+  });
   var baris=urut.map(function(k){
     var r=g[k];
-    return '<tr><td>'+esc(r.mapel)+'</td><td>'+esc(r.bab)+'</td><td>'+r.n+'</td><td>'+(r.sum/r.n).toFixed(1)+'</td><td>'+Math.round(r.tuntas/r.n*100)+'%</td></tr>';
+    return '<tr>'+(semua?'<td>'+esc(r.kelas)+'</td>':'')+'<td>'+esc(r.mapel)+'</td><td>'+esc(r.bab)+'</td><td>'+r.n+'</td><td>'+(r.sum/r.n).toFixed(1)+'</td><td>'+Math.round(r.tuntas/r.n*100)+'%</td></tr>';
   }).join('');
+  var tombol='<div class="chips"><button class="chip'+(semua?'':' on')+'" data-m="ikuti">Ikuti kelas dipilih</button><button class="chip'+(semua?' on':'')+'" data-m="semua">Semua kelas</button></div>';
+  var ket=semua?'Menampilkan semua kelas.':(filterAktif!==null?'Mengikuti kelas yang dipilih.':'Belum ada kelas dipilih, menampilkan semua hasil.');
   box.hidden=false;
-  box.innerHTML='<b>Rekap per mapel dan bab</b><div class="small" style="margin-bottom:6px">Tuntas = nilai di atas atau sama dengan KKM '+KKM()+'.</div>'+
-    '<div style="overflow-x:auto"><table class="rekapTbl"><tr><th>Mapel</th><th>Bab</th><th>Siswa</th><th>Rata-rata</th><th>Tuntas</th></tr>'+baris+'</table></div>';
+  box.innerHTML='<b>Rekap per mapel dan bab</b>'+tombol+
+    '<div class="small" style="margin-bottom:6px">'+ket+' Tuntas = nilai di atas atau sama dengan KKM '+KKM()+'.</div>'+
+    '<div style="overflow-x:auto"><table class="rekapTbl"><tr>'+(semua?'<th>Kelas</th>':'')+'<th>Mapel</th><th>Bab</th><th>Siswa</th><th>Rata-rata</th><th>Tuntas</th></tr>'+baris+'</table></div>';
 }
+var rekapMode='ikuti';
+function kelasDari(o){var p=(o.label||'').split(' - ');return p[0]||'(tanpa kelas)'}
+$('#rekapBab').addEventListener('click',function(e){
+  var b=e.target.closest('[data-m]');if(!b)return;
+  rekapMode=b.dataset.m;renderRekapBab();
+});
 
 function isiFilterHasil(){
   var labels=labelDaftar();
