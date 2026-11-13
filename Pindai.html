@@ -14,6 +14,7 @@
 <title>Intelligent Grading Assistant</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--text:#1b1f24;--muted:#667085;--line:#e2e5ea;--accent:#1f9a3a;--accent-text:#fff;--warn:#b54708;--warn-bg:#fff4e5;--ok:#067647;--danger:#c0362c}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111418;--card:#1a1f26;--text:#e8ebef;--muted:#9aa4b2;--line:#2b323c;--accent:#4ccb6a;--accent-text:#0b1220;--warn:#f5b266;--warn-bg:#2d2315;--ok:#4ade80;--danger:#f07167}}
@@ -181,7 +182,7 @@ html[data-theme="neon"] body{background:radial-gradient(900px 500px at 50% -10%,
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v49</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v50</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -428,7 +429,7 @@ html[data-theme="neon"] body{background:radial-gradient(900px 500px at 50% -10%,
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 49 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 50 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1807,6 +1808,72 @@ function namaFile(o,kind){
   var J=o.latihan.jenis==='remedial'?'Remedial':'Pengayaan';
   return 'Latihan_'+J+'_'+String(o.nama||'siswa').replace(/[^\w]+/g,'_')+(kind==='kunci'?'_kunci':'')+'.pdf';
 }
+/* ---------- PDF teks (jsPDF): teks dibungkus otomatis di A4 ---------- */
+function pdfTeksBuat(blok){
+  var J=window.jspdf&&window.jspdf.jsPDF;
+  if(!J)throw new Error('Pembuat PDF belum termuat. Periksa koneksi internet, lalu coba lagi.');
+  var doc=new J({unit:'mm',format:'a4'});
+  var M=18,lebar=210-2*M,H=297-M,y=M;
+  function cek(h){if(y+h>H){doc.addPage();y=M}}
+  blok.forEach(function(b){
+    if(b.k==='kop'){
+      cek(18);
+      try{doc.addImage(LOGO,'PNG',M,y,14,14)}catch(e){}
+      doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text(SEKOLAH,M+18,y+9);
+      y+=18;return;
+    }
+    if(!b.s){y+=3;return}
+    var size=b.k==='judul'?16:b.k==='soal'?11.5:11;
+    doc.setFont('helvetica',(b.k==='judul'||b.k==='soal')?'bold':'normal');
+    doc.setFontSize(size);
+    doc.splitTextToSize(String(b.s),lebar).forEach(function(l){
+      cek(size*0.51);doc.text(l,M,y+size*0.3);y+=size*0.51;
+    });
+    y+=b.k==='judul'?3:1.5;
+  });
+  return doc;
+}
+async function kirimPdfBlob(blob,fn){
+  var file=new File([blob],fn,{type:'application/pdf'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:fn});return}
+    catch(e){if(e&&e.name==='AbortError')return}
+  }
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href)},60000);
+}
+async function pdfTeksBagikan(blok,fn){
+  try{await kirimPdfBlob(pdfTeksBuat(blok).output('blob'),fn)}
+  catch(e){alert('Gagal membuat PDF: '+(e&&e.message?e.message:e))}
+}
+function blokBaris(teks,soalMode){
+  var out=[];
+  String(teks||'').split(/\r?\n/).forEach(function(l){
+    var t=l.trim();
+    if(!t){out.push({k:'',s:''});return}
+    if(soalMode&&/^\d+[.)]/.test(t)){out.push({k:'soal',s:t});out.push({k:'isi',s:'______________________________________________________________'});return}
+    if(!soalMode&&/:$/.test(t)&&!/^[-•]/.test(t)){out.push({k:'soal',s:t});return}
+    out.push({k:'isi',s:t});
+  });
+  return out;
+}
+function blokAnalisis(key,a){
+  return [{k:'kop'},{k:'judul',s:'Analisis Hasil Kelas'},{k:'isi',s:key},{k:'isi',s:a.n+' siswa · dibuat '+tglIndo(a.waktu)},{k:'',s:''}].concat(blokBaris(a.teks,false));
+}
+function blokRapor(o){
+  return [{k:'kop'},{k:'judul',s:'Catatan Capaian Belajar'},{k:'isi',s:o.label||''},{k:'isi',s:'Nama: '+o.nama},{k:'',s:''}].concat(blokBaris(o.rapor,false));
+}
+function blokSoal(it,kind){
+  if(kind==='kunci')return [{k:'kop'},{k:'judul',s:'Kunci Jawaban (untuk guru)'},{k:'isi',s:it.judul},{k:'',s:''}].concat(blokBaris(it.kunci,false));
+  return [{k:'kop'},{k:'judul',s:'Lembar Soal'},{k:'isi',s:it.judul},{k:'isi',s:'Nama: ______________________   Tanggal: ____________'},{k:'',s:''}].concat(blokBaris(it.soal,true));
+}
+function blokLatihan(o,kind){
+  var J=o.latihan.jenis==='remedial'?'Remedial':'Pengayaan';
+  var info=(o.label?o.label+' · ':'')+'Nama: '+o.nama;
+  if(kind==='kunci')return [{k:'kop'},{k:'judul',s:'Kunci Lembar Latihan '+J+' (untuk guru)'},{k:'isi',s:info},{k:'',s:''}].concat(blokBaris(o.latihan.kunci,false));
+  return [{k:'kop'},{k:'judul',s:'Lembar Latihan '+J},{k:'isi',s:info},{k:'isi',s:'Tanggal: '+tglIndo(o.latihan.waktu)},{k:'',s:''}].concat(blokBaris(o.latihan.soal,true));
+}
+
 async function pdfDanBagikan(inner,fn){
   if(typeof html2pdf==='undefined'){alert('Pembuat PDF belum termuat. Periksa koneksi internet, lalu coba lagi.');return}
   var html='<div class="pdf-tmp" style="width:680px;padding:16px;background:#fff;color:#000">'+inner+'</div>';
@@ -1822,14 +1889,14 @@ async function pdfDanBagikan(inner,fn){
   }catch(e){alert('Gagal membuat PDF: '+(e&&e.message?e.message:e))}
 }
 function tombolLatihan(o){
-  if(o.latihan){pdfDanBagikan(latihanInner(o,'soal'),namaFile(o,'soal'));return}
+  if(o.latihan){pdfTeksBagikan(blokLatihan(o,'soal'),namaFile(o,'soal'));return}
   var box=$('#latihanBox');
   mulaiLatihan([o],jenisOtomatis(o));
   box.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function tombolKunci(o){
   if(!o.latihan){alert('Belum ada lembar latihan untuk siswa ini. Tekan Latihan dulu.');return}
-  pdfDanBagikan(latihanInner(o,'kunci'),namaFile(o,'kunci'));
+  pdfTeksBagikan(blokLatihan(o,'kunci'),namaFile(o,'kunci'));
 }
 
 /* ---------- PDF gabungan untuk semua siswa ---------- */
@@ -2523,8 +2590,7 @@ $('#anBuat').addEventListener('click',async function(){
 });
 $('#anPdf').addEventListener('click',function(){
   var key=$('#anKelas').value,a=store.get('analisis',{})[key];if(!a)return;
-  var inner='<img class="pa-logo" src="'+LOGO+'" alt=""><p class="pa-sekolah">'+esc(SEKOLAH)+'</p><h2>Analisis Hasil Kelas</h2><p>'+esc(key)+' · '+a.n+' siswa · dibuat '+esc(tglIndo(a.waktu))+'</p><div style="white-space:pre-wrap;line-height:1.6">'+esc(a.teks)+'</div>';
-  pdfDanBagikan(inner,'Analisis_'+key.replace(/[^\w]+/g,'_')+'.pdf');
+  pdfTeksBagikan(blokAnalisis(key,a),'Analisis_'+key.replace(/[^\w]+/g,'_')+'.pdf');
 });
 
 /* ---------- Tab Rapor ---------- */
@@ -2587,7 +2653,7 @@ $('#rpDaftar').addEventListener('click',async function(e){
   }
   if(e.target.closest('[data-rp-pdf]')){
     if(!o.rapor){alert('Catatan masih kosong.');return}
-    pdfDanBagikan(raporInner(o),'Catatan_'+String(o.nama||'siswa').replace(/[^\w]+/g,'_')+'.pdf');
+    pdfTeksBagikan(blokRapor(o),'Catatan_'+String(o.nama||'siswa').replace(/[^\w]+/g,'_')+'.pdf');
   }
 });
 
@@ -2620,8 +2686,8 @@ $('#bankDaftar').addEventListener('click',function(e){
   var card=e.target.closest('[data-bank]');if(!card)return;
   var id=+card.dataset.bank,list=bankSoal(),it=list.filter(function(x){return x.id===id})[0];if(!it)return;
   var base='Soal_'+it.judul.replace(/[^\w]+/g,'_');
-  if(e.target.closest('[data-bank-soal]'))pdfDanBagikan(soalInner(it,'soal'),base+'.pdf');
-  else if(e.target.closest('[data-bank-kunci]'))pdfDanBagikan(soalInner(it,'kunci'),base+'_kunci.pdf');
+  if(e.target.closest('[data-bank-soal]'))pdfTeksBagikan(blokSoal(it,'soal'),base+'.pdf');
+  else if(e.target.closest('[data-bank-kunci]'))pdfTeksBagikan(blokSoal(it,'kunci'),base+'_kunci.pdf');
   else if(e.target.closest('[data-bank-hapus]')&&confirm('Hapus soal ini dari bank?')){store.set('bankSoal',list.filter(function(x){return x.id!==id}));renderBank()}
 });
 $('#soalBuat').addEventListener('click',async function(){
@@ -2660,11 +2726,11 @@ $('#soalSimpan').addEventListener('click',function(){
 });
 $('#soalPdfSoal').addEventListener('click',function(){
   var it=itemEditor();if(!it.soal){alert('Soal masih kosong.');return}
-  pdfDanBagikan(soalInner(it,'soal'),'Soal_'+it.judul.replace(/[^\w]+/g,'_')+'.pdf');
+  pdfTeksBagikan(blokSoal(it,'soal'),'Soal_'+it.judul.replace(/[^\w]+/g,'_')+'.pdf');
 });
 $('#soalPdfKunci').addEventListener('click',function(){
   var it=itemEditor();if(!it.kunci){alert('Kunci masih kosong.');return}
-  pdfDanBagikan(soalInner(it,'kunci'),'Soal_'+it.judul.replace(/[^\w]+/g,'_')+'_kunci.pdf');
+  pdfTeksBagikan(blokSoal(it,'kunci'),'Soal_'+it.judul.replace(/[^\w]+/g,'_')+'_kunci.pdf');
 });
 
 /* Muat ulang isi tab saat dibuka */
