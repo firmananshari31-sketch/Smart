@@ -182,7 +182,7 @@ html[data-theme="neon"] body{background:radial-gradient(900px 500px at 50% -10%,
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v50</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v51</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -371,7 +371,14 @@ html[data-theme="neon"] body{background:radial-gradient(900px 500px at 50% -10%,
     <p class="hint">Catatan dibuat dari nilai dan catatan perbaikan yang sudah ada. Periksa dan edit sebelum dibagikan. Nama siswa ikut dikirim ke AI agar catatannya personal.</p>
     <div class="msg" id="rpMsg"></div>
   </div>
+  <div class="card">
+    <label for="rpCari">Cari dan saring</label>
+    <input type="text" id="rpCari" placeholder="Ketik nama siswa">
+    <div class="row" style="margin-top:8px"><select id="rpStatus"><option value="semua">Semua status</option><option value="belum">Belum ada catatan</option><option value="sudah">Sudah ada catatan</option></select><select id="rpUrut"><option value="nama">Nama A–Z</option><option value="tinggi">Nilai tertinggi</option><option value="rendah">Nilai terendah</option></select></div>
+    <p class="hint" id="rpJumlah"></p>
+  </div>
   <div id="rpDaftar"></div>
+  <div id="rpSheet" class="sheet-bg" hidden><div class="sheet-card"><div class="sheet-top"><span class="sheet-grip"></span><button id="rpSheetTutup" type="button">Tutup ✕</button></div><b id="rpSheetJudul" style="display:block;margin-bottom:8px"></b><textarea id="rpSheetTeks" rows="12"></textarea><p class="hint">Perubahan langsung tersimpan.</p></div></div>
 </section>
 
 <section id="tab-soal" class="tab">
@@ -429,7 +436,7 @@ html[data-theme="neon"] body{background:radial-gradient(900px 500px at 50% -10%,
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 50 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 51 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1029,6 +1036,7 @@ function catatPakai(masuk,keluar){
   b.masuk+=masuk||0;b.keluar+=keluar||0;b.panggilan+=1;
   p[bulan]=b;store.set('pakai',p);
 }
+var ketPotong=false;
 function apiText(system,content,maxTokens,attempt,model){
   attempt=attempt||0;
   var key=store.get('key','');
@@ -1046,6 +1054,7 @@ function apiText(system,content,maxTokens,attempt,model){
       throw new Error(m);
     }
     if(j.usage)catatPakai(j.usage.input_tokens,j.usage.output_tokens);
+    if(j.stop_reason==='max_tokens')ketPotong=true;
     return (j.content||[]).filter(function(b){return b.type==='text'}).map(function(b){return b.text}).join('');
   });
 }
@@ -2581,7 +2590,9 @@ $('#anBuat').addEventListener('click',async function(){
     '\nSoal dari yang paling sulit:\n'+s.soal.slice(0,8).map(function(x){return '- No '+x.no+': '+x.persen+'% benar'+(x.alasan.length?'. Contoh alasan salah: '+x.alasan.slice(0,3).join('; '):'')}).join('\n');
   var sys='Kamu membantu guru SD di Indonesia menganalisis hasil penilaian kelas. Data yang diberikan hanya ringkasan kelas, tanpa nama siswa. Tulis analisis singkat dalam bahasa Indonesia sederhana dengan format persis:\nKekuatan:\n- ...\nKelemahan:\n- ...\nSoal yang perlu diulang:\n- ...\nSaran untuk pertemuan berikutnya:\n- ...\nIsi setiap bagian dengan 1 sampai 3 butir yang konkret dan berdasarkan data. Jangan menulis judul lain, markdown, atau pujian kosong.';
   try{
-    var teks=(await apiText(sys,rinci,1200,0,store.get('model','claude-haiku-5-5'))).trim();
+    ketPotong=false;
+    var teks=(await apiText(sys,rinci,1800,0,store.get('model','claude-haiku-5-5'))).trim();
+    if(ketPotong)throw new Error('analisis terpotong karena terlalu panjang, coba lagi');
     if(!teks)throw new Error('Jawaban AI kosong. Coba lagi.');
     var a=store.get('analisis',{});a[key]={teks:teks,waktu:new Date().toISOString(),n:s.n};store.set('analisis',a);
     tampilAnalisisTersimpan();
@@ -2594,24 +2605,60 @@ $('#anPdf').addEventListener('click',function(){
 });
 
 /* ---------- Tab Rapor ---------- */
-function raporInner(o){
-  return '<img class="pa-logo" src="'+LOGO+'" alt=""><p class="pa-sekolah">'+esc(SEKOLAH)+'</p><h2>Catatan Capaian Belajar</h2><p>'+esc(o.label||'')+'</p><p>Nama: <b>'+esc(o.nama)+'</b></p><div style="line-height:1.7;white-space:pre-wrap">'+esc(o.rapor||'')+'</div>';
+function raporTerfilter(){
+  var kunci=$('#rpKelas').value,cari=$('#rpCari').value.trim().toLowerCase(),st=$('#rpStatus').value,urut=$('#rpUrut').value;
+  var list=siswaKM(kunci).filter(function(o){
+    if(cari&&String(o.nama||'').toLowerCase().indexOf(cari)<0)return false;
+    if(st==='belum')return !o.rapor;
+    if(st==='sudah')return !!o.rapor;
+    return true;
+  });
+  list.sort(function(x,y){
+    if(urut==='tinggi')return nilai100(y)-nilai100(x);
+    if(urut==='rendah')return nilai100(x)-nilai100(y);
+    return String(x.nama||'').localeCompare(String(y.nama||''),'id',{sensitivity:'base'});
+  });
+  return list;
 }
+function fitTA(t){t.style.height='auto';t.style.height=Math.min(t.scrollHeight+2,200)+'px'}
+function cekBukaSemua(t){var b=t.parentNode.querySelector('[data-rp-buka]');if(b)b.hidden=t.scrollHeight<=202}
 function renderRapor(){
-  var list=siswaKM($('#rpKelas').value),w=$('#rpDaftar');
-  if(!list.length){w.innerHTML='<div class="card"><p class="hint">Belum ada siswa di kelas dan mapel ini.</p></div>';return}
+  var semua=siswaKM($('#rpKelas').value),list=raporTerfilter(),w=$('#rpDaftar');
+  var belum=semua.filter(function(o){return !o.rapor}).length;
+  $('#rpJumlah').textContent=semua.length?(list.length+' dari '+semua.length+' siswa · belum ada catatan: '+belum):'';
+  if(!semua.length){w.innerHTML='<div class="card"><p class="hint">Belum ada siswa di kelas dan mapel ini.</p></div>';return}
+  if(!list.length){w.innerHTML='<div class="card"><p class="hint">Tidak ada siswa yang cocok dengan pencarian atau filter.</p></div>';return}
   w.innerHTML=list.map(function(o){
     var i=hasil.indexOf(o);
     return '<div class="card" data-rp="'+i+'"><div class="sheet-h"><b>'+esc(o.nama)+'</b><span class="small">'+Math.round(nilai100(o))+' · '+esc(babDari(o))+'</span></div>'+
-      '<textarea rows="5" data-rp-teks placeholder="Belum ada catatan. Tekan tombol di atas, atau tulis sendiri.">'+esc(o.rapor||'')+'</textarea>'+
+      '<textarea rows="3" data-rp-teks placeholder="Belum ada catatan. Tekan tombol di atas, atau tulis sendiri.">'+esc(o.rapor||'')+'</textarea>'+
+      '<button data-rp-buka hidden style="margin-top:6px">Lihat semua</button>'+
       '<div class="row" style="margin-top:8px"><button data-rp-ulang>Ulangi AI</button><button data-rp-salin>Salin</button><button data-rp-pdf>PDF</button></div></div>';
   }).join('');
+  w.querySelectorAll('[data-rp-teks]').forEach(function(t){fitTA(t);cekBukaSemua(t)});
 }
+var rpIdx=-1;
+function bukaRapor(i){
+  var o=hasil[i];if(!o)return;
+  rpIdx=i;
+  $('#rpSheetJudul').textContent=o.nama+(o.label?' · '+o.label:'');
+  $('#rpSheetTeks').value=o.rapor||'';
+  $('#rpSheet').hidden=false;document.body.style.overflow='hidden';
+}
+function tutupRapor(){$('#rpSheet').hidden=true;document.body.style.overflow='';rpIdx=-1;renderRapor()}
+$('#rpSheetTutup').addEventListener('click',tutupRapor);
+$('#rpSheet').addEventListener('click',function(e){if(e.target===this)tutupRapor()});
+$('#rpSheetTeks').addEventListener('input',function(){
+  var o=hasil[rpIdx];if(!o)return;
+  o.rapor=this.value;store.set('hasil',hasil);
+});
 async function buatRapor(o,model){
   var rinci=(o.jawaban||[]).map(function(x){return 'Soal '+x.no+': '+(x.skor==null?'belum diputuskan':x.skor)+' dari '+x.skor_maks+(x.alasan?'. Catatan: '+x.alasan:'')}).join('\n');
   var sys='Kamu menulis catatan capaian belajar untuk siswa SD di Indonesia. Tulis 3 sampai 4 kalimat dalam satu paragraf dengan bahasa Indonesia yang hangat dan positif: (1) capaian belajar pada materi ini; (2) kekuatan yang terlihat; (3) hal yang perlu dibimbing dan satu saran latihan yang konkret. Jangan menyebut angka nilai, jangan memakai judul, daftar, atau tanda kutip, dan jangan menambah data yang tidak ada di rincian.';
   var isi='Nama: '+o.nama+'\nMateri: '+(o.label||'-')+'\nNilai: '+Math.round(nilai100(o))+' dari 100\nRincian per soal:\n'+rinci+(o.perbaikan?'\nCatatan perbaikan: '+o.perbaikan:'');
-  var t=(await apiText(sys,isi,600,0,model)).trim().replace(/^["']+|["']+$/g,'');
+  ketPotong=false;
+  var t=(await apiText(sys,isi,900,0,model)).trim().replace(/^["']+|["']+$/g,'');
+  if(ketPotong)throw new Error('catatan terpotong karena terlalu panjang, coba Ulangi AI');
   if(t.length<20)throw new Error('catatan AI terlalu pendek');
   return t;
 }
@@ -2629,6 +2676,9 @@ async function jalankanRapor(list,btn){
   renderRapor();
 }
 $('#rpKelas').addEventListener('change',renderRapor);
+$('#rpCari').addEventListener('input',renderRapor);
+$('#rpStatus').addEventListener('change',renderRapor);
+$('#rpUrut').addEventListener('change',renderRapor);
 $('#rpBuat').addEventListener('click',function(){
   var list=siswaKM($('#rpKelas').value).filter(function(o){return !o.rapor&&o.jawaban&&o.jawaban.length});
   jalankanRapor(list,this);
@@ -2637,10 +2687,12 @@ $('#rpDaftar').addEventListener('input',function(e){
   var t=e.target.closest('[data-rp-teks]');if(!t)return;
   var o=hasil[+t.closest('[data-rp]').dataset.rp];if(!o)return;
   o.rapor=t.value;store.set('hasil',hasil);
+  fitTA(t);cekBukaSemua(t);
 });
 $('#rpDaftar').addEventListener('click',async function(e){
   var card=e.target.closest('[data-rp]');if(!card)return;
-  var o=hasil[+card.dataset.rp];if(!o)return;
+  var i=+card.dataset.rp,o=hasil[i];if(!o)return;
+  if(e.target.closest('[data-rp-buka]')){bukaRapor(i);return}
   if(e.target.closest('[data-rp-ulang]')){
     if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
     var b=e.target.closest('button');b.disabled=true;b.textContent='Membuat...';
