@@ -25,6 +25,9 @@ header .hbtns{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 header .hbtns button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:999px;width:34px;height:34px;font-size:16px;padding:0;cursor:pointer}
 header .badge{font-size:11px;background:#f0d020;color:#1e3fae;border-radius:999px;padding:2px 7px;font-weight:700}
 #bantuan{font-size:14px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;margin-bottom:6px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:6px 12px;margin:0 6px 6px 0;font-size:13px;cursor:pointer}
+.chip.on{background:#1e3fae;color:#fff;border-color:#1e3fae}
 .latPilih{margin-top:6px}
 
 .rekapTbl{width:100%;border-collapse:collapse;font-size:13px}
@@ -124,7 +127,7 @@ nav button.on{color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v43</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v44</span></div></header>
 <main>
 <div id="bantuan" class="card" hidden>
   <b>Cara cepat</b>
@@ -240,6 +243,15 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="row" style="margin-top:6px"><button id="tulisLewati">Lewati</button><button id="tulisBatal">Berhenti</button></div>
 </div>
   <div class="row" style="margin-bottom:8px"><select id="filterHasil" style="flex:1"></select><select id="filterMapel" style="flex:1"></select></div>
+  <div id="chipStatus" class="chips">
+    <button class="chip on" data-f="semua">Semua</button>
+    <button class="chip" data-f="ok">Tuntas</button>
+    <button class="chip" data-f="no">Belum tuntas</button>
+    <button class="chip" data-f="warn">Perlu dicek</button>
+    <button class="chip" data-f="belum">Belum diperiksa guru</button>
+    <button class="chip" data-f="latihan">Ada latihan</button>
+  </div>
+  <div class="row" style="margin-bottom:8px"><input type="search" id="cariHasil" placeholder="Cari nama siswa" style="flex:1"><select id="urutHasil" style="flex:1"><option value="nama">Urut: nama (A–Z)</option><option value="rendah">Urut: nilai terendah dulu</option><option value="tinggi">Urut: nilai tertinggi dulu</option><option value="terbaru">Urut: terbaru dinilai</option><option value="status">Urut: perlu dicek dulu</option></select></div>
   <div class="card" id="rekapBab" style="margin-bottom:12px" hidden></div>
   <div class="row">
     <button id="btnPdfSemuaGuru">📤 PDF semua (guru)</button> <button id="btnPdfSemuaOrtu">📤 PDF semua (orang tua)</button> <button id="btnLatihan">📝 Lembar latihan (AI)</button> <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button> <button id="btnIslami">✨ Tambahkan kalimat islami</button> <button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button>
@@ -296,7 +308,7 @@ nav button.on{color:var(--accent);font-weight:700}
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 43 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 44 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1243,11 +1255,45 @@ function labelDaftar(){var l=[];hasil.forEach(function(o){var k=o.label||'';if(l
 var filterMapel=null;
 function mapelDari(o){var p=(o.label||'').split(' - ');return p.length>1&&p[1]?p[1]:'(tanpa mapel)'}
 function babDari(o){var p=(o.label||'').split(' - ');return p.length>2?p.slice(2).join(' - '):'(tanpa bab)'}
-function filteredHasil(){
-  return hasil.filter(function(o){
-    return (filterAktif===null||(o.label||'')===filterAktif)&&(filterMapel===null||mapelDari(o)===filterMapel);
-  });
+var filterStatus='semua',filterCari='',urutHasil='nama';
+function cocokStatus(o,f){
+  if(!f||f==='semua')return true;
+  if(f==='ok')return statusSiswa(o)==='ok';
+  if(f==='no')return statusSiswa(o)==='no';
+  if(f==='warn')return statusSiswa(o)==='warn';
+  if(f==='belum')return !o.diperiksa;
+  if(f==='latihan')return !!o.latihan;
+  return true;
 }
+function indeksTampil(){
+  var kata=filterCari.trim().toLowerCase(),idxs=[];
+  hasil.forEach(function(o,i){
+    if(filterAktif!==null&&(o.label||'')!==filterAktif)return;
+    if(filterMapel!==null&&mapelDari(o)!==filterMapel)return;
+    if(kata&&String(o.nama||'').toLowerCase().indexOf(kata)<0)return;
+    if(!cocokStatus(o,filterStatus))return;
+    idxs.push(i);
+  });
+  var urutan={warn:0,no:1,ok:2};
+  idxs.sort(function(a,b){
+    var A=hasil[a],B=hasil[b];
+    if(urutHasil==='rendah')return nilai100(A)-nilai100(B)||String(A.nama).localeCompare(String(B.nama));
+    if(urutHasil==='tinggi')return nilai100(B)-nilai100(A)||String(A.nama).localeCompare(String(B.nama));
+    if(urutHasil==='terbaru')return String(B.waktu||'').localeCompare(String(A.waktu||''));
+    if(urutHasil==='status')return (urutan[statusSiswa(A)]-urutan[statusSiswa(B)])||String(A.nama).localeCompare(String(B.nama));
+    return String(A.nama||'').localeCompare(String(B.nama||''));
+  });
+  return idxs;
+}
+function filteredHasil(){return indeksTampil().map(function(i){return hasil[i]})}
+$('#chipStatus').addEventListener('click',function(e){
+  var b=e.target.closest('.chip');if(!b)return;
+  filterStatus=b.dataset.f;
+  this.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('on',c===b)});
+  renderHasil();
+});
+$('#cariHasil').addEventListener('input',function(){filterCari=this.value;renderHasil()});
+$('#urutHasil').addEventListener('change',function(){urutHasil=this.value;renderHasil()});
 function isiFilterMapel(){
   var daftar=[];
   hasil.forEach(function(o){var m=mapelDari(o);if(daftar.indexOf(m)<0)daftar.push(m)});
@@ -1345,8 +1391,8 @@ function renderHasil(){
     '<p class="small">Sudah diperiksa guru: '+n_periksa+' dari '+hasil.length+' siswa.</p>';
   var atas=banner+ringkasanHtml(list)+analisisHtml(list);
   renderStats();
-  box.innerHTML=atas+hasil.map(function(o,idx){
-    if(filterAktif!==null&&(o.label||'')!==filterAktif)return '';
+  box.innerHTML=atas+indeksTampil().map(function(idx){
+    var o=hasil[idx];
     var perlu=(o.ragu&&o.ragu.length);
     var st=statusSiswa(o),pct=Math.round(nilai100(o));
     return '<div class="sis st-'+st+'" data-i="'+idx+'">'+
