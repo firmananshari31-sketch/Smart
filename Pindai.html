@@ -218,17 +218,29 @@ body{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 .jenis-row{display:flex;align-items:center;gap:8px;margin-top:4px}
 .jenis-row .cek{flex:1;margin:0}
 .jenis-row input[type=number]{width:64px;height:42px;padding:6px;text-align:center}
+.rm-chip{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid var(--line);margin:2px 4px 2px 0;font-size:13px}
+.rm-edit{margin-top:12px;border-top:1px dashed var(--line);padding-top:8px}
+.rm-row{padding:8px 0;border-bottom:1px dashed var(--line)}
+.rm-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.rm-j{display:grid;grid-template-columns:44px 1fr 96px;gap:6px;align-items:center;margin:8px 0;font-size:13px}
+.rm-j input{width:100%}
+.rm-ring{margin:8px 0;font-size:14px}
+.menu-tema{position:fixed;top:64px;right:12px;z-index:1000;display:flex;flex-direction:column;gap:6px;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px #0006;min-width:150px}
+.menu-tema button{text-align:left;padding:8px 10px;font-size:15px;background:transparent;border:1px solid transparent}
+.menu-tema button[aria-checked="true"]{border-color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v60</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v64</span></div></header>
+<div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon">✨ Neon</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <nav>
   <button data-tab="nilai" class="on">📝 Nilai</button>
   <button data-tab="rubrik">🗝 Rubrik</button>
   <button data-tab="hasil">📊 Hasil</button>
   <button data-tab="analisis">🔍 Analisis</button>
   <button data-tab="rapor">📄 Rapor</button>
+  <button data-tab="rm">🎯 Remedial</button>
   <button data-tab="soal">📚 Soal</button>
   <button data-tab="set">⚙ Pengaturan</button>
 </nav>
@@ -284,6 +296,11 @@ body{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
     <div class="msg" id="msgSiswa"></div>
   </div>
 
+  <div class="card" id="tahapBox">
+    <label for="tahapLembar">Jenis lembar yang dipindai</label>
+    <select id="tahapLembar"><option value="asli">Lembar asli (ulangan)</option><option value="remedial">Lembar remedial</option><option value="remedial2">Lembar remedial tahap 2</option><option value="pengayaan">Lembar pengayaan</option></select>
+    <p class="hint" id="tahapInfo"></p>
+  </div>
   <div class="card">
     <label>Antrean penilaian</label>
     <div id="antrean"></div>
@@ -369,6 +386,9 @@ body{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
       <div style="overflow-x:auto"><table id="edTabel" style="min-width:600px"><thead><tr><th>Bagian</th><th>No</th><th>Jenis</th><th>Kunci</th><th>Skor</th><th>Diterima juga</th><th>Umpan balik</th><th></th></tr></thead><tbody></tbody></table></div>
       <div class="row" style="margin-top:8px"><button id="btnEdTambah">+ Soal</button><button id="btnNomori">Nomori ulang</button><button id="btnEdPakai" class="primary">Pakai tabel ini</button></div>
     </details>
+    <label class="hint" style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="drafAdaSiswa" style="width:auto;margin-top:3px"><span>Foto ini ada tulisan atau jawaban siswa (abaikan tulisan siswa saat membuat kunci)</span></label>
+    <label for="drafPerintah" style="margin-top:8px">Perintah tambahan untuk AI (opsional)</label>
+    <textarea id="drafPerintah" rows="3" placeholder="Contoh: soal nomor 5 kunci-nya C. Atau: pakai kunci dari buku guru halaman 12. Kosongkan jika tidak perlu."></textarea>
     <div class="row" style="margin-top:10px">
       <button id="btnKunci">📁 Unggah file kunci jawaban</button>
       <button id="btnBuatKunci">📷 Tambah foto soal</button>
@@ -428,6 +448,24 @@ body{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
   </div>
   <div id="rpDaftar"></div>
   <div id="rpSheet" class="sheet-bg" hidden><div class="sheet-card"><div class="sheet-top"><span class="sheet-grip"></span><button id="rpSheetTutup" type="button">Tutup ✕</button></div><b id="rpSheetJudul" style="display:block;margin-bottom:8px"></b><textarea id="rpSheetTeks" rows="12"></textarea><p class="hint">Perubahan langsung tersimpan.</p></div></div>
+</section>
+
+<section id="tab-rm" class="tab">
+  <div class="card">
+    <label for="rmKelas">Kelas dan mapel</label>
+    <select id="rmKelas"></select>
+    <label for="rmBab" style="margin-top:8px">Bab</label>
+    <select id="rmBab"></select>
+    <label for="rmJumlah" style="margin-top:8px">Jumlah soal per lembar</label>
+    <select id="rmJumlah"><option value="3">3 soal</option><option value="5" selected>5 soal</option><option value="8">8 soal</option></select>
+    <p class="hint" id="rmInfo"></p>
+    <p class="hint">Siswa dibagi menurut nilai. Nama siswa tidak dikirim ke AI, hanya pola soal yang sering salah.</p>
+    <div class="msg" id="rmMsg"></div>
+  </div>
+  <div class="card" id="rmRemedial"></div>
+  <div class="card" id="rmRemedial2" hidden></div>
+  <div class="card" id="rmPengayaan"></div>
+  <div class="card" id="rmReguler"></div>
 </section>
 
 <section id="tab-soal" class="tab">
@@ -502,12 +540,13 @@ body{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
   <button class="primary" id="btnSave" style="width:100%">Simpan pengaturan</button>
   <div class="card" style="margin-bottom:12px"><label for="kkm">KKM (nilai tuntas, 0 sampai 100)</label><input type="number" id="kkm" min="0" max="100" step="1"></div>
   <div class="card" style="margin-bottom:12px"><label for="hargaMasuk">Harga API (USD per 1 juta token)</label><div class="row"><input type="number" step="0.01" min="0" id="hargaMasuk" placeholder="Token masuk"><input type="number" step="0.01" min="0" id="hargaKeluar" placeholder="Token keluar"></div><p class="hint">Isi sesuai halaman harga Anthropic untuk model yang dipakai. Kosongkan kalau tidak ingin melihat perkiraan biaya.</p></div>
+  <div class="card" style="margin-bottom:12px"><label for="aturanAkhir">Aturan nilai akhir setelah remedial</label><select id="aturanAkhir"><option value="kkm">Dibatasi KKM (jika remedial tuntas, nilai akhir = KKM)</option><option value="tertinggi">Nilai tertinggi (asli atau remedial)</option><option value="asli">Nilai asli tetap (remedial hanya dicatat)</option></select><p class="hint">Hanya berlaku di menu Remedial. Nilai di tab Hasil tidak diubah.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="batasPengayaan">Batas nilai pengayaan (%)</label><input type="number" id="batasPengayaan" min="0" max="100" step="1"><p class="hint">Siswa dengan nilai sama dengan atau di atas angka ini masuk daftar pengayaan. Yang di bawah KKM masuk daftar remedial.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="tema">Tampilan</label><select id="tema"><option value="neon">Futuristik neon</option><option value="">Ikuti pengaturan HP</option><option value="light">Terang</option><option value="dark">Gelap</option></select><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px"><input type="checkbox" id="kurangiAnimasi" style="width:auto;margin:0">Kurangi animasi dan efek cahaya (lebih ringan untuk HP lama)</label></div>
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 60 (14 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 64 (15 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -709,6 +748,7 @@ function isiForm(){
   $('#hargaMasuk').value=store.get('hargaMasuk','');
   $('#hargaKeluar').value=store.get('hargaKeluar','');
   $('#batasPengayaan').value=store.get('batasPengayaan',90);
+  $('#aturanAkhir').value=store.get('aturanAkhir','kkm');
   $('#namaGuru').value=store.get('namaGuru','');
   $('#ulangSonnet').checked=store.get('ulangSonnet',true);
   isiRosterUI();
@@ -719,8 +759,16 @@ function isiForm(){
 function setSetMsg(t,isErr){var m=$('#setmsg');m.textContent=t||'';m.className='msg'+(isErr?' err':'')}
 function isiDaftarSiswa(){syncPilihSiswa()}
 function sudahDinilai(nama){
-  var lab=$('#label').value||'';
+  var lab=$('#label').value||'',t=tahapAktif();
+  if(t!=='asli')return hasilRPAmbil().some(function(o){return o.tahap===t&&String(o.nama||'').toLowerCase()===String(nama||'').toLowerCase()&&(o.label||'')===lab});
   return hasil.some(function(o){return o.nama===nama&&(o.label||'')===lab});
+}
+function tahapAktif(){var e=$('#tahapLembar');return e&&e.value?e.value:'asli'}
+function terapkanTahap(){
+  var t=tahapAktif(),info=$('#tahapInfo');
+  info.textContent=t==='asli'?'Hasil masuk ke tab Hasil seperti biasa.':'Hasil dicatat sebagai '+TAHAP_LABEL[t].toLowerCase()+' dan TIDAK menimpa nilai asli. Lihat di tab Remedial. Setelah selesai, kembalikan ke "Lembar asli".';
+  info.style.color=t==='asli'?'':'#f5a300';
+  syncPilihSiswa();
 }
 function syncPilihSiswa(){
   var names=parseRoster(rosterAktif()),sel=$('#pilihSiswa'),inp=$('#namaSiswa'),cur=inp.value.trim();
@@ -1058,18 +1106,32 @@ function terapkanTema(){
 terapkanTema();
 function updIkonTema(){
   var gelap=['dark','neon'].indexOf(document.documentElement.getAttribute('data-theme'))>=0||(!document.documentElement.getAttribute('data-theme')&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
-  $('#btnTema').textContent=gelap?'☀':'🌙';
+  $('#btnTema').textContent='🎨';
+  document.querySelectorAll('#menuTema [data-tema]').forEach(function(b){b.setAttribute('aria-checked',String(b.getAttribute('data-tema')===(store.get('tema','neon')||'')))});
 }
 $('#tema').addEventListener('change',function(){store.set('tema',this.value);terapkanTema();updIkonTema()});
 $('#kurangiAnimasi').addEventListener('change',function(){store.set('animasi',this.checked?'kurang':'');terapkanTema()});
 $('#hargaMasuk').addEventListener('input',function(){store.set('hargaMasuk',this.value);renderBiaya()});
 $('#hargaKeluar').addEventListener('input',function(){store.set('hargaKeluar',this.value);renderBiaya()});
+$('#aturanAkhir').addEventListener('change',function(){store.set('aturanAkhir',this.value);if(typeof renderRM==='function')renderRM()});
 $('#batasPengayaan').addEventListener('input',function(){store.set('batasPengayaan',parseFloat(this.value)||90)});
-$('#btnTema').addEventListener('click',function(){
-  var gelap=['dark','neon'].indexOf(document.documentElement.getAttribute('data-theme'))>=0||(!document.documentElement.getAttribute('data-theme')&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
-  var t=gelap?'light':'dark';
-  store.set('tema',t);$('#tema').value=t;terapkanTema();updIkonTema();
+function bukaMenuTema(buka){
+  var m=$('#menuTema'),b=$('#btnTema');
+  m.hidden=!buka;b.setAttribute('aria-expanded',String(buka));
+  if(buka)updIkonTema();
+}
+$('#btnTema').addEventListener('click',function(e){
+  e.stopPropagation();bukaMenuTema($('#menuTema').hidden);
 });
+$('#menuTema').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-tema]');if(!b)return;
+  var t=b.getAttribute('data-tema');
+  store.set('tema',t);$('#tema').value=t;terapkanTema();updIkonTema();bukaMenuTema(false);
+});
+document.addEventListener('click',function(e){
+  if(!$('#menuTema').hidden&&!e.target.closest('#menuTema')&&e.target!==$('#btnTema'))bukaMenuTema(false);
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')bukaMenuTema(false)});
 updIkonTema();
 function renderAntrean(){
   simpanAntrean();
@@ -1215,6 +1277,7 @@ $('#btnGo').addEventListener('click',async function(){
   var btn=this;btn.disabled=true;setMsg('');sedangNilai=true;setRubrikTerkunci(true);
   var bar=$('#bar');bar.hidden=false;var fill=bar.firstElementChild;fill.style.width='0';
   var label=$('#label').value.trim();
+  var tahap=tahapAktif();
   var list=parseRoster(rosterAktif());
   var todo=antrean.slice(),total=todo.length,gagal=0,done=0,pesanGagal='';
   for(var i=0;i<todo.length;i++){
@@ -1234,7 +1297,8 @@ $('#btnGo').addEventListener('click',async function(){
         }catch(e2){ob.ragu.push('nilai ulang Sonnet gagal: '+e2.message)}
       }
       ob.rubrikId=ambilRubrikAktif().id;ob.fp=fpRubrik(ob.rubrikId);ob.diperiksa=false;
-      if(a.ganti){
+      if(tahap!=='asli'){ob.tahap=tahap;simpanHasilRP(ob)}
+      else if(a.ganti){
         var samaSiswa=function(h){return String(h.nama||'').toLowerCase()===String(ob.nama||'').toLowerCase()&&(h.label||'')===(ob.label||'')};
         var baru=[],sudahDiganti=false;
         hasil.forEach(function(h){
@@ -1245,7 +1309,7 @@ $('#btnGo').addEventListener('click',async function(){
         hasil.splice(0,hasil.length);
         Array.prototype.push.apply(hasil,baru);
       }else hasil.push(ob);
-      store.set('hasil',hasil);
+      if(tahap==='asli')store.set('hasil',hasil);
       antrean=antrean.filter(function(x){return x!==a});
       done++;
       toast('✓ '+a.nama+' selesai dinilai');
@@ -1258,7 +1322,7 @@ $('#btnGo').addEventListener('click',async function(){
   }
   sedangNilai=false;setRubrikTerkunci(false);
   renderAntrean();
-  if(!gagal){setMsg('Selesai. '+done+' siswa dinilai. Lihat tab Hasil.');setTimeout(function(){bar.hidden=true},800)}
+  if(!gagal){setMsg('Selesai. '+done+' siswa dinilai. '+(tahap==='asli'?'Lihat tab Hasil.':'Lihat tab Remedial.'));setTimeout(function(){bar.hidden=true},800)}
   else setMsg(done+' berhasil, '+gagal+' gagal. '+pesanGagal+' Yang gagal tetap di antrean. Tekan Mulai untuk mencoba lagi.',true);
 });
 
@@ -1379,7 +1443,11 @@ $('#btnKosongSoal').addEventListener('click',function(){soalBlok=[];updateSoalIn
 $('#btnBuatDraf').addEventListener('click',async function(){
   if(!soalBlok.length)return;
   var kelas=$('#kelas').value,label=$('#label').value.trim();
-  var sys='Kamu membuat draf kunci jawaban untuk guru SD dari foto soal. Foto yang diberikan bisa berupa beberapa halaman dari satu lembar soal; gabungkan dan urutkan menjadi satu kunci bernomor. Baca soal dengan teliti. Tulis satu baris per soal dengan format persis seperti contoh:\n'+
+  var perintahGuru=($('#drafPerintah').value||'').trim();
+  var adaSiswa=$('#drafAdaSiswa').checked;
+  var sys=(perintahGuru?'PERINTAH GURU (prioritas tertinggi, ikuti lebih dulu daripada aturan lain di bawah kecuali aturan FORMAT):\n'+perintahGuru+'\n\n':'')+
+    (adaSiswa?'Foto ini mungkin memuat tulisan tangan, lingkaran, centang, atau jawaban siswa. Abaikan semua itu. Kunci hanya diambil dari soal cetak dan penalaranmu terhadap soal, bukan dari jawaban yang tertulis di lembar. Jika ragu apakah suatu tanda adalah jawaban siswa, abaikan tanda itu dan tulis (ragu: mungkin jawaban siswa).\n\n':'')+
+    'ATURAN FORMAT (wajib): Kamu membuat draf kunci jawaban untuk guru SD dari foto soal. Foto yang diberikan bisa berupa beberapa halaman dari satu lembar soal; gabungkan dan urutkan menjadi satu kunci bernomor. Baca soal dengan teliti. Tulis satu baris per soal dengan format persis seperti contoh:\n'+
     '- PG: "<no>. PG (skor N): B"\n'+
     '- BS: "<no>. BS (skor N): 1-B, 2-S, 3-B"\n'+
     '- Menjodohkan: "<no>. Menjodohkan (skor N): 1-C, 2-A, 3-D, 4-B"\n'+
@@ -1395,8 +1463,13 @@ $('#btnBuatDraf').addEventListener('click',async function(){
     kmsg('Claude Opus sedang membuat draf kunci dari '+soalBlok.length+' foto...');
     var tpDraf=(store.get('labelDetail',null)||{}).tp||'';
     var content=soalBlok.concat([{type:'text',text:'Label: '+(label||'-')+(tpDraf?'. Tujuan pembelajaran: '+tpDraf:'')+'. Buatkan draf kunci jawaban untuk soal ini.'}]);
-    var draf=(await apiText(sys,content,4000,0,'claude-opus-5-5')).trim();
-    if(!draf)throw new Error('Draf kunci tidak terbentuk. Coba foto yang lebih jelas.');
+    var draf='';
+    for(var coba=0;coba<2;coba++){
+      draf=(await apiText(sys,content,4000,0,'claude-opus-5-5')).trim();
+      if(draf&&parseKunci(draf).soal.length>0)break;
+      draf='';
+    }
+    if(!draf)throw new Error('Format kunci dari AI tidak sesuai setelah dua kali coba. Periksa perintah tambahan atau pakai foto soal yang lebih jelas.');
     kmsg('Claude Opus memeriksa draf kunci...');
     var sysCek='Kamu memeriksa draf kunci jawaban SD. Tugasmu: (1) pastikan setiap kunci benar dan sesuai tujuan pembelajaran; (2) untuk isian dan uraian, tambahkan [terima: ...] berisi jawaban lain yang juga benar dan masuk akal, termasuk ejaan yang sering salah; (3) tambahkan [umpan: ...] singkat, ramah, dan sesuai usia SD untuk tiap soal; (4) tulis masalah atau keraguan dalam baris yang diawali "CATATAN:". Keluarkan seluruh kunci lengkap dengan format yang sama seperti draf, satu baris per soal, lalu baris CATATAN. Tanpa markdown dan tanpa komentar lain. Pastikan skor setiap baris sesuai KEBIJAKAN PENILAIAN.'+aturanSkorDraf();
     var cek=''; try{cek=(await apiText(sysCek,[{type:'text',text:'Label: '+(label||'-')+(tpDraf?'\nTujuan pembelajaran: '+tpDraf:'')+'\n\nDRAF KUNCI:\n'+draf}],4000,0,'claude-opus-5-5')).trim()}catch(eCek){cek=''}
@@ -2394,7 +2467,7 @@ $('#btnXlsx').addEventListener('click',function(){
 
 /* ---------- Cadangan ---------- */
 $('#btnBackup').addEventListener('click',function(){
-  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),labelDetail:store.get('labelDetail',null),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),kebijakanStandar:ambilKebijakanStandar(),daftarNama:store.get('roster',''),rosterKelas:rosterKelasObj(),model:store.get('model','claude-haiku-5-5'),hasil:hasil};
+  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),labelDetail:store.get('labelDetail',null),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),kebijakanStandar:ambilKebijakanStandar(),hasilRP:store.get('hasilRP',[]),lembarRP:store.get('lembarRP',[]),jejakRP:store.get('jejakRP',{}),bandingRP:store.get('bandingRP',{}),daftarNama:store.get('roster',''),rosterKelas:rosterKelasObj(),model:store.get('model','claude-haiku-5-5'),hasil:hasil};
   unduhFile(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),'cadangan-penilai-'+hari()+'.json');
 });
 $('#btnRestore').addEventListener('click',function(){$('#fileRestore').click()});
@@ -2414,6 +2487,7 @@ $('#fileRestore').addEventListener('change',async function(){
     else{var ldb=data.labelDetail||{};store.set('rosterKelas',data.daftarNama?{[kunciKelasDari(ldb.kelas||'',ldb.rombel||'')]:data.daftarNama}:{})}
     store.set('model',data.model||'claude-haiku-5-5');
     hasil=data.hasil;store.set('hasil',hasil);
+    store.set('hasilRP',data.hasilRP||[]);store.set('lembarRP',data.lembarRP||[]);store.set('jejakRP',data.jejakRP||{});store.set('bandingRP',data.bandingRP||{});
     isiForm();renderHasil();
     setSetMsg('Cadangan dipulihkan: '+hasil.length+' hasil.');
   }catch(e){setSetMsg(e.message||'Cadangan tidak bisa dibaca.',true)}
@@ -3150,10 +3224,328 @@ $('#soalWordKunci').addEventListener('click',function(){
   wordBagikan(blokSoal(it,'kunci'),namaSoalFile()+'_kunci.docx',{kolom:1});
 });
 
+/* ---------- Remedial, pengayaan, dan tindak lanjut ---------- */
+var RM_KEY='lembarRP';
+var TAHAP_LABEL={remedial:'Remedial',remedial2:'Remedial tahap 2',pengayaan:'Pengayaan'};
+function rmAmbil(){var a=store.get(RM_KEY,[]);return Array.isArray(a)?a:[]}
+function rmCari(id){return rmAmbil().filter(function(x){return x.id===id})[0]}
+function hasilRPAmbil(){var a=store.get('hasilRP',[]);return Array.isArray(a)?a:[]}
+function simpanHasilRP(ob){
+  var a=hasilRPAmbil().filter(function(h){return !(String(h.nama||'').toLowerCase()===String(ob.nama||'').toLowerCase()&&(h.label||'')===(ob.label||'')&&h.tahap===ob.tahap)});
+  a.push(ob);store.set('hasilRP',a);
+}
+function rmHasilSiswa(nama,tahap,label){return hasilRPAmbil().filter(function(h){return String(h.nama||'').toLowerCase()===String(nama||'').toLowerCase()&&(h.label||'')===label&&h.tahap===tahap})[0]}
+function jejakAmbil(){var j=store.get('jejakRP',{});return j&&typeof j==='object'&&!Array.isArray(j)?j:{}}
+function aturanAkhir(){return store.get('aturanAkhir','kkm')}
+function nilaiAkhir(asli,tindak){
+  var kkm=KKM(),a=aturanAkhir(),ada=tindak.filter(function(x){return x!=null});
+  if(!ada.length||a==='asli')return asli;
+  var terbaik=Math.max.apply(null,ada);
+  if(a==='tertinggi')return Math.max(asli,terbaik);
+  if(asli>=kkm)return asli;
+  return terbaik>=kkm?kkm:Math.max(asli,terbaik);
+}
+function rmLabel(ctx){return ctx.key+' - '+ctx.bab}
+function rmAkhirSiswa(o,label){
+  var t=[];['remedial','remedial2'].forEach(function(j){var h=rmHasilSiswa(o.nama,j,label);if(h)t.push(nilai100(h))});
+  return nilaiAkhir(nilai100(o),t);
+}
+function rmKonteks(){
+  var key=$('#rmKelas').value,bab=$('#rmBab').value;
+  var semua=key?siswaKM(key).filter(function(o){return babDari(o)===bab}):[];
+  var list=semua.filter(function(o){return o.jawaban&&o.jawaban.length});
+  var kkm=KKM(),batas=batasPengayaan(),label=key+' - '+bab;
+  var R=list.filter(function(o){return nilai100(o)<kkm});
+  return {key:key,bab:bab,semua:semua,list:list,kkm:kkm,batas:batas,R:R,
+    E:list.filter(function(o){return nilai100(o)>=kkm&&nilai100(o)>=batas}),
+    G:list.filter(function(o){return nilai100(o)>=kkm&&nilai100(o)<batas}),
+    T2:R.filter(function(o){var r1=rmHasilSiswa(o.nama,'remedial',label),r2=rmHasilSiswa(o.nama,'remedial2',label);return r2||(r1&&nilai100(r1)<kkm)})};
+}
+function rmIsiBab(){
+  var key=$('#rmKelas').value,sel=$('#rmBab'),keep=sel.value,babs={};
+  siswaKM(key).forEach(function(o){babs[babDari(o)]=1});
+  var arr=Object.keys(babs).sort();
+  sel.innerHTML=arr.length?arr.map(function(b){return '<option value="'+esc(b)+'">'+esc(b)+'</option>'}).join(''):'<option value="">Belum ada hasil</option>';
+  if(arr.indexOf(keep)>=0)sel.value=keep;
+}
+function rmChips(arr){return arr.map(function(o){return '<span class="rm-chip">'+esc(o.nama||'(tanpa nama)')+' · '+nilai100(o)+'</span>'}).join('')}
+function rmRincian(h){
+  var t='<div class="rm-rincian">';
+  (h.jawaban||[]).forEach(function(x,i){
+    t+='<div class="rm-j"><b>No '+esc(x.no)+'</b><span class="hint">'+esc(x.transkripsi||'')+'<br>'+esc(x.alasan||'')+'</span><span><input type="number" step="0.5" min="0" max="'+(x.skor_maks||0)+'" value="'+(x.skor==null?'':x.skor)+'" data-rm-skor="'+i+'"> / '+(x.skor_maks||0)+'</span></div>';
+  });
+  return t+'<div class="row" style="margin-top:6px"><button type="button" data-rm="skor" data-hid="'+esc(String(h.id))+'">Simpan skor</button></div></div>';
+}
+function rmBaris(o,jenis,ctx,item){
+  var label=rmLabel(ctx),h=rmHasilSiswa(o.nama,jenis,label),asli=nilai100(o),kkm=ctx.kkm;
+  var s='<div class="rm-row"><div class="rm-top"><b>'+esc(o.nama||'(tanpa nama)')+'</b><span class="hint">nilai asli '+asli+'</span></div>';
+  if(h){
+    var v=nilai100(h),verd;
+    if(jenis==='pengayaan')verd=v>=ctx.batas?'🌟 Unggul':'📈 Terus berlatih';
+    else verd=(v>=kkm?'✅ Tuntas':'⚠ Belum tuntas')+' · nilai akhir '+rmAkhirSiswa(o,label);
+    s+='<div class="rm-ring">→ '+TAHAP_LABEL[jenis].toLowerCase()+' <b>'+v+'</b> · '+verd+'</div>';
+    if((h.ragu&&h.ragu.length)||h.pending>0)s+='<div class="flag">Perlu dicek guru: '+esc((h.ragu||[]).slice(0,2).join('; ')||'ada jawaban belum bernilai')+'</div>';
+    s+='<details><summary>Rincian dan koreksi skor</summary>'+rmRincian(h)+'</details>';
+  }else if(item){
+    var cur=jejakAmbil()[label+'|'+jenis+'|'+o.nama]||'dibuat';
+    s+='<select data-rm-jejak="'+esc(o.nama)+'" data-j="'+jenis+'">'+[['dibuat','Lembar sudah dibuat'],['dibagikan','Sudah dibagikan'],['dikerjakan','Sudah dikerjakan, belum dipindai']].map(function(p){return '<option value="'+p[0]+'"'+(cur===p[0]?' selected':'')+'>'+p[1]+'</option>'}).join('')+'</select>';
+  }else s+='<div class="hint">Belum ada lembar.</div>';
+  return s+'</div>';
+}
+function rmBandingHTML(jenis,ctx){
+  var bd=(store.get('bandingRP',{})||{})[ctx.key+'|'+ctx.bab+'|'+jenis];
+  if(!bd)return '';
+  var h='<div class="rm-edit"><label>Perkembangan (ditulis AI)</label><p>'+esc(bd.ringkasan)+'</p>';
+  Object.keys(bd.siswa||{}).forEach(function(n){h+='<p class="hint"><b>'+esc(n)+'</b>: '+esc(bd.siswa[n])+'</p>'});
+  return h+'<div class="row"><button type="button" data-rm="pdf-banding" data-j="'+jenis+'">PDF perkembangan</button></div><p class="hint">Dibuat '+esc(tglIndo(bd.waktu))+'.</p></div>';
+}
+function rmKartu(jenis,arr,judul,ikon,ctx,kosong){
+  var id=ctx.key+'|'+ctx.bab+'|'+jenis,item=rmCari(id),label=rmLabel(ctx);
+  var h='<label>'+ikon+' '+judul+' ('+arr.length+' siswa)</label>';
+  if(!arr.length)return h+'<p class="hint">'+kosong+'</p>';
+  var a=0,b2=0,c=0;
+  arr.forEach(function(o){var x=rmHasilSiswa(o.nama,jenis,label);if(!x){c++;return}var v=nilai100(x);if(jenis==='pengayaan'?v>=ctx.batas:v>=ctx.kkm)a++;else b2++});
+  h+='<p class="hint">'+(jenis==='pengayaan'?'Unggul '+a+' · terus berlatih '+b2:'Tuntas '+a+' · belum tuntas '+b2)+' · menunggu dipindai '+c+'</p>';
+  h+=arr.map(function(o){return rmBaris(o,jenis,ctx,item)}).join('');
+  h+='<div class="row" style="margin-top:10px"><button class="primary" type="button" data-rm="buat" data-j="'+jenis+'">✨ '+(item?'Buat ulang':'Buat')+' soal '+TAHAP_LABEL[jenis].toLowerCase()+' bersama</button></div>';
+  if(item){
+    h+='<div class="rm-edit"><label>Soal</label><textarea rows="9" data-rm-soal="'+jenis+'">'+esc(item.soal)+'</textarea>'+
+      '<label style="margin-top:8px">Kunci (untuk guru)</label><textarea rows="6" data-rm-kunci="'+jenis+'">'+esc(item.kunci)+'</textarea>'+
+      (jenis==='remedial2'?'<label style="margin-top:8px">Saran tindakan untuk guru</label><textarea rows="5" data-rm-saran="'+jenis+'">'+esc(item.saran||'')+'</textarea>':'')+
+      '<div class="row" style="margin-top:8px"><button type="button" data-rm="simpan" data-j="'+jenis+'">Simpan perubahan</button></div>'+
+      '<div class="row" style="margin-top:8px"><button type="button" data-rm="pdf-soal" data-j="'+jenis+'">PDF soal</button><button type="button" data-rm="pdf-kunci" data-j="'+jenis+'">PDF kunci</button></div>'+
+      '<div class="row" style="margin-top:8px"><button type="button" data-rm="word-soal" data-j="'+jenis+'">Word soal</button><button type="button" data-rm="word-kunci" data-j="'+jenis+'">Word kunci</button></div>'+
+      '<div class="row" style="margin-top:8px"><button type="button" data-rm="hapus" data-j="'+jenis+'">Hapus lembar</button></div>'+
+      '<div class="row" style="margin-top:8px"><button class="primary" type="button" data-rm="pindai" data-j="'+jenis+'">📷 Siapkan pindai lembar ini</button></div>'+
+      '<p class="hint">Setelah siswa mengerjakan, tombol di atas menyiapkan kunci dan membuka tab Nilai dengan jenis lembar yang benar. Dibuat '+esc(tglIndo(item.waktu))+'. Periksa soal sebelum dibagikan.</p></div>';
+  }
+  if(arr.some(function(o){return rmHasilSiswa(o.nama,jenis,label)})){
+    h+='<div class="row" style="margin-top:8px"><button type="button" data-rm="banding" data-j="'+jenis+'">📈 Bandingkan sebelum dan sesudah (AI)</button>'+(jenis!=='pengayaan'?'<button type="button" data-rm="salin" data-j="'+jenis+'">📋 Salin rekap nilai akhir</button>':'')+'</div>';
+  }
+  return h+rmBandingHTML(jenis,ctx);
+}
+function renderRM(){
+  var ctx=rmKonteks();
+  var tanpa=ctx.semua.length-ctx.list.length;
+  $('#rmInfo').textContent=ctx.semua.length?('KKM '+ctx.kkm+' · batas pengayaan '+ctx.batas+' · aturan nilai akhir: '+({kkm:'dibatasi KKM',tertinggi:'nilai tertinggi',asli:'nilai asli tetap'})[aturanAkhir()]+' (ubah di Pengaturan). '+ctx.semua.length+' siswa pada bab ini'+(tanpa?', '+tanpa+' tanpa data jawaban tidak ikut.':'.')):'Belum ada hasil penilaian untuk pilihan ini.';
+  $('#rmRemedial').innerHTML=rmKartu('remedial',ctx.R,'Remedial','🛟',ctx,'Tidak ada siswa di bawah KKM '+ctx.kkm+' pada bab ini.');
+  var ada2=ctx.T2.length>0||!!rmCari(ctx.key+'|'+ctx.bab+'|remedial2');
+  $('#rmRemedial2').hidden=!ada2;
+  $('#rmRemedial2').innerHTML=ada2?rmKartu('remedial2',ctx.T2,'Remedial tahap 2 (masih di bawah KKM)','🧗',ctx,'Semua siswa sudah tuntas setelah remedial pertama.'):'';
+  $('#rmPengayaan').innerHTML=rmKartu('pengayaan',ctx.E,'Pengayaan','🚀',ctx,'Tidak ada siswa dengan nilai '+ctx.batas+' ke atas pada bab ini.');
+  $('#rmReguler').innerHTML='<label>Siswa reguler ('+ctx.G.length+' siswa)</label>'+(ctx.G.length?'<div>'+rmChips(ctx.G)+'</div>':'<p class="hint">Tidak ada siswa di antara KKM dan batas pengayaan.</p>');
+}
+function rmKunciSoal(arr){
+  try{
+    var r=(store.get('rubriks',{})||{})[arr[0].rubrikId];
+    if(!r||!r.kunci)return {};
+    var peta={};parseKunci(r.kunci).soal.forEach(function(x){peta[String(x.no)]=x});
+    return peta;
+  }catch(e){return {}}
+}
+function rmSalah(o){
+  var w=(o.jawaban||[]).filter(function(x){return x.skor==null||x.skor<x.skor_maks}).slice(0,3).map(function(x){return 'no '+x.no+': '+String(x.alasan||'belum tepat').slice(0,90)});
+  return w.length?w.join(' | '):'tidak ada';
+}
+function rmBlokAI(text,nama){var b=parseSoalAI(text).filter(function(x){return x.nama===nama})[0];return b?b.isi:''}
+async function rmBuat(jenis,btn){
+  if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+  var ctx=rmKonteks(),arr=jenis==='remedial'?ctx.R:jenis==='remedial2'?ctx.T2:ctx.E,label=rmLabel(ctx);
+  if(!arr.length)return;
+  var id=ctx.key+'|'+ctx.bab+'|'+jenis;
+  if(rmCari(id)&&!confirm('Lembar yang sudah ada akan diganti. Lanjut?'))return;
+  var n=parseInt($('#rmJumlah').value,10)||5;
+  var tp=(store.get('labelDetail',null)||{}).tp||'';
+  var isi='Materi: '+label+(tp?'\nTujuan pembelajaran: '+tp:'')+'\nJumlah soal: '+n;
+  var format='Tulis dengan format persis ini dan tanpa teks lain di luar format:\n### SOAL\n1. ...\n2. ...\n### KUNCI\n1. ...\n2. ...'+(jenis==='remedial2'?'\n### SARAN\n1. ...\n2. ...\n3. ...':'')+'\nJangan memakai tanda kutip ganda. Untuk pilihan ganda, tulis pilihan A sampai D pada baris berikutnya.';
+  var sys;
+  if(jenis==='remedial'||jenis==='remedial2'){
+    var st=statKM(ctx.R).soal.filter(function(x){return x.persen<100}).slice(0,4),rub=rmKunciSoal(arr);
+    isi+='\nJumlah siswa di kelompok: '+arr.length+(st.length?'\nSoal asli yang paling banyak salah di kelompok ini:\n'+st.map(function(x){
+      return 'Soal '+x.no+': '+x.persen+'% benar'+(rub[x.no]?' (jenis '+rub[x.no].jenis+', kunci '+rub[x.no].kunci+')':'')+
+        (x.alasan.length?'; contoh kesalahan: '+x.alasan.slice(0,3).map(function(a){return String(a).slice(0,110)}).join(' | '):'');
+    }).join('\n'):'\nTidak ada pola soal tertentu, buat penguatan umum.');
+  }
+  if(jenis==='remedial'){
+    sys='Kamu menyusun lembar remedial untuk siswa SD di Indonesia sesuai Kurikulum Merdeka, untuk sekelompok siswa yang belum tuntas. Buat soal penguatan yang berfokus pada konsep yang paling banyak salah. Soal lebih sederhana dari soal asli, bahasa mudah, berurutan dari mudah ke sedang, dan soal pertama memberi petunjuk atau contoh. Gunakan campuran pilihan ganda, isian singkat, dan benar-salah. Kunci memuat jawaban dan penjelasan satu kalimat. '+format;
+  }else if(jenis==='remedial2'){
+    var sisa=arr.map(function(o){var h=rmHasilSiswa(o.nama,'remedial',label);return h?rmSalah(h):''}).filter(Boolean);
+    isi+='\nKesalahan yang masih muncul setelah remedial pertama (tanpa nama):\n'+(sisa.length?sisa.map(function(t,i){return 'Siswa '+(i+1)+': '+t}).join('\n'):'tidak tercatat');
+    sys='Kamu menyusun lembar remedial tahap dua untuk siswa SD di Indonesia yang masih belum tuntas setelah remedial pertama. Buat soal yang sangat bertahap: dua soal pertama sangat mudah dengan petunjuk langkah, lalu naik pelan. Gunakan contoh konkret yang dekat dengan kehidupan anak, kalimat pendek, dan soal yang menyasar kesalahan yang masih muncul. Kunci memuat jawaban dan penjelasan satu kalimat. Bagian SARAN berisi tiga saran tindakan untuk guru, misalnya bimbingan kelompok kecil, tutor sebaya, atau komunikasi dengan orang tua, yang spesifik untuk kesalahan di atas. '+format;
+  }else{
+    sys='Kamu menyusun lembar pengayaan untuk siswa SD di Indonesia sesuai Kurikulum Merdeka, untuk siswa yang sudah menguasai materi. Buat soal tantangan penalaran (menganalisis, mengevaluasi, mencipta) dalam konteks baru yang dekat dengan kehidupan anak, tanpa mengulang soal asli. Sekitar dua pertiga berupa pilihan ganda atau isian bernalar, sisanya uraian singkat. Kunci memuat jawaban atau poin jawaban yang diharapkan. '+format;
+  }
+  var model=store.get('model','claude-haiku-5-5');
+  $('#rmMsg').textContent='Claude sedang menyusun lembar '+TAHAP_LABEL[jenis].toLowerCase()+'...';
+  if(btn)btn.disabled=true;
+  try{
+    var hasilAI=null;
+    for(var k=0;k<2&&!hasilAI;k++){
+      ketPotong=false;
+      var text=await apiText(sys,isi,2800,0,model)||'';
+      if(ketPotong)throw new Error('lembar terlalu panjang. Kurangi jumlah soal lalu coba lagi.');
+      var so=rmBlokAI(text,'SOAL'),ku=rmBlokAI(text,'KUNCI');
+      if(so.length>10&&ku.length>3)hasilAI={soal:so,kunci:ku,saran:rmBlokAI(text,'SARAN')};
+    }
+    if(!hasilAI)throw new Error('format jawaban AI tidak sesuai. Coba lagi.');
+    var a=rmAmbil().filter(function(x){return x.id!==id});
+    a.push({id:id,jenis:jenis,kunciKM:ctx.key,bab:ctx.bab,soal:hasilAI.soal,kunci:hasilAI.kunci,saran:hasilAI.saran||'',
+      siswa:arr.map(function(o){return o.nama||'(tanpa nama)'}),waktu:new Date().toISOString()});
+    store.set(RM_KEY,a);
+    renderRM();
+    $('#rmMsg').textContent='Lembar '+TAHAP_LABEL[jenis].toLowerCase()+' dibuat. Periksa dan edit sebelum dibagikan.';
+  }catch(e){$('#rmMsg').textContent='Gagal: '+(e&&e.message?e.message:e);if(btn)btn.disabled=false}
+}
+function rmSimpanDariLayar(jenis){
+  var ctx=rmKonteks(),id=ctx.key+'|'+ctx.bab+'|'+jenis,a=rmAmbil(),it=a.filter(function(x){return x.id===id})[0];
+  if(!it)return null;
+  var ts=document.querySelector('[data-rm-soal="'+jenis+'"]'),tk=document.querySelector('[data-rm-kunci="'+jenis+'"]'),tr=document.querySelector('[data-rm-saran="'+jenis+'"]');
+  if(ts&&tk){
+    if(!ts.value.trim()||!tk.value.trim()){alert('Soal dan kunci harus diisi.');return null}
+    it.soal=ts.value.trim();it.kunci=tk.value.trim();
+    if(tr)it.saran=tr.value.trim();
+    store.set(RM_KEY,a);
+  }
+  return it;
+}
+function rmBlok(it,kind){
+  var J=TAHAP_LABEL[it.jenis]||'Remedial',info=it.kunciKM+' · '+it.bab;
+  if(kind==='kunci'){
+    var b=[{k:'kop'},{k:'judul',s:'Kunci Lembar '+J+' (untuk guru)'},{k:'isi',s:info},{k:'isi',s:'Kelompok: '+(it.siswa||[]).join(', ')},{k:'',s:''}].concat(blokBaris(it.kunci,false));
+    if(it.saran)b=b.concat([{k:'',s:''},{k:'soal',s:'Saran tindakan untuk guru:'}],blokBaris(it.saran,false));
+    return b;
+  }
+  return [{k:'kop'},{k:'judul',s:'Lembar '+J},{k:'isi',s:info},{k:'isi',s:'Nama: ______________________________   Tanggal: ______________'},{k:'',s:''}].concat(blokBaris(it.soal,true).filter(function(b,i,a){return !(b.k==='garis'&&a[i+1]&&a[i+1].k==='isi'&&/^[A-E][.)]/.test(a[i+1].s))}));
+}
+function rmNamaFile(it,kind,ext){return (TAHAP_LABEL[it.jenis]||'Remedial').replace(/\s+/g,'_')+'_'+(it.kunciKM+'_'+it.bab).replace(/[^\w]+/g,'_')+(kind==='kunci'?'_kunci':'')+'.'+ext}
+async function rmKonversiKunci(it){
+  var sys='Ubah soal dan kunci jawaban berikut menjadi baris kunci baku untuk penilaian otomatis. Format setiap baris persis: "N. JENIS (skor S): kunci", dengan JENIS salah satu dari: '+KUNCI_JENIS.join(', ')+'. PG: kunci satu huruf A sampai E. BS: kunci seperti 1-B, 2-S. Menjodohkan: seperti 1-C, 2-A. MCMA: seperti A, C, E. Mengurutkan: seperti 3, 1, 4, 2. Isian: kata atau frasa, boleh ditambah [terima: sinonim]. Uraian: poin jawaban. Skor 1 untuk setiap soal kecuali uraian skor 2. Satu baris untuk setiap nomor soal, tanpa teks lain dan tanpa tanda kutip ganda.';
+  var isi='SOAL:\n'+it.soal+'\n\nKUNCI:\n'+it.kunci,model=store.get('model','claude-haiku-5-5'),last=null;
+  for(var k=0;k<2;k++){
+    ketPotong=false;
+    var t=String(await apiText(sys,isi,1500,0,model)||'').replace(/```[a-z]*\n?|```/g,'').trim();
+    var p=parseKunci(t);
+    if(p.soal.length&&!p.masalah.length)return {text:t,masalah:[]};
+    last={text:t,masalah:p.masalah,n:p.soal.length};
+  }
+  if(last&&last.n)return last;
+  throw new Error('kunci pindai gagal disusun. Coba lagi.');
+}
+async function rmPindai(jenis,btn){
+  var ctx=rmKonteks(),it=rmSimpanDariLayar(jenis);if(!it)return;
+  var hash=hashTeks(it.soal+'|'+it.kunci),rubs=ambilRubriks(),rid=it.rubrikId,peringatan='';
+  if(!(rid&&rubs[rid]&&it.rubrikHash===hash)){
+    if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+    $('#rmMsg').textContent='Menyusun kunci untuk dipindai...';
+    if(btn)btn.disabled=true;
+    try{
+      var k=await rmKonversiKunci(it);
+      rubs=ambilRubriks();
+      if(!(rid&&rubs[rid]))rid='rbrp'+Date.now();
+      rubs[rid]={nama:(TAHAP_LABEL[jenis]+' - '+it.bab).slice(0,48),kunci:k.text,kebijakan:ambilKebijakanStandar(),contoh:[]};
+      store.set('rubriks',rubs);
+      var a=rmAmbil();a.forEach(function(x){if(x.id===it.id){x.rubrikId=rid;x.rubrikHash=hash}});store.set(RM_KEY,a);
+      if(k.masalah&&k.masalah.length)peringatan=' Periksa kunci di tab Rubrik: '+k.masalah.slice(0,2).join('; ')+'.';
+    }catch(e){$('#rmMsg').textContent='Gagal: '+(e&&e.message?e.message:e);if(btn)btn.disabled=false;return}
+    if(btn)btn.disabled=false;
+  }
+  store.set('rubrikAktif',rid);
+  var m=ctx.key.match(/^Kelas\s+([IVX]+)(?:\s+([A-Z]))?\s*-\s*(.+)$/i);
+  if(m){
+    $('#kelas').value=m[1].toUpperCase();$('#rombel').value=(m[2]||'').toUpperCase();$('#mapel').value=m[3];$('#bab').value=ctx.bab;updateLabel();
+  }else peringatan+=' Kelas dan mapel belum bisa diisi otomatis, periksa di tab Nilai.';
+  $('#tahapLembar').value=jenis;terapkanTahap();isiRubrikUI();
+  $('#rmMsg').textContent='Siap memindai.'+peringatan;
+  document.querySelector('nav button[data-tab=nilai]').click();
+  toast('Siap memindai lembar '+TAHAP_LABEL[jenis].toLowerCase());
+}
+async function rmBanding(jenis,btn){
+  if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+  var ctx=rmKonteks(),label=rmLabel(ctx),sem=jenis==='remedial'?ctx.R:jenis==='remedial2'?ctx.T2:ctx.E;
+  var arr=sem.filter(function(o){return rmHasilSiswa(o.nama,jenis,label)});
+  if(!arr.length){alert('Belum ada hasil yang dipindai untuk kelompok ini.');return}
+  var baris=arr.map(function(o,i){var h=rmHasilSiswa(o.nama,jenis,label);
+    return 'Siswa '+(i+1)+': nilai asli '+nilai100(o)+'; kesalahan awal: '+rmSalah(o)+'. Nilai setelah '+TAHAP_LABEL[jenis].toLowerCase()+' '+nilai100(h)+'; kesalahan setelah: '+rmSalah(h)+'.'}).join('\n');
+  var sys='Kamu membantu guru SD membuat catatan perkembangan siswa setelah '+TAHAP_LABEL[jenis].toLowerCase()+'. Tulis dalam bahasa Indonesia yang positif, jelas, dan jujur; jangan melebih-lebihkan. Tulis dengan format persis ini dan tanpa teks lain:\n### RINGKASAN\n(tiga sampai empat kalimat untuk guru: kenaikan nilai kelompok, konsep yang sudah dikuasai, konsep yang masih lemah, dan satu saran)\n### SISWA\n1. (satu sampai dua kalimat untuk siswa nomor 1)\n2. ...\n(satu baris untuk setiap siswa sesuai nomor). Jangan memakai tanda kutip ganda.';
+  $('#rmMsg').textContent='Claude sedang membandingkan...';
+  if(btn)btn.disabled=true;
+  try{
+    ketPotong=false;
+    var text=await apiText(sys,'Materi: '+label+'\n'+baris,1800,0,store.get('model','claude-haiku-5-5'))||'';
+    if(ketPotong)throw new Error('terlalu panjang, coba lagi.');
+    var ring=rmBlokAI(text,'RINGKASAN'),sis=rmBlokAI(text,'SISWA');
+    if(ring.length<10)throw new Error('format jawaban AI tidak sesuai. Coba lagi.');
+    var peta={};
+    sis.split(/\r?\n/).forEach(function(l){var mm=l.match(/^\s*(\d+)[.)]\s*(.+)$/);if(mm&&arr[parseInt(mm[1],10)-1])peta[arr[parseInt(mm[1],10)-1].nama||'(tanpa nama)']=mm[2].trim()});
+    var all=store.get('bandingRP',{})||{};all[ctx.key+'|'+ctx.bab+'|'+jenis]={ringkasan:ring,siswa:peta,waktu:new Date().toISOString()};
+    store.set('bandingRP',all);renderRM();
+    $('#rmMsg').textContent='Perbandingan dibuat.';
+  }catch(e){$('#rmMsg').textContent='Gagal: '+(e&&e.message?e.message:e);if(btn)btn.disabled=false}
+}
+function rmBlokBanding(jenis,ctx){
+  var bd=(store.get('bandingRP',{})||{})[ctx.key+'|'+ctx.bab+'|'+jenis],label=rmLabel(ctx);
+  var b=[{k:'kop'},{k:'judul',s:'Perkembangan Setelah '+TAHAP_LABEL[jenis]},{k:'isi',s:ctx.key+' · '+ctx.bab},{k:'',s:''},{k:'soal',s:'Ringkasan untuk guru:'},{k:'isi',s:bd.ringkasan},{k:'',s:''},{k:'soal',s:'Per siswa:'}];
+  var sem=jenis==='remedial'?ctx.R:jenis==='remedial2'?ctx.T2:ctx.E;
+  sem.forEach(function(o){
+    var h=rmHasilSiswa(o.nama,jenis,label);if(!h)return;
+    b.push({k:'isi',s:(o.nama||'(tanpa nama)')+': '+nilai100(o)+' → '+nilai100(h)+(jenis==='pengayaan'?'':' (nilai akhir '+rmAkhirSiswa(o,label)+')')});
+    if(bd.siswa&&bd.siswa[o.nama||'(tanpa nama)'])b.push({k:'isi',s:'   '+bd.siswa[o.nama||'(tanpa nama)']});
+  });
+  return b;
+}
+$('#rmKelas').addEventListener('change',function(){rmIsiBab();renderRM()});
+$('#rmBab').addEventListener('change',renderRM);
+$('#tahapLembar').addEventListener('change',terapkanTahap);
+$('#tab-rm').addEventListener('change',function(e){
+  var sel=e.target.closest('select[data-rm-jejak]');if(!sel)return;
+  var ctx=rmKonteks(),j=jejakAmbil();j[rmLabel(ctx)+'|'+sel.getAttribute('data-j')+'|'+sel.getAttribute('data-rm-jejak')]=sel.value;
+  store.set('jejakRP',j);
+});
+$('#tab-rm').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-rm]');if(!b)return;
+  var act=b.getAttribute('data-rm'),j=b.getAttribute('data-j');
+  if(act==='buat'){rmBuat(j,b);return}
+  if(act==='pindai'){rmPindai(j,b);return}
+  if(act==='banding'){rmBanding(j,b);return}
+  if(act==='skor'){
+    var all=hasilRPAmbil(),hid=b.getAttribute('data-hid'),h=all.filter(function(x){return String(x.id)===hid})[0];if(!h)return;
+    [].forEach.call(b.closest('.rm-rincian').querySelectorAll('input[data-rm-skor]'),function(inp){
+      var x=h.jawaban[parseInt(inp.getAttribute('data-rm-skor'),10)];if(!x)return;
+      var v=inp.value===''?null:Math.max(0,Math.min(x.skor_maks||0,parseFloat(inp.value)||0));x.skor=v;
+    });
+    hitung(h);h.ragu=[];h.diperiksa=true;store.set('hasilRP',all);renderRM();toast('Skor tersimpan');return;
+  }
+  if(act==='hapus'){
+    if(!confirm('Hapus lembar '+j+' ini?'))return;
+    var ctx=rmKonteks(),id=ctx.key+'|'+ctx.bab+'|'+j;
+    store.set(RM_KEY,rmAmbil().filter(function(x){return x.id!==id}));renderRM();return;
+  }
+  if(act==='pdf-banding'){
+    var c2=rmKonteks();if(!(store.get('bandingRP',{})||{})[c2.key+'|'+c2.bab+'|'+j])return;
+    pdfTeksBagikan(rmBlokBanding(j,c2),'Perkembangan_'+TAHAP_LABEL[j].replace(/\s+/g,'_')+'_'+(c2.key+'_'+c2.bab).replace(/[^\w]+/g,'_')+'.pdf');return;
+  }
+  if(act==='salin'){
+    var c3=rmKonteks(),lab=rmLabel(c3),sem=j==='remedial2'?c3.T2:c3.R;
+    var tsv=['Nama\tNilai asli\tRemedial\tRemedial tahap 2\tNilai akhir'].concat(sem.map(function(o){
+      var r1=rmHasilSiswa(o.nama,'remedial',lab),r2=rmHasilSiswa(o.nama,'remedial2',lab);
+      return [o.nama||'',nilai100(o),r1?nilai100(r1):'',r2?nilai100(r2):'',rmAkhirSiswa(o,lab)].join('\t');
+    })).join('\n');
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(tsv).then(function(){toast('Rekap disalin. Tempel di Excel atau e-rapor.')},function(){alert('Tidak bisa menyalin.')});
+    else alert(tsv);
+    return;
+  }
+  var it=rmSimpanDariLayar(j);if(!it)return;
+  if(act==='simpan'){toast('Perubahan tersimpan');return}
+  var kind=/kunci$/.test(act)?'kunci':'soal';
+  if(/^pdf/.test(act))pdfTeksBagikan(rmBlok(it,kind),rmNamaFile(it,kind,'pdf'));
+  else wordBagikan(rmBlok(it,kind),rmNamaFile(it,kind,'docx'),{kolom:1});
+});
+
 /* Muat ulang isi tab saat dibuka */
 function segarkanTab(t){
   if(t==='analisis'){isiPilihanKM($('#anKelas'));tampilAnalisisTersimpan()}
   if(t==='rapor'){isiPilihanKM($('#rpKelas'));renderRapor()}
+  if(t==='rm'){isiPilihanKM($('#rmKelas'));rmIsiBab();renderRM()}
   if(t==='soal'){renderBank();if(!$('#soalLabel').value&&$('#label').value)$('#soalLabel').value=$('#label').value}
 }
 
