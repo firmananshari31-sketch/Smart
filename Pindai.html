@@ -222,7 +222,7 @@ body{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v57</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Ganti tema terang/gelap" title="Ganti tema">🌙</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v60</span></div></header>
 <nav>
   <button data-tab="nilai" class="on">📝 Nilai</button>
   <button data-tab="rubrik">🗝 Rubrik</button>
@@ -439,6 +439,24 @@ body{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
     <label class="cek"><input type="checkbox" id="soalBeda" checked>Tiga tingkat: dasar, sedang, dan lanjut (berdiferensiasi)</label>
     <div class="jenis-list" id="soalJenisBox" style="margin-top:8px"><div class="jenis-row"><label class="cek"><input type="checkbox" value="PG" checked>Pilihan ganda (PG)</label><input type="number" min="0" max="30" value="4" aria-label="Jumlah Pilihan ganda (PG)"></div><div class="jenis-row"><label class="cek"><input type="checkbox" value="MCMA" checked>PG kompleks (MCMA)</label><input type="number" min="0" max="30" value="2" aria-label="Jumlah PG kompleks (MCMA)"></div><div class="jenis-row"><label class="cek"><input type="checkbox" value="BS" checked>Benar-salah (BS)</label><input type="number" min="0" max="30" value="2" aria-label="Jumlah Benar-salah (BS)"></div><div class="jenis-row"><label class="cek"><input type="checkbox" value="Menjodohkan" checked>Menjodohkan</label><input type="number" min="0" max="30" value="1" aria-label="Jumlah Menjodohkan"></div><div class="jenis-row"><label class="cek"><input type="checkbox" value="Isian" checked>Isian singkat</label><input type="number" min="0" max="30" value="2" aria-label="Jumlah Isian singkat"></div><div class="jenis-row"><label class="cek"><input type="checkbox" value="Uraian" checked>Uraian singkat</label><input type="number" min="0" max="30" value="1" aria-label="Jumlah Uraian singkat"></div><div class="jenis-row"><label class="cek"><input type="checkbox" value="Mengurutkan">Mengurutkan</label><input type="number" min="0" max="30" value="0" aria-label="Jumlah Mengurutkan"></div></div>
     <p class="hint" id="soalTotal"></p>
+    <div class="sumber-box" style="margin-top:8px"><label>Format jumlah pilihan</label>
+    <p class="hint" style="margin:0 0 6px">Dipakai jika kriteria guru di bawah kosong.</p>
+    <div class="row"><span class="hint" style="min-width:110px">Pilihan ganda</span><select id="pgPilihan"><option value="campur" selected>Campuran 4 dan 5 pilihan</option><option value="4">4 pilihan (A–D)</option><option value="5">5 pilihan (A–E)</option></select></div>
+    <div class="row" style="margin-top:6px"><span class="hint" style="min-width:110px">Benar-salah</span><select id="bsJumlah"><option value="3">3 pernyataan</option><option value="4">4 pernyataan</option><option value="5" selected>5 pernyataan</option></select></div>
+    <div class="row" style="margin-top:6px"><span class="hint" style="min-width:110px">Menjodohkan</span><select id="jodohKiri"><option value="3">3 kiri, 3 kanan</option><option value="4" selected>4 kiri, 4 kanan</option><option value="5">5 kiri, 5 kanan</option></select></div>
+    <div class="row" style="margin-top:6px"><span class="hint" style="min-width:110px">Pengecoh (menjodohkan)</span><select id="jodohPengecoh"><option value="0">Tanpa pengecoh</option><option value="1" selected>1 pengecoh</option><option value="2">2 pengecoh</option></select></div>
+    <div class="row" style="margin-top:6px"><span class="hint" style="min-width:110px">PG kompleks (MCMA)</span><select id="mcmaAturan"><option value="4-2">4 pilihan, 2 benar</option><option value="5-23" selected>5 pilihan, 2 atau 3 benar</option><option value="5-3">5 pilihan, 3 benar</option></select></div>
+    </div>
+    <div class="sumber-box"><label>Sumber materi (opsional)</label>
+    <input type="file" id="soalFile" accept=".docx,.txt">
+    <textarea id="soalTempel" rows="4" placeholder="Atau tempel teks bab dari buku di sini" style="margin-top:6px"></textarea>
+    <p class="hint" id="soalFileInfo">Jika diisi, AI membuat bacaan dan soal hanya dari sumber ini. Kalau kosong, AI memakai pengetahuannya sendiri.</p>
+    <button type="button" id="soalFileHapus">Hapus sumber</button></div>
+    <div class="sumber-box" style="margin-top:8px"><label>Kriteria soal dari guru (opsional)</label>
+    <p class="hint" style="margin:0 0 6px">Jika diisi, kriteria ini MENGGANTIKAN jenis, jumlah, dan format jumlah pilihan di atas. Materi, tujuan pembelajaran, dan bacaan tetap dipakai.</p>
+    <textarea id="soalKriteria" rows="4" placeholder="Contoh: 5 PG (A–D), 2 BS masing-masing 4 pernyataan, 1 menjodohkan 3-3, 2 isian singkat, tanpa uraian"></textarea>
+    <div class="row" style="margin-top:6px"><input type="text" id="kriteriaNama" placeholder="Nama kriteria, contoh: Ulangan Bab 2"><button type="button" id="kriteriaSimpan">Simpan</button></div>
+    <div class="row" style="margin-top:6px"><select id="kriteriaPilih"></select><button type="button" id="kriteriaPakai">Pakai</button><button type="button" id="kriteriaHapus">Hapus</button></div></div>
     <textarea id="soalCatatan" rows="2" placeholder="Catatan tambahan (opsional), contoh: fokus pada rantai makanan" style="margin-top:8px"></textarea>
     <div class="row" style="margin-top:10px"><button class="primary" id="soalBuat">✨ Buat soal dengan AI</button></div>
     <div class="msg" id="soalMsg"></div>
@@ -489,7 +507,7 @@ body{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 57 (13 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 60 (14 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -2970,37 +2988,106 @@ $('#soalJenisBox').addEventListener('input',segarkanTotalSoal);
 $('#soalJenisBox').addEventListener('change',segarkanTotalSoal);
 $('#soalBeda').addEventListener('change',segarkanTotalSoal);
 segarkanTotalSoal();
+var sumberFile='';
+function ambilSumberMateri(){
+  var t=(sumberFile+'\n'+$('#soalTempel').value).trim();
+  return t.length>15000?t.slice(0,15000)+'\n[sumber dipotong]':t;
+}
+async function bacaBerkasSumber(file){
+  var nama=file.name.toLowerCase();
+  if(/\.txt$/.test(nama))return await file.text();
+  if(/\.docx$/.test(nama)){
+    if(!window.JSZip)throw new Error('Pembaca Word belum termuat. Periksa koneksi internet.');
+    var zip=await JSZip.loadAsync(file);
+    var xml=await zip.file('word/document.xml').async('string');
+    var dok=new DOMParser().parseFromString(xml,'application/xml');
+    return [].map.call(dok.getElementsByTagName('w:p'),function(p){
+      return [].map.call(p.getElementsByTagName('w:t'),function(t){return t.textContent}).join('');
+    }).filter(function(x){return x.trim()}).join('\n');
+  }
+  throw new Error('Format belum didukung. Pakai .docx atau .txt, atau tempel teksnya.');
+}
+$('#soalFile').addEventListener('change',async function(){
+  var f=this.files&&this.files[0];if(!f)return;
+  try{
+    sumberFile=await bacaBerkasSumber(f);
+    $('#soalFileInfo').textContent='Sumber: '+f.name+' ('+sumberFile.length+' karakter)'+(sumberFile.length>15000?' · hanya 15.000 karakter pertama yang dipakai':'');
+  }catch(e){sumberFile='';this.value='';$('#soalFileInfo').textContent=e.message}
+});
+$('#soalFileHapus').addEventListener('click',function(){
+  sumberFile='';$('#soalFile').value='';$('#soalTempel').value='';
+  $('#soalFileInfo').textContent='Sumber dihapus. AI memakai pengetahuannya sendiri.';
+});
 function parseSoalAI(text){
   var parts=String(text||'').split(/^\s*#{3}\s*(.+?)\s*$/m),blok=[];
   for(var i=1;i<parts.length;i+=2)blok.push({nama:parts[i].trim().toUpperCase(),isi:(parts[i+1]||'').trim()});
   return blok;
 }
 function tcJudul(x){return x.toLowerCase().replace(/(^|\s)\S/g,function(c){return c.toUpperCase()})}
+function ambilKriteriaSimpan(){var a=store.get('kriteriaSimpan',[]);return Array.isArray(a)?a:[]}
+function segarkanKriteriaPilih(){var a=ambilKriteriaSimpan();$('#kriteriaPilih').innerHTML=a.length?a.map(function(k,i){return '<option value="'+i+'">'+esc(k.nama)+'</option>'}).join(''):'<option value="">(belum ada kriteria tersimpan)</option>'}
+$('#kriteriaSimpan').addEventListener('click',function(){
+  var t=$('#soalKriteria').value.trim();
+  if(!t){alert('Tulis kriteria soal dulu di kotak di atas.');return}
+  var nama=$('#kriteriaNama').value.trim()||t.slice(0,40);
+  var a=ambilKriteriaSimpan().filter(function(k){return k.nama!==nama});
+  a.unshift({nama:nama,teks:t});store.set('kriteriaSimpan',a);
+  $('#kriteriaNama').value='';segarkanKriteriaPilih();
+  $('#soalMsg').textContent='Kriteria "'+nama+'" tersimpan.';
+});
+$('#kriteriaPakai').addEventListener('click',function(){
+  var k=ambilKriteriaSimpan()[parseInt($('#kriteriaPilih').value,10)];
+  if(!k){alert('Belum ada kriteria yang dipilih.');return}
+  $('#soalKriteria').value=k.teks;$('#soalMsg').textContent='Kriteria "'+k.nama+'" dimuat.';
+});
+$('#kriteriaHapus').addEventListener('click',function(){
+  var a=ambilKriteriaSimpan(),i=parseInt($('#kriteriaPilih').value,10);
+  if(isNaN(i)||!a[i])return;
+  if(!confirm('Hapus kriteria "'+a[i].nama+'"?'))return;
+  a.splice(i,1);store.set('kriteriaSimpan',a);segarkanKriteriaPilih();
+});
+segarkanKriteriaPilih();
 $('#soalBuat').addEventListener('click',async function(){
   if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
   var label=$('#soalLabel').value.trim();
   if(!label){alert('Isi kelas, mapel, dan bab dulu. Contoh: Kelas V - IPAS - Bab 2 Tumbuhan');return}
   var tingkat=$('#soalTingkat').value;
+  var kriteria=$('#soalKriteria').value.trim();
   var pilihan=ambilJumlahJenis();
   var pilihJenis=pilihan.map(function(x){return x.jenis});
-  if(!pilihJenis.length){alert('Pilih minimal satu jenis soal dan isi jumlahnya.');return}
+  if(!kriteria&&!pilihJenis.length){alert('Pilih minimal satu jenis soal dan isi jumlahnya, atau tulis kriteria soal.');return}
   var jumlahTxt=pilihan.map(function(x){return x.n+' soal '+x.jenis}).join(', ');
   var beda=$('#soalBeda').checked,wacana=$('#soalWacana').checked;
-  var JENIS_SOAL={PG:'pilihan ganda dengan pilihan A sampai D, satu jawaban benar. Kunci: 1. PG (skor 1): B',
-    MCMA:'PG kompleks dengan pilihan A sampai E, lebih dari satu jawaban benar, siswa diminta memilih semua yang benar. Kunci: 2. MCMA (skor 2): A, C, E',
-    BS:'benar-salah dengan 3 pernyataan yang diberi nomor, siswa menandai B (benar) atau S (salah). Kunci: 3. BS (skor 1): 1-B, 2-S, 3-B',
-    Menjodohkan:'menjodohkan, kolom A berisi 3 atau 4 hal dan kolom B berisi pasangannya dalam urutan acak yang diberi huruf. Kunci: 4. Menjodohkan (skor 1): 1-C, 2-A, 3-D',
+  var pgP=$('#pgPilihan').value;
+  var bsN=parseInt($('#bsJumlah').value,10)||5;
+  var jodN=parseInt($('#jodohKiri').value,10)||4;
+  var pengN=parseInt($('#jodohPengecoh').value,10)||0;
+  var kanN=jodN+pengN;
+  var mc=$('#mcmaAturan').value.split('-'),mcPil=parseInt(mc[0],10)||5,mcBenar=mc[1]==='23'?'2 atau 3':(mc[1]||'2');
+  var hurufAkhir=String.fromCharCode(64+mcPil);
+  var pgTxt=pgP==='campur'
+    ?'pilihan ganda dengan pilihan A sampai D atau A sampai E (campur: sebagian soal 4 pilihan, sebagian 5 pilihan), satu jawaban benar'
+    :'pilihan ganda dengan pilihan A sampai '+(pgP==='5'?'E':'D')+', satu jawaban benar';
+  var JENIS_SOAL={PG:pgTxt+'. Kunci: 1. PG (skor 1): B',
+    MCMA:'PG kompleks dengan pilihan A sampai '+hurufAkhir+', lebih dari satu jawaban benar ('+mcBenar+' jawaban benar), siswa diminta memilih semua yang benar. Kunci: 2. MCMA (skor 2): A, C, E',
+    BS:'benar-salah dengan '+bsN+' pernyataan yang diberi nomor, siswa menandai B (benar) atau S (salah). Kunci: 3. BS (skor 1): 1-B, 2-S, dan seterusnya sampai '+bsN+' pernyataan',
+    Menjodohkan:'menjodohkan, kolom A berisi '+jodN+' hal dan kolom B berisi '+kanN+' pilihan jawaban yang diberi huruf dan diacak'+(pengN?', termasuk '+pengN+' pengecoh yang tidak punya pasangan di kolom A':'')+'. Kunci hanya memuat pasangan yang benar, contoh: 4. Menjodohkan (skor 1): 1-C, 2-A, dan seterusnya untuk setiap nomor di kolom A',
     Isian:'isian singkat, jawaban satu kata atau frasa. Kunci: 5. Isian (skor 1): fotosintesis',
     Uraian:'uraian singkat, jawaban 1 sampai 3 kalimat. Kunci: 6. Uraian (skor 2): poin jawaban yang diharapkan',
     Mengurutkan:'mengurutkan 4 langkah atau kejadian yang diberi nomor, siswa menulis urutan yang benar dengan angka. Kunci: 7. Mengurutkan (skor 1): 3, 1, 4, 2'};
-  var bentuk='Gunakan HANYA jenis soal berikut dengan jumlah yang sudah ditentukan: '+pilihJenis.map(function(j){return '('+j+') '+JENIS_SOAL[j]}).join('; ')+'. Setiap soal wajib menulis kunci dalam format baris persis seperti contoh di jenisnya.';
+  var kunciAturan='Setiap soal wajib menulis kunci dalam format baris persis "N. JENIS (skor S): kunci", dengan JENIS salah satu dari: '+KUNCI_JENIS.join(', ')+'.';
+  var bentuk=kriteria
+    ?'Jenis dan jumlah soal WAJIB mengikuti KRITERIA GURU berikut, dan mengabaikan pengaturan jenis atau jumlah lain: "'+kriteria+'". Jika kriteria menyebut jenis di luar daftar, pilih jenis terdekat dari daftar. Format per jenis: '+KUNCI_JENIS.map(function(j){return '('+j+') '+JENIS_SOAL[j]}).join('; ')+'. '+kunciAturan
+    :'Gunakan HANYA jenis soal berikut dengan jumlah yang sudah ditentukan: '+pilihJenis.map(function(j){return '('+j+') '+JENIS_SOAL[j]}).join('; ')+'. '+kunciAturan;
   var tp=(store.get('labelDetail',null)||{}).tp||'';
   var catatan=$('#soalCatatan').value.trim();
   var dimensi='keimanan dan ketakwaan kepada Tuhan YME, kewargaan, penalaran kritis, kreativitas, kolaborasi, kemandirian, kesehatan, atau komunikasi';
   var jenjang='mengingat, memahami, menerapkan, menganalisis, mengevaluasi, atau mencipta';
-  var tingkatTxt=beda
-    ?'Buat tiga tingkat: DASAR (mengingat dan memahami), SEDANG (menerapkan dan menganalisis), dan LANJUT (menganalisis dan mengevaluasi). Untuk SETIAP tingkat, buat jumlah soal persis: '+jumlahTxt+'.'
-    :'Buat soal dengan jumlah persis: '+jumlahTxt+', dengan tingkat kesulitan '+tingkat.toLowerCase()+'.';
+  var tingkatBase=beda
+    ?'Buat tiga tingkat: DASAR (mengingat dan memahami), SEDANG (menerapkan dan menganalisis), dan LANJUT (menganalisis dan mengevaluasi).'
+    :'Buat soal dengan tingkat kesulitan '+tingkat.toLowerCase()+'.';
+  var jumlahKal=kriteria?'jenis dan jumlahnya mengikuti kriteria guru':'dengan jumlah persis: '+jumlahTxt+'';
+  var tingkatTxt=tingkatBase+' Untuk SETIAP tingkat, buat soal '+jumlahKal+'.';
   var struktur=(wacana?'### WACANA\n(bacaan 60 sampai 120 kata, atau kasus singkat, dekat dengan kehidupan anak Indonesia)\n':'')+
     (beda?'### SOAL DASAR\n1. ...\n### KUNCI DASAR\n1. ...\n### SOAL SEDANG\n1. ...\n### KUNCI SEDANG\n1. ...\n### SOAL LANJUT\n1. ...\n### KUNCI LANJUT\n1. ...'
          :'### SOAL\n1. ...\n### KUNCI\n1. ...');
@@ -3009,7 +3096,9 @@ $('#soalBuat').addEventListener('click',async function(){
     ' Soal menuntut penalaran, bukan hafalan semata, dengan bahasa yang sederhana. Nilai yang diangkat boleh kejujuran, kepedulian, kerja sama, atau tanggung jawab, dengan konteks yang positif. '+
     'Setiap soal diakhiri label dalam kurung siku persis seperti ini, dengan dimensi dari Profil Lulusan: [Dimensi: <satu dari: '+dimensi+'> | Jenjang: <satu dari: '+jenjang+'>]. '+
     'Tulis dengan format persis ini dan tanpa teks lain di luar format:\n'+struktur+'\nJangan memakai tanda kutip ganda.';
-  var isi='Materi: '+label+(tp?'\nTujuan pembelajaran: '+tp:'')+(catatan?'\nCatatan guru: '+catatan:'');
+  var sumber=ambilSumberMateri();
+  var isi='Materi: '+label+(tp?'\nTujuan pembelajaran: '+tp:'')+(catatan?'\nCatatan guru: '+catatan:'')+
+    (sumber?'\n\nSUMBER MATERI (buat bacaan, contoh, dan semua soal HANYA dari isi sumber ini; jangan menambah fakta dari luar sumber):\n'+sumber:'');
   var btn=this;btn.disabled=true;$('#soalMsg').textContent='Claude sedang menyusun soal...';
   try{
     ketPotong=false;
@@ -3023,10 +3112,15 @@ $('#soalBuat').addEventListener('click',async function(){
     });
     var soalAll=sTxt.join('\n').trim(),kunciAll=kTxt.join('\n').trim();
     if(soalAll.length<20||kunciAll.length<3)throw new Error('Format jawaban AI tidak sesuai. Coba lagi.');
+    var asing=[];
+    kunciAll.split('\n').forEach(function(line){
+      var m=/^\s*\d+\.\s*([A-Za-z]+)\s*\(skor/.exec(line);
+      if(m&&KUNCI_JENIS.indexOf(m[1])<0&&asing.indexOf(m[1])<0)asing.push(m[1]);
+    });
     soalDraf={judul:label,soal:soalAll,kunci:kunciAll};
     $('#soalTeks').value=soalAll;$('#soalKunciTeks').value=kunciAll;
     $('#soalEdit').hidden=false;
-    $('#soalMsg').textContent='Periksa soal dan kunci, lalu simpan ke bank soal.';
+    $('#soalMsg').textContent=(asing.length?'Perhatian: ada jenis kunci yang tidak dikenal ('+asing.join(', ')+'). Periksa dan perbaiki sebelum disimpan. ':'')+'Periksa soal dan kunci, lalu simpan ke bank soal.';
   }catch(e){$('#soalMsg').textContent='Gagal: '+e.message}
   finally{btn.disabled=false}
 });
