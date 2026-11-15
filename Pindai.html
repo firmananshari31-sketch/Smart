@@ -252,7 +252,7 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v80</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v81</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon">✨ Neon</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <nav>
   <button data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
@@ -586,7 +586,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 80 (15 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 81 (15 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1010,8 +1010,13 @@ function pdfTabelBuat(t){
   var babN=t.head.length-2,lanskap=babN>3;
   var doc=new J({unit:'mm',format:'a4',orientation:lanskap?'landscape':'portrait'});
   var W=doc.internal.pageSize.getWidth(),T=doc.internal.pageSize.getHeight(),M=12;
-  var namaW=lanskap?60:44,rataW=18;
+  var rataW=18;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var daftarNama=t.rows.map(function(r){return String(r[0]||'')}).concat(['Nama','Rata-rata kelas','Tuntas']);
+  var terlebar=Math.max.apply(null,daftarNama.map(function(x){return doc.getTextWidth(x)}));
+  var namaW=Math.min(lanskap?90:66,Math.max(34,terlebar+5));
   var kolW=Math.min(lanskap?32:26,(W-2*M-namaW-rataW)/Math.max(1,babN));
+  if(kolW<18){kolW=18;namaW=Math.max(26,W-2*M-rataW-kolW*babN)}
   var lebar=[namaW].concat(t.head.slice(1,-1).map(function(){return kolW})).concat([rataW]);
   var kolom=lebar.length;
   var y=M;
@@ -1062,15 +1067,27 @@ function pdfTabelBuat(t){
     return null;
   }
   function baris(isi,gaya,warnaLatar){
-    var tinggi=6.4,x=M;
-    if(y+tinggi>T-M-6){doc.addPage();y=M;kepala();headerTabel()}
+    var huruf=gaya==='bold'?8.5:9;
+    doc.setFont('helvetica',gaya||'normal');doc.setFontSize(huruf);
+    var namaTeks=String(isi[0]==null?'':isi[0]);
+    var barisNama=doc.splitTextToSize(namaTeks||'–',lebarKotak(0)-3.6);
+    var tinggi=Math.max(6.4,barisNama.length*3.7+2.6),x=M;
+    if(y+tinggi>T-M-6){doc.addPage();y=M;kepala();headerTabel();doc.setFont('helvetica',gaya||'normal');doc.setFontSize(huruf)}
     for(var j=0;j<kolom;j++){
       var v=isi[j];
       var fill=j===0||j===kolom-1?(gaya==='bold'?[240,243,250]:null):(j>0&&j<kolom-1?warnaNilai(v):null);
       if(warnaLatar&&j>0&&j<kolom-1&&!fill)fill=warnaLatar;
-      var teks=(v===null||v===undefined||v==='')?'–':String(v);
-      if(j===0){var lebarN=lebarKotak(0)-3.6;while(doc.getTextWidth(teks)>lebarN&&teks.length>3)teks=teks.slice(0,-1);if(teks!==String(isi[0]))teks=teks.replace(/\s+$/,'')+'…'}
-      sel(x,y,lebarKotak(j),tinggi,teks,gaya,j===0?'kiri':'tengah',fill);
+      if(j===0){
+        doc.setDrawColor(170);doc.setLineWidth(0.15);
+        if(fill){doc.setFillColor(fill[0],fill[1],fill[2]);doc.rect(x,y,lebarKotak(0),tinggi,'F')}
+        doc.rect(x,y,lebarKotak(0),tinggi);
+        doc.setFont('helvetica',gaya||'normal');doc.setFontSize(huruf);doc.setTextColor(0);
+        var mulaiY=y+tinggi/2-(barisNama.length*3.7)/2+2.6;
+        barisNama.forEach(function(l,k){doc.text(l,x+1.8,mulaiY+k*3.7)});
+      }else{
+        var teks=(v===null||v===undefined||v==='')?'–':String(v);
+        sel(x,y,lebarKotak(j),tinggi,teks,gaya,'tengah',fill);
+      }
       x+=lebarKotak(j);
     }
     y+=tinggi;
