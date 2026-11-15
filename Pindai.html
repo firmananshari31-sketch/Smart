@@ -240,28 +240,30 @@ main{position:relative;overflow-x:hidden;touch-action:pan-y}
 .rk-undo{border:0;background:transparent;padding:0 3px;font-size:13px;min-height:0;width:auto}
 .pil-tab{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:50;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:700;box-shadow:0 4px 14px #0003;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 .pil-tab.on{opacity:1}
-nav{flex-wrap:wrap;overflow:hidden}
-nav button{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:13px;padding:8px 6px}
+nav{flex-wrap:nowrap;overflow:hidden;align-items:stretch}
+nav button{flex:1 1 0;min-width:0;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;padding:8px 2px;line-height:1.1}
+nav button .ic{font-size:14px}
+nav button .nm{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 nav button.nav-sembunyi{display:none}
-.hal-dot{flex:0 0 100%;display:flex;justify-content:center;gap:8px;padding:2px 0 4px}
-.hal-titik{width:8px;height:8px;border-radius:50%;background:var(--line);cursor:pointer}
+.hal-dot{flex:0 0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:0 6px 0 2px}
+.hal-titik{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer}
 .hal-titik.on{background:var(--accent)}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v76</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v80</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon">✨ Neon</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <nav>
-  <button data-tab="nilai" class="on">📝 Nilai</button>
-  <button data-tab="rubrik">🗝 Rubrik</button>
-  <button data-tab="hasil">📊 Hasil</button>
-  <button data-tab="rekap">📋 Rekap</button>
-  <button data-tab="analisis">🔍 Analisis</button>
-  <button data-tab="rapor">📄 Rapor</button>
-  <button data-tab="rm">🎯 Remedial</button>
-  <button data-tab="soal">📚 Soal</button>
-  <button data-tab="set">⚙ Pengaturan</button>
+  <button data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
+  <button data-tab="rubrik"><span class="ic">🗝</span><span class="nm">Rubrik</span></button>
+  <button data-tab="hasil"><span class="ic">📊</span><span class="nm">Hasil</span></button>
+  <button data-tab="rekap"><span class="ic">📋</span><span class="nm">Rekap</span></button>
+  <button data-tab="analisis"><span class="ic">🔍</span><span class="nm">Analisis</span></button>
+  <button data-tab="rapor"><span class="ic">📄</span><span class="nm">Rapor</span></button>
+  <button data-tab="rm"><span class="ic">🎯</span><span class="nm">Remedial</span></button>
+  <button data-tab="soal"><span class="ic">📚</span><span class="nm">Soal</span></button>
+  <button data-tab="set"><span class="ic">⚙</span><span class="nm">Atur</span></button>
   <span id="halDot" class="hal-dot"></span>
 </nav>
 <main>
@@ -584,7 +586,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 76 (15 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 80 (15 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -766,7 +768,7 @@ function segarHasilBila(){
   if(fp!==hasilTerakhirFp){renderHasil();hasilTerakhirFp=fp}
 }
 /* Menu dibagi per halaman berisi 4 tombol */
-var MENU_PER_HAL=4;
+var MENU_PER_HAL=3;
 function segarHalaman(){
   var m=$$('nav button');
   var aktif=m.indexOf(document.querySelector('nav button.on'));
@@ -1002,6 +1004,98 @@ $('#rkTabel').addEventListener('click',function(e){
   o.total=o.diubahManual.asal;delete o.diubahManual;
   rkSimpan();renderRekap();toast('Nilai dikembalikan');
 });
+function pdfTabelBuat(t){
+  var J=window.jspdf&&window.jspdf.jsPDF;
+  if(!J)throw new Error('Pembuat PDF belum termuat. Periksa koneksi internet, lalu coba lagi.');
+  var babN=t.head.length-2,lanskap=babN>3;
+  var doc=new J({unit:'mm',format:'a4',orientation:lanskap?'landscape':'portrait'});
+  var W=doc.internal.pageSize.getWidth(),T=doc.internal.pageSize.getHeight(),M=12;
+  var namaW=lanskap?60:44,rataW=18;
+  var kolW=Math.min(lanskap?32:26,(W-2*M-namaW-rataW)/Math.max(1,babN));
+  var lebar=[namaW].concat(t.head.slice(1,-1).map(function(){return kolW})).concat([rataW]);
+  var kolom=lebar.length;
+  var y=M;
+  function kepala(){
+    try{doc.addImage(LOGO,'PNG',M,y,12,12)}catch(e){}
+    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(0);
+    doc.text(SEKOLAH,M+15,y+5);
+    doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('Rekap Nilai '+t.kelas,M+15,y+11.5);
+    y+=16;
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(60);
+    doc.text('Jenis nilai: '+t.jenisLabel+'   ·   KKM '+t.kkm+'   ·   Dicetak '+t.tanggal,M,y);
+    y+=6;doc.setTextColor(0);
+  }
+  function lebarKotak(i){return lebar[i]}
+  function sel(x,y0,w,h,isi,gaya,rata,fill){
+    if(fill){doc.setFillColor(fill[0],fill[1],fill[2]);doc.rect(x,y0,w,h,'F')}
+    doc.setDrawColor(170);doc.setLineWidth(0.15);doc.rect(x,y0,w,h);
+    doc.setFont('helvetica',gaya||'normal');doc.setFontSize(gaya==='bold'?8.5:9);
+    doc.setTextColor(fill&&fill[3]?fill[3]:0);
+    var tx=rata==='kiri'?x+1.8:x+w/2;
+    doc.text(String(isi),tx,y0+h/2+1.2,{align:rata==='kiri'?'left':'center',maxWidth:w-2.5});
+    doc.setTextColor(0);
+  }
+  function headerTabel(){
+    var h=0,pecah=[];
+    for(var i=0;i<kolom;i++){
+      var lines=doc.splitTextToSize(String(t.head[i]),lebarKotak(i)-2.5);
+      pecah.push(lines);h=Math.max(h,lines.length);
+    }
+    var tinggi=Math.max(7,h*3.6+3);
+    var x=M;
+    for(var j=0;j<kolom;j++){
+      doc.setFillColor(30,63,174);doc.rect(x,y,lebarKotak(j),tinggi,'F');
+      doc.setDrawColor(120);doc.setLineWidth(0.15);doc.rect(x,y,lebarKotak(j),tinggi);
+      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255);
+      pecah[j].forEach(function(l,k){
+        var ty=y+3.6+k*3.6;
+        doc.text(l,j===0?x+1.8:x+lebarKotak(j)/2,ty,{align:j===0?'left':'center'});
+      });
+      doc.setTextColor(0);x+=lebarKotak(j);
+    }
+    y+=tinggi;
+  }
+  function warnaNilai(v){
+    if(v===''||v===null||v===undefined||isNaN(Number(v)))return null;
+    if(Number(v)<t.kkm)return [254,226,226,0];
+    if(Number(v)>=t.batas)return [220,252,231,0];
+    return null;
+  }
+  function baris(isi,gaya,warnaLatar){
+    var tinggi=6.4,x=M;
+    if(y+tinggi>T-M-6){doc.addPage();y=M;kepala();headerTabel()}
+    for(var j=0;j<kolom;j++){
+      var v=isi[j];
+      var fill=j===0||j===kolom-1?(gaya==='bold'?[240,243,250]:null):(j>0&&j<kolom-1?warnaNilai(v):null);
+      if(warnaLatar&&j>0&&j<kolom-1&&!fill)fill=warnaLatar;
+      var teks=(v===null||v===undefined||v==='')?'–':String(v);
+      if(j===0){var lebarN=lebarKotak(0)-3.6;while(doc.getTextWidth(teks)>lebarN&&teks.length>3)teks=teks.slice(0,-1);if(teks!==String(isi[0]))teks=teks.replace(/\s+$/,'')+'…'}
+      sel(x,y,lebarKotak(j),tinggi,teks,gaya,j===0?'kiri':'tengah',fill);
+      x+=lebarKotak(j);
+    }
+    y+=tinggi;
+  }
+  kepala();
+  headerTabel();
+  t.rows.forEach(function(r){baris(r,'normal',null)});
+  y+=2;
+  var rataKelas=['Rata-rata kelas'].concat(t.sum.slice(1,-1)).concat(['']);
+  var tuntasBar=['Tuntas'].concat(t.tuntas.slice(1,-1)).concat(['']);
+  if(y+14>T-M-6){doc.addPage();y=M;kepala();headerTabel()}
+  baris(rataKelas,'bold',null);
+  baris(tuntasBar,'bold',null);
+  var n=doc.internal.getNumberOfPages();
+  for(var p=1;p<=n;p++){
+    doc.setPage(p);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(110);
+    doc.text('Halaman '+p+' dari '+n,W-M,T-6,{align:'right'});
+    doc.setTextColor(0);
+  }
+  return doc;
+}
+async function pdfTabelBagikan(t,fn){
+  try{await kirimBerkas(pdfTabelBuat(t).output('blob'),fn,'application/pdf')}
+  catch(e){alert('Gagal membuat PDF: '+(e&&e.message?e.message:e))}
+}
 function rkNamaFile(ext){return 'Rekap_'+String(rkData.kelas).replace(/[^\w]+/g,'_')+'_'+rkData.jenis+'.'+ext}
 function buatXlsx(baris){
   function kolom(i){var s='';i++;while(i>0){var m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s}
@@ -1033,11 +1127,8 @@ $('#rkExcel').addEventListener('click',async function(){
 });
 $('#rkPdf').addEventListener('click',function(){
   if(!rkData){alert('Belum ada data untuk diekspor.');return}
-  var blok=[{k:'kop'},{k:'judul',s:'Rekap Nilai '+rkData.kelas},{k:'isi',s:'Jenis nilai: '+({asli:'asli',remedial:'remedial',akhir:'akhir'})[rkData.jenis]+' · KKM '+KKM()},{k:'',s:''}];
-  blok.push({k:'isi',s:rkData.head.join(' | ')});
-  rkData.rows.forEach(function(r){blok.push({k:'isi',s:r.join(' | ')})});
-  blok.push({k:'',s:''},{k:'isi',s:rkData.sum.join(' | ')},{k:'isi',s:rkData.tuntas.join(' | ')});
-  pdfTeksBagikan(blok,rkNamaFile('pdf'));
+  var jenisLabel={asli:'asli',remedial:'remedial',akhir:'akhir'}[rkData.jenis];
+  pdfTabelBagikan({kelas:rkData.kelas,jenisLabel:jenisLabel,kkm:KKM(),batas:batasPengayaan(),tanggal:tglIndo(new Date().toISOString()),head:rkData.head,rows:rkData.rows,sum:rkData.sum,tuntas:rkData.tuntas},rkNamaFile('pdf'));
 });
 
 /* ---------- Pengaturan ---------- */
