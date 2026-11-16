@@ -252,7 +252,7 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v82</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v83</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon">✨ Neon</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <nav>
   <button data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
@@ -287,8 +287,10 @@ nav button.nav-sembunyi{display:none}
       <select id="kelas" style="flex:2"><option value="">Kelas</option><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option><option>VI</option></select>
       <select id="rombel" style="flex:1"><option value="">Rombel</option><option>A</option><option>B</option><option>C</option><option>D</option></select>
     </div>
-    <input type="text" id="mapel" list="dlMapel" placeholder="Mapel, contoh: IPAS" style="margin-top:8px">
-    <input type="text" id="bab" list="dlBab" placeholder="Bab / materi, contoh: Bab 2 Tumbuhan" style="margin-top:8px">
+    <select id="mapelPilih" style="margin-top:8px"></select>
+    <input type="text" id="mapel" placeholder="Tulis mapel baru, contoh: IPAS" style="margin-top:8px" hidden>
+    <select id="babPilih" style="margin-top:8px"></select>
+    <input type="text" id="bab" placeholder="Tulis bab baru, contoh: Bab 2 Tumbuhan" style="margin-top:8px" hidden>
     <textarea id="tp" rows="2" placeholder="Tujuan pembelajaran (opsional), contoh: Siswa dapat menjelaskan proses fotosintesis." style="margin-top:8px"></textarea>
     <datalist id="dlMapel"></datalist><datalist id="dlBab"></datalist>
     <input type="hidden" id="label">
@@ -594,7 +596,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 82 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 83 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -607,6 +609,7 @@ nav button.nav-sembunyi{display:none}
     <p class="hint" style="margin-top:0">Data di browser bisa hilang kalau cache atau data situs dibersihkan. Simpan cadangan secara berkala ke file, lalu pulihkan kapan saja. Cadangan berisi rubrik, daftar nama, label, dan hasil nilai. API key sengaja tidak ikut disimpan.</p>
     <div class="row" style="margin-top:10px">
       <button id="btnBackup">💾 Simpan cadangan (.json)</button>
+      <button id="btnKirimCadang">📤 Kirim cadangan (WA, email, Drive)</button>
       <button id="btnRestore">♻ Pulihkan dari cadangan</button>
       <button id="btnGabung">🔗 Gabung dengan cadangan lain</button>
     </div>
@@ -1322,10 +1325,22 @@ function daftarBab(mapel){
   var m=kanonikDari(mapel,daftarMapel());
   return rkUnik(hasil.filter(function(o){return mapelDari(o)===m}).map(babDari).filter(function(b){return b!=='(tanpa bab)'}));
 }
+var mapelBaruAktif=false,babBaruAktif=false;
+function opsiDropdown(daftar,kosong,baru){
+  return '<option value="">'+kosong+'</option>'+daftar.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('')+'<option value="__baru__">'+baru+'</option>';
+}
 function isiDaftarLabel(){
-  $('#dlMapel').innerHTML=daftarMapel().map(function(x){return '<option value="'+esc(x)+'">'}).join('');
-  var m=kanonikDari($('#mapel').value,daftarMapel());
-  $('#dlBab').innerHTML=daftarBab(m).map(function(x){return '<option value="'+esc(x)+'">'}).join('');
+  var mDaftar=daftarMapel(),mIn=$('#mapel').value.trim(),mCanon=kanonikDari(mIn,mDaftar),mSel=$('#mapelPilih');
+  mSel.innerHTML=opsiDropdown(mDaftar,'— pilih mapel —','＋ Mapel baru…');
+  if(mIn&&mDaftar.indexOf(mCanon)>=0&&!mapelBaruAktif){mSel.value=mCanon;$('#mapel').hidden=true}
+  else if(mapelBaruAktif||mIn||!mDaftar.length){mSel.value='__baru__';$('#mapel').hidden=false}
+  else{mSel.value='';$('#mapel').hidden=true}
+  var mapelNow=mSel.value==='__baru__'?mIn:kanonikDari(mIn,mDaftar);
+  var bDaftar=daftarBab(mapelNow),bIn=$('#bab').value.trim(),bCanon=kanonikDari(bIn,bDaftar),bSel=$('#babPilih');
+  bSel.innerHTML=opsiDropdown(bDaftar,'— pilih bab —','＋ Bab baru…');
+  if(bIn&&bDaftar.indexOf(bCanon)>=0&&!babBaruAktif){bSel.value=bCanon;$('#bab').hidden=true}
+  else if(babBaruAktif||bIn||!bDaftar.length){bSel.value='__baru__';$('#bab').hidden=false}
+  else{bSel.value='';$('#bab').hidden=true}
 }
 function updateLabel(){
   isiDaftarLabel();
@@ -1344,8 +1359,21 @@ function updateLabel(){
   $(s).addEventListener(s==='#kelas'||s==='#rombel'?'change':'input',updateLabel);
 });
 /* Saat selesai mengetik, mapel dan bab disamakan dengan tulisan yang sudah ada */
-$('#mapel').addEventListener('change',function(){this.value=kanonikDari(this.value,daftarMapel());updateLabel()});
-$('#bab').addEventListener('change',function(){this.value=kanonikDari(this.value,daftarBab($('#mapel').value));updateLabel()});
+$('#mapel').addEventListener('change',function(){this.value=kanonikDari(this.value,daftarMapel());if(daftarMapel().indexOf(this.value)>=0)mapelBaruAktif=false;updateLabel()});
+$('#mapelPilih').addEventListener('change',function(){
+  var v=this.value;
+  if(v==='__baru__'){mapelBaruAktif=true;$('#mapel').value='';$('#mapel').hidden=false;$('#mapel').focus()}
+  else{mapelBaruAktif=false;$('#mapel').value=v;$('#mapel').hidden=true}
+  babBaruAktif=false;$('#bab').value='';
+  updateLabel();
+});
+$('#babPilih').addEventListener('change',function(){
+  var v=this.value;
+  if(v==='__baru__'){babBaruAktif=true;$('#bab').value='';$('#bab').hidden=false;$('#bab').focus()}
+  else{babBaruAktif=false;$('#bab').value=v;$('#bab').hidden=true}
+  updateLabel();
+});
+$('#bab').addEventListener('change',function(){this.value=kanonikDari(this.value,daftarBab($('#mapel').value));if(daftarBab($('#mapel').value).indexOf(this.value)>=0)babBaruAktif=false;updateLabel()});
 $('#btnBantuan').addEventListener('click',function(){var b=$('#bantuan');b.hidden=!b.hidden});
 $('#rubrik').addEventListener('input',function(){simpanRubrikAktif(this.value)});
 $('#ulangSonnet').addEventListener('change',function(){store.set('ulangSonnet',this.checked)});
@@ -2972,10 +3000,12 @@ $('#btnXlsx').addEventListener('click',function(){
 });
 
 /* ---------- Cadangan ---------- */
-$('#btnBackup').addEventListener('click',function(){
+function blobCadangan(){
   var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),labelDetail:store.get('labelDetail',null),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),kebijakanStandar:ambilKebijakanStandar(),hasilRP:store.get('hasilRP',[]),lembarRP:store.get('lembarRP',[]),jejakRP:store.get('jejakRP',{}),bandingRP:store.get('bandingRP',{}),daftarNama:store.get('roster',''),rosterKelas:rosterKelasObj(),model:store.get('model','claude-haiku-5-5'),hasil:hasil};
-  unduhFile(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),'cadangan-penilai-'+hari()+'.json');
-});
+  return new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+}
+$('#btnBackup').addEventListener('click',function(){unduhFile(blobCadangan(),'cadangan-penilai-'+hari()+'.json')});
+$('#btnKirimCadang').addEventListener('click',function(){kirimBerkas(blobCadangan(),'cadangan-penilai-'+hari()+'.json','application/json')});
 $('#btnRestore').addEventListener('click',function(){$('#fileRestore').click()});
 $('#fileRestore').addEventListener('change',async function(){
   var f=this.files[0];this.value='';
