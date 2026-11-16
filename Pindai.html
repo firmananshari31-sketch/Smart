@@ -258,7 +258,7 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v94</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v95</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <nav>
   <button data-no="1" data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
@@ -469,6 +469,8 @@ nav button.nav-sembunyi{display:none}
   <div class="card" id="anStat" hidden></div>
   <div class="card" id="grafCard" hidden>
     <label>Grafik kelas dan mapel</label>
+    <div class="row"><select id="grafMode"><option value="satu">Satu rombel</option><option value="banding">Banding semua rombel</option></select><select id="grafTampilan"><option value="gabung">Gabung semua bab</option><option value="pisah">Pisah per bab</option></select></div>
+    <div class="row" style="margin-top:8px"><select id="grafBab"><option value="">Semua bab</option></select></div>
     <div class="row"><select id="grafSoalJenis"><option value="tegak">Soal: batang tegak</option><option value="mendatar">Soal: batang mendatar</option></select><select id="grafSoalUrut"><option value="sulit">Urut: paling sulit</option><option value="nomor">Urut: nomor soal</option></select></div>
     <div class="row" style="margin-top:8px"><select id="grafTrenJenis"><option value="garis">Tren: garis</option><option value="batang">Tren: batang</option></select></div>
     <div class="row" style="margin-top:8px"><label style="flex:1;display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="grafAngka" checked style="width:auto">Tampilkan angka</label><label style="flex:1;display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="grafAmbang" checked style="width:auto">Garis KKM</label></div>
@@ -612,7 +614,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 94 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 95 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -3532,7 +3534,36 @@ $('#anKelas').addEventListener('change',tampilAnalisisTersimpan);
 /* ---------- Grafik analisis (SVG, dihitung di perangkat) ---------- */
 var PAL_LAYAR={teks:'var(--text)',muda:'var(--muted)',garis:'var(--line)',bar:'#38e1ff',kurang:'#fbbf24'};
 var PAL_CETAK={teks:'#111827',muda:'#4b5563',garis:'#d1d5db',bar:'#2563eb',kurang:'#d97706'};
+var SERI_LAYAR=['#38e1ff','#f472b6','#34d399','#fbbf24'];
+var SERI_CETAK=['#2563eb','#db2777','#16a34a','#d97706'];
 var grafTerakhir=null;
+function babPendek(nama){var m=/Bab\s*(\S+)/i.exec(String(nama));return m?m[1]:String(nama).slice(0,6)}
+function cmpNatural(a,b){
+  var p=String(a).split('.'),q=String(b).split('.');
+  for(var i=0;i<Math.max(p.length,q.length);i++){
+    var x=parseFloat(p[i]),y=parseFloat(q[i]);
+    if(isNaN(x)||isNaN(y)){var c=String(p[i]||'').localeCompare(String(q[i]||''));if(c)return c;continue}
+    if(x!==y)return x-y;
+  }
+  return 0;
+}
+function kelasBaseDari(key){return key.split(' - ')[0].split(' ').slice(0,2).join(' ')}
+function kunciBanding(key){
+  var mp=key.split(' - ')[1]||'',base=kelasBaseDari(key);
+  return pilihanKM().filter(function(k){return (k.split(' - ')[1]||'')===mp&&kelasBaseDari(k)===base});
+}
+function hitungSoalBab(list){
+  var m={};
+  list.forEach(function(o){
+    var b=babDari(o);
+    (o.jawaban||[]).forEach(function(x){
+      var k=b+'\u0001'+String(x.no);
+      var r=m[k]||(m[k]={bab:b,no:String(x.no),n:0,benar:0});
+      r.n++;if(x.skor!=null&&x.skor>=x.skor_maks)r.benar++;
+    });
+  });
+  return Object.keys(m).map(function(k){var r=m[k];return {bab:r.bab,no:r.no,persen:r.n?Math.round(r.benar/r.n*100):0}});
+}
 function grafDataTren(list){
   var grup={};
   list.forEach(function(o){
@@ -3540,71 +3571,107 @@ function grafDataTren(list){
     var g=grup[b]||(grup[b]={nama:b,jum:0,n:0,t:w});
     g.jum+=nilai100(o);g.n++;if(w<g.t)g.t=w;
   });
-  return Object.keys(grup).map(function(k){var g=grup[k];return {nama:g.nama,rata:Math.round(g.jum/g.n*10)/10,t:g.t}})
-    .sort(function(a,b){return a.t<b.t?-1:a.t>b.t?1:0});
+  return Object.keys(grup).map(function(k){var g=grup[k];return {nama:g.nama,rata:Math.round(g.jum/g.n*10)/10,t:g.t}});
 }
-function grafSoalSvg(data,jenis,urut,angka,P){
-  if(!data.length)return '';
-  var d=data.slice();
-  if(urut==='nomor')d.sort(function(a,b){return parseFloat(a.no)-parseFloat(b.no)||String(a.no).localeCompare(String(b.no))});
-  var n=d.length,kkm=KKM();
+function grafLegenda(nama,warnaSeri,P,y0){
+  return nama.length>1?nama.map(function(n,i){return '<rect x="'+(4+i*120)+'" y="'+y0+'" width="10" height="10" fill="'+warnaSeri[i%warnaSeri.length]+'"/><text x="'+(18+i*120)+'" y="'+(y0+9)+'" font-size="11" fill="'+P.teks+'">'+esc(n)+'</text>'}).join(''):'';
+}
+function grafSoalSeri(seri,jenis,angka,P,warnaSeri,urut){
+  var semua=[];
+  seri.forEach(function(s){s.data.forEach(function(d){if(semua.indexOf(d.x)<0)semua.push(d.x)})});
+  if(!semua.length)return '';
+  var S=seri.length,kkm=KKM();
+  var nilaiSeri=seri.map(function(s){var m={};s.data.forEach(function(d){m[d.x]=d.persen});return m});
+  if(S===1&&urut==='sulit'){semua.sort(function(a,b){return (nilaiSeri[0][a]||0)-(nilaiSeri[0][b]||0)||cmpNatural(a,b)})}
+  else semua.sort(cmpNatural);
+  var n=semua.length;
+  var warna=function(si,v){return S===1?(v>=kkm?P.bar:P.kurang):warnaSeri[si%warnaSeri.length]};
+  var lgd=grafLegenda(seri.map(function(s){return s.nama}),warnaSeri,P,22),top=S>1?40:22;
   if(jenis==='mendatar'){
-    var W=360,rowH=22,H=34+n*rowH,lab=44,maxW=W-lab-56;
-    var isi=d.map(function(x,i){
-      var y=24+i*rowH,w=Math.max(0,maxW*x.persen/100);
-      return '<text x="4" y="'+(y+12)+'" font-size="11" fill="'+P.teks+'">No '+esc(x.no)+'</text>'+
-        '<rect x="'+lab+'" y="'+(y+2)+'" width="'+w.toFixed(1)+'" height="14" rx="4" fill="'+(x.persen>=kkm?P.bar:P.kurang)+'"/>'+
-        (angka?'<text x="'+(lab+w+6).toFixed(1)+'" y="'+(y+13)+'" font-size="11" fill="'+P.teks+'">'+x.persen+'%</text>':'');
+    var W=360,rowH=Math.max(18,S*14+6),lab=60,maxW=W-lab-56,H=top+10+n*rowH;
+    var isi=semua.map(function(x,i){
+      var yRow=top+i*rowH;
+      return '<text x="4" y="'+(yRow+rowH/2+4)+'" font-size="11" fill="'+P.teks+'">'+esc(x)+'</text>'+
+        nilaiSeri.map(function(m,si){var v=m[x];if(v==null)return '';var y=yRow+si*14+2,w=Math.max(0,maxW*v/100);
+          return '<rect x="'+lab+'" y="'+y+'" width="'+w.toFixed(1)+'" height="12" rx="3" fill="'+warna(si,v)+'"/>'+(angka?'<text x="'+(lab+w+5).toFixed(1)+'" y="'+(y+10)+'" font-size="10" fill="'+P.teks+'">'+v+'%</text>':'')}).join('');
     }).join('');
-    return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Persentase benar per soal"><text x="4" y="14" font-size="11" fill="'+P.muda+'">% jawaban benar per nomor soal</text>'+isi+'</svg>';
+    return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Persentase benar per soal"><text x="4" y="14" font-size="11" fill="'+P.muda+'">% jawaban benar per soal</text>'+lgd+isi+'</svg>';
   }
-  var W2=Math.max(300,n*34+40),H2=210,pad=28,area=H2-pad-34,bw=(W2-pad-10)/n;
-  var isi2=d.map(function(x,i){
-    var h=area*x.persen/100,bx=pad+i*bw+bw*0.15,bwid=bw*0.7,by=H2-pad-h;
-    return '<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bwid.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="4" fill="'+(x.persen>=kkm?P.bar:P.kurang)+'"/>'+
-      (angka?'<text x="'+(bx+bwid/2).toFixed(1)+'" y="'+(by-4).toFixed(1)+'" text-anchor="middle" font-size="10" fill="'+P.teks+'">'+x.persen+'</text>':'')+
-      '<text x="'+(bx+bwid/2).toFixed(1)+'" y="'+(H2-pad+14)+'" text-anchor="middle" font-size="10" fill="'+P.muda+'">'+esc(x.no)+'</text>';
+  var W2=Math.max(300,n*(S*14+12)+40),H2=S>1?250:210,pad=28,baseline=H2-pad,area=baseline-(top+30);
+  var gw=(W2-pad-10)/n,bw=gw*0.8/S;
+  var isi2=semua.map(function(x,i){
+    var gx=pad+i*gw+gw*0.1;
+    return nilaiSeri.map(function(m,si){var v=m[x];if(v==null)return '';var h=area*v/100,bx=gx+si*bw,by=baseline-h;
+      return '<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+(bw*0.92).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="'+warna(si,v)+'"/>'+(angka?'<text x="'+(bx+bw*0.46).toFixed(1)+'" y="'+(by-3).toFixed(1)+'" text-anchor="middle" font-size="9" fill="'+P.teks+'">'+v+'</text>':'')}).join('')+
+      '<text x="'+(pad+i*gw+gw/2).toFixed(1)+'" y="'+(baseline+14)+'" text-anchor="middle" font-size="10" fill="'+P.muda+'">'+esc(x)+'</text>';
   }).join('');
-  return '<svg viewBox="0 0 '+W2+' '+H2+'" width="100%" role="img" aria-label="Persentase benar per soal"><text x="4" y="12" font-size="11" fill="'+P.muda+'">% benar per nomor soal</text>'+
-    '<line x1="'+pad+'" y1="'+(H2-pad)+'" x2="'+(W2-6)+'" y2="'+(H2-pad)+'" stroke="'+P.garis+'"/>'+isi2+'</svg>';
+  return '<svg viewBox="0 0 '+W2+' '+H2+'" width="100%" role="img" aria-label="Persentase benar per soal"><text x="4" y="12" font-size="11" fill="'+P.muda+'">% benar per soal</text>'+lgd+'<line x1="'+pad+'" y1="'+baseline+'" x2="'+(W2-6)+'" y2="'+baseline+'" stroke="'+P.garis+'"/>'+isi2+'</svg>';
 }
-function grafTrenSvg(data,jenis,angka,ambang,P){
-  if(!data.length)return '';
-  var n=data.length,W=Math.max(300,n*70+50),H=220,padL=34,padB=44,padT=18,area=H-padB-padT,span=W-padL-12;
+function grafTrenSeri(tren,jenis,angka,ambang,P,warnaSeri){
+  var kkm=KKM(),labels=[];
+  tren.forEach(function(s){s.data.forEach(function(d){if(labels.indexOf(d.nama)<0)labels.push(d.nama)})});
+  if(!labels.length)return '';
+  function tMin(l){var t=null;tren.forEach(function(s){s.data.forEach(function(d){if(d.nama===l&&(t===null||d.t<t))t=d.t})});return t||''}
+  labels.sort(function(a,b){var x=tMin(a),y=tMin(b);return x<y?-1:x>y?1:0});
+  var S=tren.length,n=labels.length,legend=S>1,padT=legend?40:18,padB=44,padL=34,H=230,area=H-padB-padT;
+  var W=Math.max(300,n*(S*22+30)+50),span=W-padL-12;
   var xc=function(i){return padL+(i+0.5)*span/n};
   var y=function(v){return padT+area*(1-Math.min(100,Math.max(0,v))/100)};
+  var nilai=tren.map(function(s){var m={};s.data.forEach(function(d){m[d.nama]=d.rata});return m});
+  var warna=function(si,v){return S===1?(v>=kkm?P.bar:P.kurang):warnaSeri[si%warnaSeri.length]};
   var grid=[0,50,100].map(function(v){return '<line x1="'+padL+'" y1="'+y(v).toFixed(1)+'" x2="'+(W-6)+'" y2="'+y(v).toFixed(1)+'" stroke="'+P.garis+'"/><text x="'+(padL-6)+'" y="'+(y(v)+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="'+P.muda+'">'+v+'</text>'}).join('');
-  var kkmLine=ambang?'<line x1="'+padL+'" y1="'+y(KKM()).toFixed(1)+'" x2="'+(W-6)+'" y2="'+y(KKM()).toFixed(1)+'" stroke="'+P.kurang+'" stroke-dasharray="4 3"/><text x="'+(W-8)+'" y="'+(y(KKM())-4).toFixed(1)+'" text-anchor="end" font-size="10" fill="'+P.kurang+'">KKM '+KKM()+'</text>':'';
-  var isi,label=function(i){return esc(String(data[i].nama).replace(/^Bab\s*/i,'').slice(0,14))};
+  var kkmLine=ambang?'<line x1="'+padL+'" y1="'+y(kkm).toFixed(1)+'" x2="'+(W-6)+'" y2="'+y(kkm).toFixed(1)+'" stroke="'+P.kurang+'" stroke-dasharray="4 3"/><text x="'+(W-8)+'" y="'+(y(kkm)-4).toFixed(1)+'" text-anchor="end" font-size="10" fill="'+P.kurang+'">KKM '+kkm+'</text>':'';
+  var isi;
   if(jenis==='batang'){
-    var bw=span/n*0.6;
-    isi=data.map(function(g,i){
-      var by=y(g.rata),h=H-padB-by;
-      return '<rect x="'+(xc(i)-bw/2).toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(0,h).toFixed(1)+'" rx="4" fill="'+(g.rata>=KKM()?P.bar:P.kurang)+'"/>'+
-        (angka?'<text x="'+xc(i).toFixed(1)+'" y="'+(by-4).toFixed(1)+'" text-anchor="middle" font-size="10" fill="'+P.teks+'">'+g.rata+'</text>':'')+
-        '<text x="'+xc(i).toFixed(1)+'" y="'+(H-padB+14)+'" text-anchor="middle" font-size="10" fill="'+P.muda+'">'+label(i)+'</text>';
+    var gw=span/n,bw=gw*0.75/S;
+    isi=labels.map(function(l,i){
+      return nilai.map(function(m,si){var v=m[l];if(v==null)return '';var by=y(v),h=H-padB-by,bx=padL+i*gw+gw*0.125+si*bw;
+        return '<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+(bw*0.92).toFixed(1)+'" height="'+Math.max(0,h).toFixed(1)+'" rx="3" fill="'+warna(si,v)+'"/>'+(angka?'<text x="'+(bx+bw*0.46).toFixed(1)+'" y="'+(by-4).toFixed(1)+'" text-anchor="middle" font-size="9" fill="'+P.teks+'">'+v+'</text>':'')}).join('')+
+        '<text x="'+xc(i).toFixed(1)+'" y="'+(H-padB+14)+'" text-anchor="middle" font-size="10" fill="'+P.muda+'">'+esc(babPendek(l))+'</text>';
     }).join('');
   }else{
-    var pts=data.map(function(g,i){return xc(i).toFixed(1)+','+y(g.rata).toFixed(1)}).join(' ');
-    isi='<polyline points="'+pts+'" fill="none" stroke="'+P.bar+'" stroke-width="2.5"/>'+
-      data.map(function(g,i){
-        return '<circle cx="'+xc(i).toFixed(1)+'" cy="'+y(g.rata).toFixed(1)+'" r="4" fill="'+(g.rata>=KKM()?P.bar:P.kurang)+'"/>'+
-          (angka?'<text x="'+xc(i).toFixed(1)+'" y="'+(y(g.rata)-8).toFixed(1)+'" text-anchor="middle" font-size="10" fill="'+P.teks+'">'+g.rata+'</text>':'')+
-          '<text x="'+xc(i).toFixed(1)+'" y="'+(H-padB+14)+'" text-anchor="middle" font-size="10" fill="'+P.muda+'">'+label(i)+'</text>';
-      }).join('');
+    isi=tren.map(function(s,si){
+      var pts=[];labels.forEach(function(l,i){var v=nilai[si][l];if(v!=null)pts.push([xc(i),y(v),v])});
+      return (pts.length>1?'<polyline points="'+pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1)}).join(' ')+'" fill="none" stroke="'+warnaSeri[si%warnaSeri.length]+'" stroke-width="2.5"/>':'')+
+        pts.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4" fill="'+warna(si,p[2])+'"/>'+(angka?'<text x="'+p[0].toFixed(1)+'" y="'+(p[1]-8).toFixed(1)+'" text-anchor="middle" font-size="10" fill="'+P.teks+'">'+p[2]+'</text>':'')}).join('');
+    }).join('')+labels.map(function(l,i){return '<text x="'+xc(i).toFixed(1)+'" y="'+(H-padB+14)+'" text-anchor="middle" font-size="10" fill="'+P.muda+'">'+esc(babPendek(l))+'</text>'}).join('');
   }
-  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Tren nilai per bab">'+
-    '<text x="4" y="12" font-size="11" fill="'+P.muda+'">Rata-rata nilai per bab</text>'+grid+kkmLine+isi+'</svg>';
+  var lgd=grafLegenda(tren.map(function(s){return s.nama}),warnaSeri,P,22);
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Tren nilai per bab"><text x="4" y="12" font-size="11" fill="'+P.muda+'">Rata-rata nilai per bab</text>'+lgd+grid+kkmLine+isi+'</svg>';
 }
 function renderGrafik(){
-  var key=$('#anKelas').value,card=$('#grafCard'),list=siswaKM(key);
-  if(!key||!list.length){card.hidden=true;grafTerakhir=null;return}
+  var key=$('#anKelas').value,card=$('#grafCard');
+  if(!key||!siswaKM(key).length){card.hidden=true;grafTerakhir=null;return}
   card.hidden=false;
-  grafTerakhir={key:key,soal:statKM(list).soal.map(function(x){return {no:String(x.no),persen:x.persen}}),tren:grafDataTren(list)};
-  $('#grafIsi').innerHTML='<p class="small"><b>Soal</b></p>'+grafSoalSvg(grafTerakhir.soal,$('#grafSoalJenis').value,$('#grafSoalUrut').value,$('#grafAngka').checked,PAL_LAYAR)+
-    '<p class="small" style="margin-top:12px"><b>Tren per bab</b></p>'+grafTrenSvg(grafTerakhir.tren,$('#grafTrenJenis').value,$('#grafAngka').checked,$('#grafAmbang').checked,PAL_LAYAR);
+  var banding=$('#grafMode').value==='banding';
+  var keys=banding?kunciBanding(key):[key];
+  if(keys.indexOf(key)<0)keys.unshift(key);
+  var seriList=keys.map(function(k){return {nama:k.split(' - ')[0],list:siswaKM(k)}}).filter(function(s){return s.list.length});
+  var babs=[];
+  seriList.forEach(function(s){s.list.forEach(function(o){var b=babDari(o);if(babs.indexOf(b)<0)babs.push(b)})});
+  babs.sort(function(a,b){return cmpNatural(babPendek(a),babPendek(b))});
+  var sel=$('#grafBab'),keep=sel.value;
+  sel.innerHTML='<option value="">Semua bab</option>'+babs.map(function(b){return '<option value="'+esc(b)+'">'+esc(b)+'</option>'}).join('');
+  sel.value=babs.indexOf(keep)>=0?keep:'';
+  var babFilter=sel.value?[sel.value]:babs;
+  var gabung=$('#grafTampilan').value==='gabung';
+  var angka=$('#grafAngka').checked,jenis=$('#grafSoalJenis').value,urut=$('#grafSoalUrut').value;
+  var blok=[];
+  if(gabung){
+    var seri=seriList.map(function(s){return {nama:s.nama,data:hitungSoalBab(s.list).filter(function(x){return babFilter.indexOf(x.bab)>=0}).map(function(x){return {x:babPendek(x.bab)+'.'+x.no,persen:x.persen}})}});
+    blok.push({judul:babFilter.length===1?babFilter[0]:'Semua bab',seri:seri});
+  }else{
+    babFilter.forEach(function(b){
+      var seri=seriList.map(function(s){return {nama:s.nama,data:hitungSoalBab(s.list).filter(function(x){return x.bab===b}).map(function(x){return {x:x.no,persen:x.persen}})}});
+      blok.push({judul:b,seri:seri});
+    });
+  }
+  var tren=seriList.map(function(s){return {nama:s.nama,data:grafDataTren(s.list).filter(function(t){return babFilter.indexOf(t.nama)>=0})}});
+  grafTerakhir={key:key,blok:blok,tren:tren,jenis:jenis,urut:urut,angka:angka,trenJenis:$('#grafTrenJenis').value,ambang:$('#grafAmbang').checked};
+  var htmlSoal=blok.map(function(b){var sv=grafSoalSeri(b.seri,jenis,angka,PAL_LAYAR,SERI_LAYAR,urut);return sv?'<p class="small" style="margin-top:8px"><b>'+esc(b.judul)+'</b></p>'+sv:''}).join('');
+  $('#grafIsi').innerHTML=htmlSoal+'<p class="small" style="margin-top:12px"><b>Tren per bab</b></p>'+grafTrenSeri(tren,grafTerakhir.trenJenis,angka,grafTerakhir.ambang,PAL_LAYAR,SERI_LAYAR);
 }
-['#grafSoalJenis','#grafSoalUrut','#grafTrenJenis','#grafAngka','#grafAmbang'].forEach(function(s){$(s).addEventListener('change',renderGrafik)});
+['#grafMode','#grafTampilan','#grafBab','#grafSoalJenis','#grafSoalUrut','#grafTrenJenis','#grafAngka','#grafAmbang'].forEach(function(s){$(s).addEventListener('change',renderGrafik)});
 function grafUkuran(svg){var m=/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/.exec(svg);return {w:+m[1],h:+m[2]}}
 function grafPng(svg){
   var u=grafUkuran(svg);
@@ -3621,11 +3688,10 @@ function grafPng(svg){
 }
 async function grafSiapCetak(){
   if(!grafTerakhir)throw new Error('Belum ada grafik untuk kelas dan mapel ini.');
-  var angka=$('#grafAngka').checked,daftar=[];
-  var s1=grafSoalSvg(grafTerakhir.soal,$('#grafSoalJenis').value,$('#grafSoalUrut').value,angka,PAL_CETAK);
-  if(s1)daftar.push({judul:'Persentase benar per soal',svg:s1});
-  var s2=grafTrenSvg(grafTerakhir.tren,$('#grafTrenJenis').value,angka,$('#grafAmbang').checked,PAL_CETAK);
-  if(s2)daftar.push({judul:'Rata-rata nilai per bab',svg:s2});
+  var g=grafTerakhir,daftar=[];
+  g.blok.forEach(function(b){var sv=grafSoalSeri(b.seri,g.jenis,g.angka,PAL_CETAK,SERI_CETAK,g.urut);if(sv)daftar.push({judul:'Soal: '+b.judul,svg:sv})});
+  var tv=grafTrenSeri(g.tren,g.trenJenis,g.angka,g.ambang,PAL_CETAK,SERI_CETAK);
+  if(tv)daftar.push({judul:'Rata-rata nilai per bab',svg:tv});
   for(var i=0;i<daftar.length;i++){var p=await grafPng(daftar[i].svg);daftar[i].png=p.png;daftar[i].w=p.w;daftar[i].h=p.h}
   return daftar;
 }
