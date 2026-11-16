@@ -252,7 +252,7 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v88</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v90</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon">✨ Neon</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <nav>
   <button data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
@@ -427,7 +427,7 @@ nav button.nav-sembunyi{display:none}
     <details style="margin-top:12px">
       <summary style="font-weight:600;cursor:pointer">Kebijakan penilaian (sudah berisi standar, bisa diubah)</summary>
       <textarea id="kebijakan" rows="10" style="margin-top:8px"></textarea>
-      <div class="row" style="margin-top:8px"><button id="btnKebijakanStandar">Kembalikan ke standar</button><button id="btnJadikanStandar">Jadikan standar untuk kunci baru</button></div>
+      <div class="row" style="margin-top:8px"><select id="pilihStandar" style="flex:2"><option value="0">1. Standar awal</option><option value="1">2. Standar + Lampiran Asesmen SD</option></select><button id="btnKebijakanStandar">Muat standar terpilih</button></div><div class="row" style="margin-top:8px"><button id="btnUnggahKebijakan">📎 Unggah kebijakan (.docx, .xlsx, .pdf, .txt)</button><input type="file" id="fileKebijakan" accept=".docx,.xlsx,.xls,.pdf,.txt,text/plain" hidden></div><p class="hint" id="kebijakanUnggahInfo" style="margin-top:6px"></p><div class="row" style="margin-top:8px"><button id="btnJadikanStandar">Jadikan standar untuk kunci baru</button></div>
       <p class="hint">Kebijakan berlaku untuk rubrik yang sedang dipilih. Umumnya guru cukup mengisi kunci jawaban saja.</p>
     </details>
     <div class="msg" id="kmsg"></div>
@@ -596,7 +596,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 88 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 90 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -770,6 +770,8 @@ var KEBIJAKAN_BAWAAN=["ATURAN UMUM",
 "8. Konsistensi",
 "- Jawaban serupa dari siswa berbeda diberi nilai yang sama.",
 "- Jangan mengurangi nilai karena jawaban lebih pendek atau lebih panjang dari kunci, selama kata kunci terpenuhi."].join('\n');
+var KEBIJAKAN_LAMPIRAN="Lampiran Kebijakan Penilaian Asesmen SD\nLampiran ini melengkapi aturan penilaian yang sudah ada dengan satu tujuan: tidak ada jawaban siswa yang luput dari analisis, dan setiap keraguan sampai ke guru.\n1. Status penilaian\nSetiap nomor soal pada setiap lembar harus berakhir di salah satu dari empat status berikut. Hanya status \"kosong\" yang boleh langsung bernilai 0.\nStatus | Arti | Skor\nDinilai | Ada jawaban terbaca dan dinilai sesuai kunci | Sesuai kriteria jenis soal\nKosong | Jelas tidak ada tulisan atau tanda siswa | 0\nRagu | Tulisan tidak terbaca, tanda ganda, pensil samar, kunci dipertanyakan, atau jawaban dihapus semua | Dikosongkan sementara sampai guru memutuskan\nTidak ditemukan | Jawaban tidak terlihat, halaman hilang, atau nomor soal tidak terdeteksi | Dikosongkan sementara, wajib ditinjau guru\n2. Pemeriksaan kelengkapan\nSatu lembar harus menghasilkan tepat satu baris per nomor soal di kunci, tidak lebih dan tidak kurang.\nHitung baris hasil dan bandingkan dengan jumlah soal di kunci. Jika tidak sama, tandai \"ragu: soal tidak terdeteksi\" pada nomor yang hilang.\nPeriksa jumlah halaman lembar. Jika kurang dari yang seharusnya, tandai tingkat lembar \"halaman tidak lengkap\" dan beri status \"tidak ditemukan\" pada nomor soal di halaman yang hilang.\nPeriksa identitas siswa (nama atau nomor absen). Jika tidak terbaca, tandai tingkat lembar \"identitas ragu\" agar skor tidak tertukar antarsiswa.\nNomor soal yang tampak kosong diperiksa sekali lagi ke margin, halaman belakang, dan area di luar kolom sebelum diberi status \"kosong\".\n3. Lokasi dan bentuk jawaban tidak biasa\nSituasi | Perlakuan\nJawaban di margin, halaman belakang, atau di luar kolom | Nilai jika jelas milik nomor tertentu. Catat \"ditulis di luar kolom\" di kolom alasan.\nJawaban dihapus, ditipex, atau semuanya dicoret | Tandai \"ragu\", jangan langsung 0.\nAngka setara, misalnya ½ = 0,5 = 50% atau \"5 buah\" = \"lima\" | Diterima sebagai jawaban yang sama.\nEjaan fonetik, bahasa daerah, atau campuran bahasa | Terima jika maknanya jelas. Tandai \"ragu\" jika tidak yakin.\nTanda ✓ dan ✗ pada benar-salah yang artinya tidak jelas | Tandai \"ragu\".\n4. Aturan tambahan untuk celah kebijakan\nLevel uraian 7, 5, dan 3. Kebijakan awal menyebut nilai ini tanpa definisi. Tambahkan: 7 = hampir lengkap (kurang hal kecil), 5 = antara sebagian tepat dan tepat kurang satu hal, 3 = antara relevan dan sebagian tepat. Atau hapus kalimat itu agar skor hanya 0, 2, 4, 6, 8.\nSoal dibatalkan atau kunci tidak ada, ganda, atau keliru. Guru memilih satu: semua siswa diberi skor penuh, atau soal dikeluarkan dari total dan nilai akhir dihitung ulang dari skor maksimal yang tersisa.\nMenjodohkan dengan garis bersilang atau menumpuk. Baca ujung garis di sisi jawaban. Jika ujungnya tidak jelas, tandai \"ragu\" pada pasangan itu saja.\nJenis soal tidak dikenal, misalnya mengurutkan atau menggambar. Nilai sebagian berdasarkan isi dan tandai \"ragu\" sampai guru menetapkan kriteria.\n5. Pelaporan dan kontrol mutu\nTingkat keyakinan. Setiap skor diberi label tinggi, sedang, atau rendah. Skor berkeyakinan rendah otomatis masuk daftar tinjauan guru.\nRingkasan per lembar. Catat jumlah soal dinilai, kosong, ragu, dan tidak ditemukan. Jumlah keempatnya harus sama dengan jumlah soal di kunci.\nSampel acak. Guru memeriksa sekitar 10% lembar berskor penuh dan berskor 0, karena kesalahan sistematis paling mudah muncul di kedua ujung itu.\nJejak keputusan. Setiap keputusan guru atas jawaban \"ragu\" dicatat di kolom alasan, lalu dipakai sebagai acuan untuk jawaban serupa dari siswa lain (prinsip konsistensi).\n6. Templat tabel hasil penilaian\nTabel A. Hasil per soal (satu baris per nomor soal per siswa)\nSiswa | No. soal | Jenis soal | Jawaban terbaca | Status | Skor | Skor maks | Keyakinan | Alasan\nContoh: Andi | 1 | Pilihan ganda | B | Dinilai | 2 | 2 | Tinggi | Tepat dan lengkap\nContoh: Andi | 7 | Isian singkat | (sulit dibaca) | Ragu | 4 | Rendah | Tulisan tidak terbaca, menunggu guru\nContoh: Andi | 12 | Uraian | Kosong | 0 | 8 | Tinggi | Tidak ada tulisan di kolom, margin, dan halaman belakang\nTabel B. Ringkasan per lembar (jumlah D + K + R + T harus sama dengan jumlah soal)\nSiswa | Identitas terbaca | Halaman lengkap | Dinilai (D) | Kosong (K) | Ragu (R) | Tidak ditemukan (T) | Jumlah soal di kunci | Total skor sementara | Perlu tinjauan guru\nContoh: Andi | Ya | Ya | 28 | 1 | 1 | 0 | 30 | 96 | Ya\n7. Tata kelola tambahan\nDelapan ketentuan berikut menjaga keadilan dan ketertelusuran penilaian. Angka batas waktu dan persentase dapat disesuaikan oleh sekolah.\nNo. | Ketentuan | Isi aturan\n1 | Penyelesaian \"ragu\" | Guru yang ditunjuk memutuskan semua jawaban \"ragu\" dalam 2 hari kerja. Setelah batas itu, jawaban naik ke wali kelas atau koordinator penilaian.\n2 | Kalibrasi awal | Sebelum dipakai penuh, 5 sampai 10 lembar contoh dinilai terpisah oleh guru dan sistem. Selisih yang berulang dicatat sebagai aturan yang perlu diperjelas.\n3 | Versi kunci dan log perubahan | Kunci yang direvisi setelah penilaian dimulai berlaku untuk semua siswa pada nomor itu. Catat tanggal, alasan, dan pengambil keputusan.\n4 | Akomodasi kebutuhan khusus | Lembar siswa dengan kesulitan menulis atau disleksia yang sudah diketahui sekolah langsung ditinjau guru, tidak dinilai otomatis. Kerapian dan ejaan tetap tidak dinilai.\n5 | Jawaban identik antarsiswa | Hanya ditandai \"ragu\" untuk ditinjau guru. Tidak ada pengurangan skor otomatis, karena kemiripan bisa kebetulan, terutama di kelas rendah.\n6 | Keberatan atas nilai | Siswa atau orang tua mengajukan keberatan ke wali kelas dalam batas waktu yang ditetapkan sekolah. Penilaian ulang dilakukan guru lain, dan hasilnya dicatat.\n7 | Penyimpanan dan privasi | Tetapkan lama simpan lembar dan hasil, daftar pihak yang boleh mengakses, dan cara penghapusan setelah masa simpan berakhir.\n8 | Pemanfaatan hasil | Rekap soal dengan jawaban salah atau \"ragu\" terbanyak untuk memperbaiki butir soal dan menyusun umpan balik belajar siswa.\n8. Perhitungan skor\nNilai akhir dihitung proporsional terhadap skor maksimal, dan selama masih ada jawaban \"ragu\" nilai ditampilkan sebagai rentang.\nKetentuan | Aturan\nNilai akhir | Nilai = total skor ÷ total skor maksimal × 100. Soal yang dibatalkan dikeluarkan dari total skor maksimal (lihat bagian 4).\nNilai selama ada \"ragu\" | Tampilkan rentang: nilai terendah (semua \"ragu\" dan \"tidak ditemukan\" = 0) sampai nilai tertinggi (semua = skor penuh), disertai jumlah soal yang menunggu guru. Contoh: \"82-90, 2 soal menunggu guru\".\nNilai final | Tunggal, ditetapkan setelah guru memutuskan semua jawaban \"ragu\" dan \"tidak ditemukan\".\nSkor MCMA | Tetap memakai kriteria 4/3/2/0 pada kebijakan awal, tanpa rumus pengurangan pilihan salah.\nSkor uraian | Skor genap 0/2/4/6/8, atau level 7/5/3 bila sudah didefinisikan di bagian 4.\nPembobotan | Hanya melalui skor maksimal tiap jenis soal (2/4/8). Tidak ada faktor pengali tambahan.\nPembulatan | Hanya pada nilai akhir (bilangan bulat atau satu desimal sesuai ketetapan sekolah). Skor per soal tidak dibulatkan.\nRincian pelaporan | Sertakan skor per jenis soal di samping nilai akhir, misalnya \"Pilihan ganda 18/20, uraian 12/24\".\n9. Kriteria per jenis soal\nTabel ini merangkum kriteria kebijakan awal dan menambahkan aturan untuk celah yang ditemukan. Baris bertanda (usulan) perlu ditetapkan guru atau sekolah.\nJenis soal | Skor maks | Kriteria | Aturan tambahan\nPilihan ganda | 2 | Benar 2, salah 0, tanpa nilai sebagian | Huruf ditulis tanpa dilingkari tetap dibaca sebagai jawaban bila jelas maksudnya. Jawaban yang dicoret lalu diganti: nilai jawaban akhir. Tidak jelas mana yang akhir: \"ragu\".\nMenjodohkan | 2 per pasangan | Pasangan benar 2, salah 0, tanpa nilai sebagian | Pasangan salah tidak mengurangi pasangan lain. Garis bersilang atau menumpuk: baca ujung di sisi jawaban, \"ragu\" bila tidak jelas.\nBenar salah | 2 per pernyataan | Tanda tepat 2, tidak tepat 0. Bila diminta memperbaiki: tanda tepat 1 dan perbaikan tepat 1 | Soal berisi beberapa pernyataan: skor soal = jumlah skor tiap pernyataan. Tanda ✓ dan ✗ yang artinya tidak jelas: \"ragu\".\nPilihan ganda kompleks (MCMA) | 4 | 4: semua benar dipilih. 3: pilihan benar lebih dari separuh jumlah kunci. 2: pilihan benar separuh jumlah kunci atau kurang (minimal satu). 0: ada pilihan salah atau kosong | Bandingkan jumlah pilihan benar dengan separuh jumlah kunci tanpa pembulatan. Contoh: 3 kunci, memilih 2 benar = 3. 4 kunci, memilih 2 benar = 2.\nIsian singkat | 4 | 4: semua kata kunci. 3: kurang satu. 2: sebagian kata kunci. 1: relevan tanpa kata kunci. 0: kosong atau tidak relevan | Untuk 3 kata kunci: 3 = 4, 2 = 3, 1 = 2. Sinonim yang tepat diterima. Kunci memuat daftar kata kunci dan sinonimnya.\nUraian | 8 | 8: tepat dan lengkap. 6: tepat, kurang satu hal. 4: sebagian tepat. 2: relevan, belum menjawab. 0: kosong atau tidak relevan | Level 7, 5, 3 hanya dipakai bila sudah didefinisikan di bagian 4. Jawaban benar disertai pernyataan salah yang bertentangan: maksimal 4.\nMengurutkan (usulan) | Ditetapkan guru | Skor proporsional terhadap jumlah posisi yang benar, tanpa nilai sebagian di dalam satu posisi | Urutan yang menggeser satu item dinilai per posisi, \"ragu\" bila tidak terbaca.\nMenggambar atau melengkapi tabel (usulan) | Ditetapkan guru | Dinilai pada isi dan ketepatan, bukan kerapian, memakai pola skor uraian atau isian sesuai skor maksimal soal | Kunci memuat unsur wajib gambar atau sel tabel yang dinilai.\nHasil hitung (bila ada) | Mengikuti jenis soal | Hasil akhir benar tanpa langkah: nilai penuh, kecuali soal meminta cara pengerjaan | Langkah benar tetapi salah hitung kecil: nilai sebagian. Satuan hilang tidak mengurangi nilai kecuali soal menanyakan satuan.\n10. Ejaan, typo, dan sinonim\nEjaan dan kerapian tidak mengurangi nilai. Batas penerimaan ditentukan dengan uji tiga langkah, disesuaikan dengan jenjang kelas.\nUji tiga langkah (berlaku untuk isian singkat dan uraian)\nApakah maksud siswa bisa dibaca tanpa menebak? Jika ya, terima dengan nilai penuh.\nApakah tulisan itu juga bisa dibaca sebagai kata lain yang salah? Jika ya, tandai \"ragu\" dan guru memutuskan.\nApakah kata itu istilah kunci yang artinya berbeda dari kunci? Jika ya, tidak diterima.\nBatas ejaan menurut jenjang\nKelas | Batas penerimaan\n1-2 | Diterima selama bunyinya sama atau mirip dan maksudnya terbaca, termasuk huruf terbalik.\n3-4 | Diterima bila hanya satu atau dua huruf berbeda dan tidak membentuk kata lain.\n5-6 | Diterima bila istilahnya tepat. Istilah kunci yang wajib dieja benar ditandai di kunci.\nDaftar diterima dan ditolak per soal. Untuk soal isian atau uraian bernilai tinggi, kunci memuat tiga daftar: sinonim yang diterima, ejaan yang diterima, dan jawaban yang tidak diterima (termasuk istilah mirip yang artinya berbeda). Soal lain cukup memakai uji tiga langkah.";
+var PILIHAN_STANDAR=[{nama:'Standar awal',teks:KEBIJAKAN_BAWAAN},{nama:'Standar + Lampiran Asesmen SD',teks:KEBIJAKAN_BAWAAN+'\n\n'+KEBIJAKAN_LAMPIRAN}];
 
 /* ---------- Tab ---------- */
 var hasilTerakhirFp=null;
@@ -1375,7 +1377,8 @@ $('#babPilih').addEventListener('change',function(){
 });
 $('#bab').addEventListener('change',function(){this.value=kanonikDari(this.value,daftarBab($('#mapel').value));if(daftarBab($('#mapel').value).indexOf(this.value)>=0)babBaruAktif=false;updateLabel()});
 $('#btnBantuan').addEventListener('click',function(){var b=$('#bantuan');b.hidden=!b.hidden});
-$('#rubrik').addEventListener('input',function(){simpanRubrikAktif(this.value)});
+$('#rubrik').addEventListener('input',function(){simpanRubrikAktif(this.value);fitTinggi(this)});
+function fitTinggi(el){el.style.height='auto';el.style.height=Math.max(el.scrollHeight+4,120)+'px'}
 $('#ulangSonnet').addEventListener('change',function(){store.set('ulangSonnet',this.checked)});
 ['modelDraf','modelPeriksa','modelRemedial'].forEach(function(id){
   $('#'+id).addEventListener('change',function(){store.set(id,this.value)});
@@ -1999,14 +2002,16 @@ $('#btnBuatDraf').addEventListener('click',async function(){
     var content=soalBlok.concat([{type:'text',text:'Label: '+(label||'-')+(tpDraf?'. Tujuan pembelajaran: '+tpDraf:'')+'. Buatkan draf kunci jawaban untuk soal ini.'}]);
     var draf='';
     for(var coba=0;coba<2;coba++){
-      draf=(await apiText(sys,content,4000,0,store.get('modelDraf','claude-opus-5-5'))).trim();
+      ketPotong=false;
+      draf=(await apiText(sys,content,8000,0,store.get('modelDraf','claude-opus-5-5'))).trim();
+      if(ketPotong)throw new Error('Hasil AI terpotong karena foto soal terlalu banyak. Bagi foto menjadi dua bagian lalu scan ulang.');
       if(draf&&parseKunci(draf).soal.length>0)break;
       draf='';
     }
     if(!draf)throw new Error('Format kunci dari AI tidak sesuai setelah dua kali coba. Periksa perintah tambahan atau pakai foto soal yang lebih jelas.');
     kmsg('Claude Opus memeriksa draf kunci...');
     var sysCek='Kamu memeriksa draf kunci jawaban SD. Tugasmu: (1) pastikan setiap kunci benar dan sesuai tujuan pembelajaran; (2) untuk isian dan uraian, tambahkan [terima: ...] berisi jawaban lain yang juga benar dan masuk akal, termasuk ejaan yang sering salah; (3) tambahkan [umpan: ...] singkat, ramah, dan sesuai usia SD untuk tiap soal; (4) tulis masalah atau keraguan dalam baris yang diawali "CATATAN:". Keluarkan seluruh kunci lengkap dengan format yang sama seperti draf, satu baris per soal, lalu baris CATATAN. Tanpa markdown dan tanpa komentar lain. Pastikan skor setiap baris sesuai KEBIJAKAN PENILAIAN.'+aturanSkorDraf();
-    var cek=''; try{cek=(await apiText(sysCek,[{type:'text',text:'Label: '+(label||'-')+(tpDraf?'\nTujuan pembelajaran: '+tpDraf:'')+'\n\nDRAF KUNCI:\n'+draf}],4000,0,store.get('modelPeriksa','claude-opus-5-5'))).trim()}catch(eCek){cek=''}
+    var cek=''; try{cek=(await apiText(sysCek,[{type:'text',text:'Label: '+(label||'-')+(tpDraf?'\nTujuan pembelajaran: '+tpDraf:'')+'\n\nDRAF KUNCI:\n'+draf}],8000,0,store.get('modelPeriksa','claude-opus-5-5'))).trim()}catch(eCek){cek=''}
     var barisCek=cek.split(/\r?\n/).map(function(l){return l.trim()}).filter(Boolean);
     var catatanBaru=barisCek.filter(function(l){return /^CATATAN:/i.test(l)}).map(function(l){return l.replace(/^CATATAN:\s*/i,'')});
     var kunciCek=barisCek.filter(function(l){return !/^CATATAN:/i.test(l)});
@@ -2015,6 +2020,7 @@ $('#btnBuatDraf').addEventListener('click',async function(){
     var ta=$('#rubrik');
     if(ta.value.trim()&&!confirm('Kotak kunci jawaban sudah berisi teks. OK = ganti dengan draf baru, Batal = tambahkan di bawahnya.'))ta.value=ta.value.replace(/\s+$/,'')+'\n\n'+draf;
     else ta.value=draf;
+    fitTinggi(ta);
     simpanRubrikAktif(ta.value);
     soalBlok=[];updateSoalInfo();
     kmsg('Draf kunci dibuat. Periksa setiap baris, terutama yang bertanda "ragu", sebelum dipakai menilai.');
@@ -3266,11 +3272,89 @@ function isiRubrikUI(){
   if($('#kunciCek'))renderKunciCek();
 }
 function setRubrikTerkunci(kunci){
-  ['#pilihRubrik','#btnRubrikBaru','#btnRubrikHapus','#kebijakan','#btnKebijakanStandar','#btnJadikanStandar'].forEach(function(s){$(s).disabled=kunci});
+  ['#pilihRubrik','#btnRubrikBaru','#btnRubrikHapus','#kebijakan','#btnKebijakanStandar','#btnJadikanStandar','#pilihStandar','#btnUnggahKebijakan'].forEach(function(s){$(s).disabled=kunci});
 }
 $('#kebijakan').addEventListener('input',function(){simpanKebijakanAktif(this.value)});
+function paraTeks(p){return [].map.call(p.getElementsByTagName('w:t'),function(t){return t.textContent}).join('').trim()}
+function teksWord(body){
+  var out=[];
+  [].forEach.call(body.childNodes,function(n){
+    if(n.nodeName==='w:p'){var t=paraTeks(n);if(t)out.push(t)}
+    else if(n.nodeName==='w:tbl'){
+      [].forEach.call(n.getElementsByTagName('w:tr'),function(tr){
+        var sel=[].filter.call(tr.childNodes,function(c){return c.nodeName==='w:tc'}).map(function(tc){
+          return [].map.call(tc.getElementsByTagName('w:p'),function(p){return paraTeks(p)}).filter(Boolean).join(' ')}).filter(Boolean);
+        if(sel.length)out.push(sel.join(' | '));
+      });
+    }
+  });
+  return out.join('\n');
+}
+function muatPdfJs(){
+  if(window.pdfjsLib)return Promise.resolve();
+  return new Promise(function(ok,gagal){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload=function(){
+      if(!window.pdfjsLib){gagal(new Error('Pembaca PDF gagal dimuat.'));return}
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';ok();
+    };
+    s.onerror=function(){gagal(new Error('Pembaca PDF belum termuat. Periksa koneksi internet.'))};
+    document.head.appendChild(s);
+  });
+}
+async function bacaKebijakanBerkas(file){
+  var nama=file.name.toLowerCase();
+  if(/\.txt$/.test(nama))return await file.text();
+  if(/\.docx$/.test(nama)){
+    if(!window.JSZip)throw new Error('Pembaca Word belum termuat. Periksa koneksi internet.');
+    var zip=await JSZip.loadAsync(file);
+    var xml=await zip.file('word/document.xml').async('string');
+    var dok=new DOMParser().parseFromString(xml,'application/xml');
+    return teksWord(dok.getElementsByTagName('w:body')[0]);
+  }
+  if(/\.(xlsx|xls)$/.test(nama)){
+    if(!window.XLSX)throw new Error('Pembaca Excel belum termuat. Periksa koneksi internet.');
+    var wb=XLSX.read(await file.arrayBuffer(),{type:'array'});
+    return wb.SheetNames.map(function(sn){
+      var baris=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,blankrows:false,defval:''});
+      var isi=baris.map(function(r){return r.map(function(c){return String(c).trim()}).filter(Boolean).join(' | ')}).filter(Boolean);
+      if(!isi.length)return '';
+      return (wb.SheetNames.length>1?sn+'\n':'')+isi.join('\n');
+    }).filter(Boolean).join('\n\n');
+  }
+  if(/\.pdf$/.test(nama)){
+    await muatPdfJs();
+    var pdf=await window.pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+    var halaman=[];
+    for(var i=1;i<=pdf.numPages;i++){
+      var tc=await (await pdf.getPage(i)).getTextContent();
+      var teks='',y=null;
+      tc.items.forEach(function(it){
+        if(y!==null&&Math.abs(it.transform[5]-y)>2)teks+='\n';
+        else if(teks&&!/\s$/.test(teks))teks+=' ';
+        teks+=it.str;y=it.transform[5];
+      });
+      halaman.push(teks);
+    }
+    return halaman.join('\n').replace(/\n{3,}/g,'\n\n');
+  }
+  throw new Error('Format belum didukung. Pakai .docx, .xlsx, .pdf, atau .txt.');
+}
+$('#btnUnggahKebijakan').addEventListener('click',function(){$('#fileKebijakan').click()});
+$('#fileKebijakan').addEventListener('change',async function(){
+  var f=this.files&&this.files[0];this.value='';if(!f)return;
+  var info=$('#kebijakanUnggahInfo');
+  try{
+    info.textContent='Membaca '+f.name+'…';
+    var teks=(await bacaKebijakanBerkas(f)).trim();
+    if(!teks){info.textContent='Berkas tidak berisi teks yang bisa dibaca.';return}
+    simpanKebijakanAktif(teks);isiRubrikUI();
+    info.textContent='Kebijakan dari '+f.name+' dimuat ('+teks.length+' karakter). Periksa isinya sebelum menilai.';
+  }catch(e){info.textContent=e.message||'Berkas tidak bisa dibaca.'}
+});
 $('#btnKebijakanStandar').addEventListener('click',function(){
-  simpanKebijakanAktif(KEBIJAKAN_BAWAAN);isiRubrikUI();
+  simpanKebijakanAktif(PILIHAN_STANDAR[+$('#pilihStandar').value||0].teks);isiRubrikUI();
 });
 $('#btnJadikanStandar').addEventListener('click',function(){
   var teks=$('#kebijakan').value;
