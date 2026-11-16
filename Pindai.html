@@ -32,6 +32,7 @@ header .htxt{flex:1;min-width:0}
 .ctx-line{display:inline-block;font-size:13px;font-weight:600;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:4px 12px;margin:0 0 12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 header .hbtns{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 header .hbtns button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:999px;width:34px;height:34px;font-size:16px;padding:0;cursor:pointer}
+header .hbtns button.btn-panduan{width:auto;padding:0 11px;font-size:13px;font-weight:700;white-space:nowrap}
 header .badge{font-size:11px;background:#f0d020;color:#1e3fae;border-radius:999px;padding:2px 7px;font-weight:700}
 #bantuan{font-size:14px;line-height:1.5}
 .card{border-radius:16px}
@@ -191,6 +192,18 @@ header .logo{height:34px}
 header h1{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header .sub{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header .hbtns button{width:32px;height:32px;font-size:15px}
+header .hbtns button.btn-panduan{height:32px;padding:0 9px;font-size:12px}
+.pd{position:fixed;inset:0;z-index:30;background:var(--bg);color:var(--text);overflow:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.pd[hidden]{display:none}
+.pd-top{position:sticky;top:0;display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--line)}
+.pd-top button{padding:8px 12px}
+.pd-isi{max-width:720px;margin:0 auto;padding:6px 16px;line-height:1.6}
+.pd-isi h2{font-size:18px;margin:16px 0 6px}
+.pd-isi p,.pd-isi li{font-size:15px}
+.pd-isi details{border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0;padding:10px 12px}
+.pd-isi summary{font-weight:700;cursor:pointer;font-size:16px}
+.pd-isi ol,.pd-isi ul{padding-left:20px}
+.pd-ayat{font-size:24px;text-align:center;direction:rtl;margin:12px 0 4px}
 header .badge{font-size:10px}
 nav{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:6;display:flex;gap:8px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));overflow:hidden;touch-action:pan-y;background:var(--bg);border-top:1px solid var(--line);border-bottom:0}
 nav::-webkit-scrollbar{display:none}
@@ -258,8 +271,76 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v95</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v99</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
+<div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
+<div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
+<div class="pd-isi">
+<h2>Pembuka</h2>
+<p class="pd-ayat">اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ</p>
+<p><i>"Bacalah dengan (menyebut) nama Tuhanmu yang menciptakan."</i> (QS. Al-'Alaq: 1)</p>
+<p>Ayat ini adalah perintah pertama dalam Al-Qur'an, yaitu membaca. Membaca adalah awal dari ilmu. Sebelum memakai aplikasi ini, bacalah panduannya terlebih dahulu agar hasil penilaian tepat dan tidak keliru.</p>
+<p>Assalamu'alaikum warahmatullahi wabarakatuh.</p>
+<p>Salam dari saya, Firman Anshari, untuk rekan-rekan guru. Panduan ini disusun agar Bapak/Ibu bisa memakai aplikasi Penilai Lembar Jawaban dengan cepat, dari langkah pertama sampai menilai lembar pertama.</p>
+<details open><summary>Sebelum mulai</summary>
+<p>Siapkan hal berikut:</p>
+<ul><li>HP Android atau laptop, dengan browser Chrome.</li><li>Koneksi internet, karena pemeriksaan memakai AI.</li><li>API key Anthropic milik Bapak/Ibu sendiri. Jangan dibagikan ke orang lain.</li><li>Kunci jawaban atau rubrik penilaian, dan foto lembar jawaban siswa yang terang dan tidak buram.</li></ul>
+<p>Baca panduan ini sampai selesai sebelum mulai.</p>
+</details>
+<details><summary>Langkah cepat</summary>
+<ol>
+<li>Buka menu <b>Atur</b> (menu ke-9). Isi <b>API key</b>, lalu isi <b>KKM</b>.</li>
+<li>Buka menu <b>Nilai</b> (menu ke-1). Pilih <b>kelas</b>, <b>rombel</b>, <b>mapel</b>, <b>bab</b>, dan <b>materi</b>. Isi <b>Tujuan Pembelajaran (TP)</b>.</li>
+<li>Buka menu <b>Rubrik</b> (menu ke-2). Tulis kunci jawaban, atau buat draf kunci dari foto soal. Pilih kebijakan penilaian.</li>
+<li>Kembali ke menu <b>Nilai</b>. Isi nama siswa, lalu ambil foto lembar jawabannya dengan kamera belakang, atau pilih foto dari galeri. Tekan <b>Tambah siswa ini ke antrean</b>.</li>
+<li>Tunggu sampai proses selesai, lalu buka menu <b>Hasil</b> (menu ke-3) untuk melihat nilai dan alasannya.</li>
+<li>Periksa nilai yang ditandai <b>ragu</b>. Perbaiki bila perlu.</li>
+<li>Buka menu <b>Rekap</b> (menu ke-4) untuk mengunduh Excel atau PDF.</li>
+</ol>
+<p>Setelah lancar, ulangi langkah 4 sampai 6 untuk siswa berikutnya.</p>
+</details>
+<details><summary>Panduan per menu</summary>
+<p>Menu ada di <b>bar paling bawah layar</b>. Tiga menu tampil per halaman, dan titik kecil di atas bar menunjukkan halaman yang sedang dibuka. Geser bar ke kiri atau kanan untuk pindah halaman. Angka kecil di pojok tiap tombol adalah nomor menu.</p>
+<p><b>Halaman 1</b></p>
+<ul>
+<li><b>1. Nilai</b>: memilih kelas, rombel, mapel, bab, materi, dan TP, serta memasukkan lembar jawaban siswa. Pilihan ini ikut berpindah ke menu lain.</li>
+<li><b>2. Rubrik</b>: menulis atau membuat kunci jawaban, memilih rubrik, dan memilih kebijakan penilaian. Kebijakan bisa diunggah dari file docx, xlsx, pdf, atau txt.</li>
+<li><b>3. Hasil</b>: daftar nilai dan alasan tiap siswa. Bisa disaring menurut kelas, mapel, dan materi. Nilai yang ragu ditandai di sini.</li>
+</ul>
+<p><b>Halaman 2</b></p>
+<ul>
+<li><b>4. Rekap</b>: rekap nilai per kelas dan per materi, dengan pilihan jenis. Bisa diunduh ke Excel (.xlsx) atau PDF.</li>
+<li><b>5. Analisis</b>: ringkasan nilai dan grafik per kelas, mapel, dan materi. Grafik bisa digabung atau dipisah per bab, lalu diunduh ke PDF atau Word. Tombol <b>Buat analisis AI</b> menyusun ulasan hasil.</li>
+<li><b>6. Rapor</b>: menyiapkan nilai untuk rapor siswa.</li>
+</ul>
+<p><b>Halaman 3</b></p>
+<ul>
+<li><b>7. Remedial</b>: daftar siswa yang perlu remedial.</li>
+<li><b>8. Soal</b>: bank soal. Tombol <b>Buat soal dengan AI</b> membantu menyusun soal baru.</li>
+<li><b>9. Atur</b>: API key, KKM, tampilan warna, cadangan data, gabung kelompok, dan kelola nama.</li>
+</ul>
+</details>
+<details><summary>Cadangan data</summary>
+<p>Data nilai tersimpan di browser HP atau laptop ini. Karena itu, buat cadangan secara rutin, misalnya setiap selesai satu kelas.</p>
+<p><b>Membuat cadangan</b></p>
+<ol><li>Buka menu <b>Atur</b> (menu ke-9).</li><li>Tekan <b>Simpan cadangan (.json)</b>. File akan terunduh.</li><li>Simpan file itu di tempat yang aman, misalnya Google Drive atau folder penyimpanan.</li></ol>
+<p><b>Memulihkan cadangan</b></p>
+<ol><li>Buka menu <b>Atur</b>.</li><li>Tekan <b>Pulihkan dari cadangan</b>, lalu pilih file cadangan.</li></ol>
+<p><b>Pindah ke HP lain</b></p>
+<ol><li>Buat cadangan di HP lama.</li><li>Pindahkan file cadangan ke HP baru, misalnya lewat WhatsApp ke nomor sendiri atau Google Drive.</li><li>Di HP baru, buka aplikasi, lalu pulihkan dari cadangan.</li></ol>
+<p>Pada sebagian HP, tombol kirim langsung ke aplikasi lain tidak selalu berhasil untuk file. Jika itu terjadi, simpan file dahulu, lalu kirim secara manual.</p>
+</details>
+<details><summary>Pertanyaan yang sering muncul</summary>
+<p><b>Nilai tidak muncul atau proses gagal.</b> Periksa API key di menu Atur, lalu periksa koneksi internet. Jika masih gagal, periksa kuota akun Anthropic.</p>
+<p><b>Hasil teks kunci terpotong.</b> Pisahkan kunci menjadi beberapa bagian yang lebih pendek. Aplikasi juga memberi pesan jika teks terlalu panjang.</p>
+<p><b>Nama siswa atau nama materi salah tulis.</b> Buka menu Atur, lalu pilih Kelola nama. Perubahan otomatis mengikuti menu lain.</p>
+<p><b>Foto lembar jawaban kurang jelas.</b> Foto ulang dengan cahaya yang cukup dan kertas lurus. Nilai yang ragu tetap ditandai agar Bapak/Ibu dapat memeriksanya.</p>
+<p><b>Ingin mengganti tampilan warna.</b> Buka menu Atur, lalu pilih Tampilan.</p>
+<p><b>Data hilang setelah ganti HP.</b> Pulihkan dari file cadangan. Karena itu, biasakan membuat cadangan secara rutin.</p>
+<p><b>Tombol menu tidak terlihat.</b> Pastikan layar tidak tertutup browser. Geser bar menu ke kiri atau kanan untuk menemukan menu yang dicari.</p>
+</details>
+</div>
+</div>
 <nav>
   <button data-no="1" data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
   <button data-no="2" data-tab="rubrik"><span class="ic">🗝</span><span class="nm">Rubrik</span></button>
@@ -273,15 +354,6 @@ nav button.nav-sembunyi{display:none}
   <span id="halDot" class="hal-dot"></span>
 </nav>
 <main>
-<div id="bantuan" class="card" hidden>
-  <b>Cara cepat</b>
-  <ol>
-    <li>Isi kelas, rombel, dan mapel di tab Nilai.</li>
-    <li>Isi nama siswa, lalu foto lembar jawabannya.</li>
-    <li>Tekan Nilai. Hasil yang ragu ditandai kuning untuk dicek.</li>
-    <li>Buka tab Hasil untuk unduh Excel/CSV, cetak, atau bagikan lewat WA.</li>
-  </ol>
-  <div class="small" style="margin-top:8px">Tombol 🌙 di atas mengganti tema terang/gelap. Pilihan lengkap ada di Pengaturan.</div>
 </div>
 
 <section id="tab-nilai" class="tab active">
@@ -297,6 +369,8 @@ nav button.nav-sembunyi{display:none}
     <input type="text" id="mapel" placeholder="Tulis mapel baru, contoh: IPAS" style="margin-top:8px" hidden>
     <select id="babPilih" style="margin-top:8px"></select>
     <input type="text" id="bab" placeholder="Tulis bab baru, contoh: Bab 2 Tumbuhan" style="margin-top:8px" hidden>
+    <select id="materiPilih" style="margin-top:8px"></select>
+    <input type="text" id="materi" placeholder="Tulis materi baru, contoh: Fotosintesis" style="margin-top:8px" hidden>
     <textarea id="tp" rows="2" placeholder="Tujuan pembelajaran (opsional), contoh: Siswa dapat menjelaskan proses fotosintesis." style="margin-top:8px"></textarea>
     <datalist id="dlMapel"></datalist><datalist id="dlBab"></datalist>
     <input type="hidden" id="label">
@@ -368,6 +442,7 @@ nav button.nav-sembunyi{display:none}
 </div>
   <details class="card" id="panelFilter"><summary id="panelSum">Filter &amp; urutan</summary>
   <div class="row" style="margin-bottom:8px"><select id="filterHasil" style="flex:1"></select><select id="filterMapel" style="flex:1"></select></div>
+  <div class="row" style="margin-bottom:8px"><select id="filterMateri" style="flex:1"></select></div>
   <div id="chipStatus" class="chips">
     <button class="chip on" data-f="semua">Semua</button>
     <button class="chip" data-f="ok">Tuntas</button>
@@ -450,7 +525,7 @@ nav button.nav-sembunyi{display:none}
   <div class="card">
     <label>Rekap nilai per kelas</label>
     <div class="row"><select id="rkKelas"></select><select id="rkMapel"></select></div>
-    <div class="row" style="margin-top:8px"><select id="rkBab"></select><select id="rkJenis"><option value="asli">Nilai asli</option><option value="remedial">Nilai remedial</option><option value="akhir">Nilai akhir</option></select></div>
+    <div class="row" style="margin-top:8px"><select id="rkBab"></select><select id="rkMateri"></select><select id="rkJenis"><option value="asli">Nilai asli</option><option value="remedial">Nilai remedial</option><option value="akhir">Nilai akhir</option></select></div>
     <input type="text" id="rkCari" placeholder="Cari nama siswa" style="margin-top:8px">
     <p class="hint" id="rkInfo"></p>
   </div>
@@ -462,6 +537,7 @@ nav button.nav-sembunyi{display:none}
   <div class="card">
     <label for="anKelas">Kelas dan mapel</label>
     <select id="anKelas"></select>
+    <select id="anMateri" style="margin-top:8px"><option value="Semua">Semua materi</option></select>
     <div class="row" style="margin-top:10px"><button class="primary" id="anBuat">✨ Buat analisis AI</button></div>
     <p class="hint">Ringkasan angka dihitung di perangkat. AI hanya menerima ringkasan per bab dan per soal, tanpa nama siswa.</p>
     <div class="msg" id="anMsg"></div>
@@ -614,7 +690,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 95 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 99 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -622,7 +698,14 @@ nav button.nav-sembunyi{display:none}
     <div class="row" style="margin-top:10px"><button id="btnMuatKamera">Muat ulang daftar kamera</button></div>
     <p class="hint">Kalau hasil fotonya terlalu lebar atau kecil, pilih kamera lain (misalnya yang bukan "ultra wide" atau "0.5"). Senter dan zoom juga bisa diatur di layar kamera jika HP mendukung.</p>
   </div>
-  <div class="card">
+  <div class="card" id="namaCard">
+      <label>Kelola nama</label>
+      <p class="hint" style="margin-top:0">Mengganti nama mapel, bab, atau materi juga mengubah semua hasil dan pilihan di menu lain.</p>
+      <div class="row"><select id="namaJenis"><option value="mapel">Mapel</option><option value="bab">Bab</option><option value="materi">Materi</option></select><select id="namaItem" style="flex:2"></select></div>
+      <div class="row" style="margin-top:8px"><input type="text" id="namaBaru" placeholder="Nama baru, contoh: Matematika"><button id="namaGanti">Ganti nama</button></div>
+      <div class="msg" id="namaMsg"></div>
+    </div>
+    <div class="card">
     <label>Cadangan data</label>
     <p class="hint" style="margin-top:0">Data di browser bisa hilang kalau cache atau data situs dibersihkan. Simpan cadangan secara berkala ke file, lalu pulihkan kapan saja. Cadangan berisi rubrik, daftar nama, label, dan hasil nilai. API key sengaja tidak ikut disimpan.</p>
     <div class="row" style="margin-top:10px">
@@ -991,11 +1074,14 @@ function rkIsiFilter(){
   rkIsiOpsi($('#rkMapel'),['Semua'].concat(rkUnik(dk.map(mapelDari))),$('#rkMapel').value||'Semua');
   var pm=$('#rkMapel').value,dm=dk.filter(function(o){return pm==='Semua'||mapelDari(o)===pm});
   rkIsiOpsi($('#rkBab'),['Semua'].concat(rkUnik(dm.map(babDari))),$('#rkBab').value||'Semua');
+  var pb=$('#rkBab').value,db=dm.filter(function(o){return pb==='Semua'||babDari(o)===pb});
+  rkIsiOpsi($('#rkMateri'),['Semua'].concat(rkUnik(db.map(materiDari))),$('#rkMateri').value||'Semua');
 }
 function rkItems(){
   var k=$('#rkKelas').value,m=$('#rkMapel').value,b=$('#rkBab').value;
   return hasil.filter(function(o){
-    return o.label&&kelasDari(o)===k&&(m==='Semua'||mapelDari(o)===m)&&(b==='Semua'||babDari(o)===b);
+    var x=$('#rkMateri').value||'Semua';
+    return o.label&&kelasDari(o)===k&&(m==='Semua'||mapelDari(o)===m)&&(b==='Semua'||babDari(o)===b)&&(x==='Semua'||materiDari(o)===x);
   });
 }
 function rkSel(items,nama,label){
@@ -1064,6 +1150,7 @@ function rkSimpan(){store.set('hasil',hasil)}
 $('#rkKelas').addEventListener('change',function(){rkIsiFilter();renderRekap();dorongRekap()});
 $('#rkMapel').addEventListener('change',function(){$('#rkBab').value='Semua';rkIsiFilter();renderRekap();dorongRekap()});
 $('#rkBab').addEventListener('change',function(){renderRekap();dorongRekap()});
+$('#rkMateri').addEventListener('change',function(){renderRekap();dorongRekap()});
 $('#rkJenis').addEventListener('change',renderRekap);
 $('#rkCari').addEventListener('input',renderRekap);
 $('#rkTabel').addEventListener('change',function(e){
@@ -1364,9 +1451,10 @@ function isiDaftarLabel(){
 function updateLabel(){
   sudahSinkron={};
   isiDaftarLabel();
+  isiDaftarMateri();
   var mapelDaftar=daftarMapel();
   var mapelTeks=kanonikDari($('#mapel').value,mapelDaftar);
-  var d={kelas:$('#kelas').value,rombel:$('#rombel').value,mapel:mapelTeks,bab:kanonikDari($('#bab').value,daftarBab(mapelTeks)),tp:$('#tp').value.trim()};
+  var d={kelas:$('#kelas').value,rombel:$('#rombel').value,mapel:mapelTeks,bab:kanonikDari($('#bab').value,daftarBab(mapelTeks)),materi:$('#materi').value.trim(),tp:$('#tp').value.trim()};
   var v=[(d.kelas?'Kelas '+d.kelas+(d.rombel?' '+d.rombel:''):''),d.mapel,d.bab].filter(Boolean).join(' - ');
   $('#label').value=v;
   var ctx=[(d.kelas?'Kelas '+d.kelas+(d.rombel?'-'+d.rombel:''):''),d.mapel,d.bab].filter(Boolean).join(' · ');
@@ -1387,6 +1475,118 @@ $('#mapelPilih').addEventListener('change',function(){
   babBaruAktif=false;$('#bab').value='';
   updateLabel();
 });
+
+/* ---------- Materi dan TP per materi ---------- */
+var materiBaruAktif=false;
+function kunciMateriAktif(){
+  var m=kanonikDari($('#mapel').value,daftarMapel()),b=kanonikDari($('#bab').value,daftarBab(m)),x=$('#materi').value.trim();
+  return (m&&b&&x)?m+'|'+b+'|'+x:'';
+}
+function isiDaftarMateri(){
+  var m=kanonikDari($('#mapel').value,daftarMapel()),b=kanonikDari($('#bab').value,daftarBab(m));
+  var daftar=((store.get('daftarMateri',{})||{})[m+'|'+b])||[];
+  var inp=$('#materi').value.trim(),sel=$('#materiPilih');
+  sel.innerHTML=opsiDropdown(daftar,'— pilih materi —','＋ Materi baru…');
+  if(inp&&daftar.indexOf(inp)>=0&&!materiBaruAktif){sel.value=inp;$('#materi').hidden=true}
+  else if(materiBaruAktif||inp){sel.value='__baru__';$('#materi').hidden=false}
+  else{sel.value='';$('#materi').hidden=true}
+}
+function muatTpMateri(){
+  var k=kunciMateriAktif();
+  if(k)$('#tp').value=((store.get('tpMateri',{})||{})[k])||'';
+}
+function tambahMateri(){
+  var m=kanonikDari($('#mapel').value,daftarMapel()),b=kanonikDari($('#bab').value,daftarBab(m)),x=$('#materi').value.trim();
+  if(!m||!b||!x)return;
+  var dm=store.get('daftarMateri',{})||{},key=m+'|'+b,list=dm[key]||[];
+  if(list.indexOf(x)<0){list.push(x);list.sort(function(p,q){return p.localeCompare(q,'id')});dm[key]=list;store.set('daftarMateri',dm)}
+}
+$('#materiPilih').addEventListener('change',function(){
+  var v=this.value;
+  if(v==='__baru__'){materiBaruAktif=true;$('#materi').value='';$('#materi').hidden=false;$('#materi').focus()}
+  else{materiBaruAktif=false;$('#materi').value=v;$('#materi').hidden=true}
+  muatTpMateri();updateLabel();
+});
+$('#materi').addEventListener('change',function(){
+  this.value=this.value.trim();tambahMateri();materiBaruAktif=false;muatTpMateri();updateLabel();
+});
+$('#tp').addEventListener('input',function(){
+  var k=kunciMateriAktif();if(!k)return;
+  var t=store.get('tpMateri',{})||{};t[k]=this.value;store.set('tpMateri',t);
+});
+/* ---------- Kelola nama (mapel, bab, materi) ---------- */
+function pisahLabel(label){var a=String(label||'').split(' - ');return {kelas:a[0]||'',mapel:a[1]||'',bab:a.slice(2).join(' - ')}}
+function buatLabel(p){return [p.kelas,p.mapel,p.bab].filter(Boolean).join(' - ')}
+function isiNamaItem(){
+  var j=$('#namaJenis').value,opsi=[];
+  if(j==='mapel')daftarMapel().forEach(function(m){opsi.push([m,m])});
+  else if(j==='bab')daftarMapel().forEach(function(m){daftarBab(m).forEach(function(b){opsi.push([m+'|'+b,m+' · '+b])})});
+  else{var dm=store.get('daftarMateri',{})||{};Object.keys(dm).forEach(function(k){(dm[k]||[]).forEach(function(x){opsi.push([k+'|'+x,k.split('|').join(' · ')+' · '+x])})})}
+  $('#namaItem').innerHTML=opsi.length?opsi.map(function(o){return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>'}).join(''):'<option value="">(belum ada)</option>';
+}
+function ubahNama(tf){
+  hasil.forEach(function(o){
+    var p=Object.assign({materi:o.materi||''},pisahLabel(o.label)),q=tf(p);
+    o.label=buatLabel(q);if(q.materi!==undefined)o.materi=q.materi;
+  });
+  store.set('hasil',hasil);
+  var rp=store.get('hasilRP',[]);
+  if(Array.isArray(rp)){rp.forEach(function(h){h.label=buatLabel(tf(pisahLabel(h.label)))});store.set('hasilRP',rp)}
+  var lr=store.get('lembarRP',[]);
+  if(Array.isArray(lr)){lr.forEach(function(it){
+    var km=String(it.kunciKM||'');
+    var q=tf({kelas:km.split(' - ')[0]||'',mapel:km.split(' - ')[1]||'',bab:it.bab||''});
+    it.kunciKM=[q.kelas,q.mapel].filter(Boolean).join(' - ');it.bab=q.bab;it.id=it.kunciKM+'|'+it.bab+'|'+it.jenis;
+  });store.set('lembarRP',lr)}
+  ['jejakRP','bandingRP'].forEach(function(k){
+    var obj=store.get(k,{});if(!obj||typeof obj!=='object')return;
+    var baru={};
+    Object.keys(obj).forEach(function(key){
+      var ps=key.split('|'),km=ps[0]||'',bb=ps[1]||'',sisa=ps.slice(2).join('|');
+      var q=tf({kelas:km.split(' - ')[0]||'',mapel:km.split(' - ')[1]||'',bab:bb});
+      baru[[[q.kelas,q.mapel].filter(Boolean).join(' - '),q.bab,sisa].join('|')]=obj[key];
+    });
+    store.set(k,baru);
+  });
+  var dm=store.get('daftarMateri',{})||{},bm={},tm=store.get('tpMateri',{})||{},bt={};
+  Object.keys(dm).forEach(function(k){
+    var a=k.split('|');
+    (dm[k]||[]).forEach(function(x){
+      var q=tf({kelas:'',mapel:a[0]||'',bab:a[1]||'',materi:x});
+      var nk=q.mapel+'|'+q.bab;bm[nk]=bm[nk]||[];if(bm[nk].indexOf(q.materi)<0)bm[nk].push(q.materi);
+    });
+  });
+  Object.keys(tm).forEach(function(k){
+    var a=k.split('|');var q=tf({kelas:'',mapel:a[0]||'',bab:a[1]||'',materi:a.slice(2).join('|')});
+    bt[q.mapel+'|'+q.bab+'|'+(q.materi||'')]=tm[k];
+  });
+  store.set('daftarMateri',bm);store.set('tpMateri',bt);
+  var pre=tf({kelas:'',mapel:$('#mapel').value.trim(),bab:$('#bab').value.trim(),materi:$('#materi').value.trim()});
+  $('#mapel').value=pre.mapel;$('#bab').value=pre.bab;$('#materi').value=pre.materi||'';
+  sudahSinkron={};
+  isiDaftarLabel();updateLabel();
+  isiGabung();if(typeof renderHasil==='function')renderHasil();
+  rkIsiFilter();renderRekap();isiNamaItem();
+}
+$('#namaJenis').addEventListener('change',isiNamaItem);
+$('#namaGanti').addEventListener('click',function(){
+  var j=$('#namaJenis').value,val=$('#namaItem').value,ke=$('#namaBaru').value.trim(),msg=$('#namaMsg');
+  if(!val){msg.textContent='Pilih dulu yang akan diganti namanya.';return}
+  if(!ke){msg.textContent='Tulis nama barunya.';return}
+  var dari,tf;
+  if(j==='mapel'){dari=val;tf=function(p){return p.mapel===val?Object.assign({},p,{mapel:ke}):p}}
+  else if(j==='bab'){var a=val.split('|'),m=a[0],b=a.slice(1).join('|');dari=b;tf=function(p){return (p.mapel===m&&p.bab===b)?Object.assign({},p,{bab:ke}):p}}
+  else{var c=val.split('|'),m2=c[0],b2=c[1],x2=c.slice(2).join('|');dari=x2;tf=function(p){return (p.mapel===m2&&p.bab===b2&&p.materi===x2)?Object.assign({},p,{materi:ke}):p}}
+  var n=0;
+  hasil.forEach(function(o){
+    var p=pisahLabel(o.label),q=tf(Object.assign({materi:o.materi||''},p));
+    if(q.mapel!==p.mapel||q.bab!==p.bab||(q.materi||'')!==(o.materi||''))n++;
+  });
+  if(!confirm('Ganti "'+dari+'" menjadi "'+ke+'"?\n'+n+' hasil akan ikut berubah.\n\nSudah mencadangkan data? Tindakan ini tidak bisa dibatalkan dengan satu tombol.'))return;
+  ubahNama(tf);
+  msg.textContent='Berhasil. '+n+' hasil diperbarui menjadi "'+ke+'".';
+  $('#namaBaru').value='';
+});
 $('#babPilih').addEventListener('change',function(){
   var v=this.value;
   if(v==='__baru__'){babBaruAktif=true;$('#bab').value='';$('#bab').hidden=false;$('#bab').focus()}
@@ -1394,7 +1594,10 @@ $('#babPilih').addEventListener('change',function(){
   updateLabel();
 });
 $('#bab').addEventListener('change',function(){this.value=kanonikDari(this.value,daftarBab($('#mapel').value));if(daftarBab($('#mapel').value).indexOf(this.value)>=0)babBaruAktif=false;updateLabel()});
-$('#btnBantuan').addEventListener('click',function(){var b=$('#bantuan');b.hidden=!b.hidden});
+function bukaPanduan(buka){var p=$('#panduan');p.hidden=!buka;if(buka){p.scrollTop=0;$('#pdKembali').focus()}else{$('#btnBantuan').focus()}}
+$('#btnBantuan').addEventListener('click',function(){bukaPanduan(true)});
+$('#pdKembali').addEventListener('click',function(){bukaPanduan(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('#panduan').hidden)bukaPanduan(false)});
 $('#rubrik').addEventListener('input',function(){simpanRubrikAktif(this.value);fitTinggi(this)});
 function fitTinggi(el){el.style.height='auto';el.style.height=Math.max(el.scrollHeight+4,120)+'px'}
 $('#ulangSonnet').addEventListener('change',function(){store.set('ulangSonnet',this.checked)});
@@ -1810,7 +2013,7 @@ function normalisasi(s,label,list,namaPilihan){
     nama=c.nama;
     if(!c.ok)ragu.unshift('nama "'+(s.nama||'')+'" tidak ada di daftar siswa, periksa');
   }
-  var o={id:Date.now()+Math.random(),label:label,nama:nama,jawaban:jw,perbaikan:s.perbaikan||'',catatan:s.catatan||'',ragu:ragu};
+  var ldR=store.get('labelDetail',null)||{};var o={id:Date.now()+Math.random(),label:label,materi:ldR.materi||'',tp:ldR.tp||'',nama:nama,jawaban:jw,perbaikan:s.perbaikan||'',catatan:s.catatan||'',ragu:ragu};
   hitung(o);return o;
 }
 function hitung(o){
@@ -2086,7 +2289,8 @@ function nilai100(o){return o.maks?Math.round(o.total/o.maks*1000)/10:0}
 var filterAktif=null;
 function KKM(){return +store.get('kkm',70)||70}
 function labelDaftar(){var l=[];hasil.forEach(function(o){var k=o.label||'';if(l.indexOf(k)<0)l.push(k)});return l}
-var filterMapel=null;
+var filterMapel=null;var filterMateri=null;
+function materiDari(o){return o.materi||'(tanpa materi)'}
 function mapelDari(o){var p=(o.label||'').split(' - ');return p.length>1&&p[1]?p[1]:'(tanpa mapel)'}
 function babDari(o){var p=(o.label||'').split(' - ');return p.length>2?p.slice(2).join(' - '):'(tanpa bab)'}
 var filterStatus='semua',filterCari='',urutHasil='nama';
@@ -2104,6 +2308,7 @@ function indeksTampil(){
   hasil.forEach(function(o,i){
     if(filterAktif!==null&&(o.label||'')!==filterAktif)return;
     if(filterMapel!==null&&mapelDari(o)!==filterMapel)return;
+    if(filterMateri!==null&&materiDari(o)!==filterMateri)return;
     if(kata&&String(o.nama||'').toLowerCase().indexOf(kata)<0)return;
     if(!cocokStatus(o,filterStatus))return;
     idxs.push(i);
@@ -2139,6 +2344,13 @@ function isiFilterMapel(){
   $('#filterMapel').value=filterMapel===null?'__semua__':filterMapel;
 }
 $('#filterMapel').addEventListener('change',function(){filterMapel=this.value==='__semua__'?null:this.value;renderHasil()});
+function isiFilterMateri(){
+  var daftar=rkUnik(hasil.map(materiDari));
+  if(filterMateri!==null&&daftar.indexOf(filterMateri)<0)filterMateri=null;
+  $('#filterMateri').innerHTML='<option value="__semua__">Semua materi</option>'+daftar.map(function(m){return '<option value="'+esc(m)+'">'+esc(m)+'</option>'}).join('');
+  $('#filterMateri').value=filterMateri===null?'__semua__':filterMateri;
+}
+$('#filterMateri').addEventListener('change',function(){filterMateri=this.value==='__semua__'?null:this.value;renderHasil();if(filterMateri&&filterMateri.charAt(0)!=='(')aturNilai({materi:filterMateri},'hasil')});
 /* ---------- Grafik SVG (tanpa pustaka tambahan) ---------- */
 function svgCincin(persen,judul){
   var r=42,C=2*Math.PI*r,p=Math.max(0,Math.min(100,persen||0));
@@ -2265,7 +2477,7 @@ function renderHasil(){
   $('#panelSum').textContent='Filter & urutan'+(jumlahAktif?' · '+jumlahAktif+' aktif':'');
   renderBiaya();
   isiFilterHasil();
-  isiFilterMapel();
+  isiFilterMapel();isiFilterMateri();
   renderRekapBab();
   renderKalibrasi();
   var box=$('#hasil');
@@ -3035,7 +3247,7 @@ $('#btnXlsx').addEventListener('click',function(){
 
 /* ---------- Cadangan ---------- */
 function blobCadangan(){
-  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),labelDetail:store.get('labelDetail',null),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),kebijakanStandar:ambilKebijakanStandar(),hasilRP:store.get('hasilRP',[]),lembarRP:store.get('lembarRP',[]),jejakRP:store.get('jejakRP',{}),bandingRP:store.get('bandingRP',{}),daftarNama:store.get('roster',''),rosterKelas:rosterKelasObj(),model:store.get('model','claude-haiku-5-5'),hasil:hasil};
+  var data={app:APP,versi:6,dibuat:new Date().toISOString(),label:store.get('label',''),labelDetail:store.get('labelDetail',null),daftarMateri:store.get('daftarMateri',{}),tpMateri:store.get('tpMateri',{}),rubriks:store.get('rubriks',{}),rubrikAktif:store.get('rubrikAktif',''),kebijakanStandar:ambilKebijakanStandar(),hasilRP:store.get('hasilRP',[]),lembarRP:store.get('lembarRP',[]),jejakRP:store.get('jejakRP',{}),bandingRP:store.get('bandingRP',{}),daftarNama:store.get('roster',''),rosterKelas:rosterKelasObj(),model:store.get('model','claude-haiku-5-5'),hasil:hasil};
   return new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
 }
 $('#btnBackup').addEventListener('click',function(){unduhFile(blobCadangan(),'cadangan-penilai-'+hari()+'.json')});
@@ -3049,6 +3261,8 @@ $('#fileRestore').addEventListener('change',async function(){
     if(!confirm('Pulihkan akan MENGGANTI data di HP ini dengan isi cadangan. Lanjutkan?'))return;
     store.set('label',data.label||'');
     store.set('labelDetail',data.labelDetail||null);
+    if(data.daftarMateri)store.set('daftarMateri',data.daftarMateri);
+    if(data.tpMateri)store.set('tpMateri',data.tpMateri);
     store.set('rubriks',data.rubriks||(data.rubrik!=null?{'rb-pulih':{nama:'Kunci 1',teks:data.rubrik}}:{}));
     store.set('rubrikAktif',data.rubrikAktif||'');
     if(data.kebijakanStandar)store.set('kebijakanStandar',data.kebijakanStandar);
@@ -3494,6 +3708,12 @@ function isiPilihanKM(sel){
   if(list.indexOf(keep)>=0)sel.value=keep;
 }
 function siswaKM(key){return hasil.filter(function(o){return o.label&&kunciKM(o)===key})}
+function siswaAn(key){var m=$('#anMateri')?$('#anMateri').value:'Semua';return siswaKM(key).filter(function(o){return !m||m==='Semua'||materiDari(o)===m})}
+function isiAnMateri(){
+  var daftar=rkUnik(siswaKM($('#anKelas').value).map(materiDari)),sel=$('#anMateri'),keep=sel.value;
+  sel.innerHTML='<option value="Semua">Semua materi</option>'+daftar.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('');
+  sel.value=daftar.indexOf(keep)>=0?keep:'Semua';
+}
 function statKM(list){
   var jum=0,tuntas=0,bab={},soal={};
   list.forEach(function(o){
@@ -3522,7 +3742,7 @@ function renderStatAn(s){
     '<p class="small" style="margin-top:12px"><b>Soal paling sulit</b></p>'+s.soal.slice(0,5).map(function(x){return '<div class="small">No '+esc(x.no)+': '+x.persen+'% benar</div>'}).join('');
 }
 function tampilAnalisisTersimpan(){
-  var key=$('#anKelas').value,s=statKM(siswaKM(key));
+  var key=$('#anKelas').value;isiAnMateri();var s=statKM(siswaAn(key));
   renderStatAn(s);renderGrafik();
   var simpan=store.get('analisis',{})[key];
   $('#anHasil').hidden=!simpan;
@@ -3641,12 +3861,12 @@ function grafTrenSeri(tren,jenis,angka,ambang,P,warnaSeri){
 }
 function renderGrafik(){
   var key=$('#anKelas').value,card=$('#grafCard');
-  if(!key||!siswaKM(key).length){card.hidden=true;grafTerakhir=null;return}
+  if(!key||!siswaAn(key).length){card.hidden=true;grafTerakhir=null;return}
   card.hidden=false;
   var banding=$('#grafMode').value==='banding';
   var keys=banding?kunciBanding(key):[key];
   if(keys.indexOf(key)<0)keys.unshift(key);
-  var seriList=keys.map(function(k){return {nama:k.split(' - ')[0],list:siswaKM(k)}}).filter(function(s){return s.list.length});
+  var seriList=keys.map(function(k){return {nama:k.split(' - ')[0],list:siswaAn(k)}}).filter(function(s){return s.list.length});
   var babs=[];
   seriList.forEach(function(s){s.list.forEach(function(o){var b=babDari(o);if(babs.indexOf(b)<0)babs.push(b)})});
   babs.sort(function(a,b){return cmpNatural(babPendek(a),babPendek(b))});
@@ -3748,7 +3968,7 @@ async function docxGrafik(judul,list){
   return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 $('#anBuat').addEventListener('click',async function(){
-  var key=$('#anKelas').value,list=siswaKM(key);
+  var key=$('#anKelas').value,list=siswaAn(key);
   if(!key||!list.length){alert('Belum ada hasil untuk kelas dan mapel ini.');return}
   if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
   var s=statKM(list),btn=this;btn.disabled=true;$('#anMsg').textContent='Claude sedang menganalisis...';
@@ -4415,7 +4635,7 @@ function labelAktif(){
   var kelasTeks=kl?('Kelas '+kl+(rb?' '+rb:'')):'';
   var mapel=kanonikDari($('#mapel').value,daftarMapel());
   var bab=kanonikDari($('#bab').value,daftarBab(mapel));
-  return {kelasTeks:kelasTeks,mapel:mapel,bab:bab,kunciKM:mapel?kelasTeks+' - '+mapel:''};
+  return {kelasTeks:kelasTeks,mapel:mapel,bab:bab,materi:$('#materi').value.trim(),kunciKM:mapel?kelasTeks+' - '+mapel:''};
 }
 function pilihJikaAda(sel,nilai){
   if(!sel||!nilai)return;
@@ -4426,6 +4646,7 @@ function aturNilai(p,sumber){
   if(p.rombel!==undefined)$('#rombel').value=p.rombel;
   if(p.mapel!==undefined){mapelBaruAktif=false;$('#mapel').value=p.mapel}
   if(p.bab!==undefined){babBaruAktif=false;$('#bab').value=p.bab}
+  if(p.materi!==undefined){materiBaruAktif=false;$('#materi').value=p.materi}
   updateLabel();
   syncRoster();isiDaftarSiswa();
   if(sumber)sudahSinkron[sumber]=true;
@@ -4434,16 +4655,16 @@ function sinkronTab(t){
   if(sudahSinkron[t])return;
   sudahSinkron[t]=true;
   var a=labelAktif();
-  if(t==='rekap'){rkIsiFilter();pilihJikaAda($('#rkKelas'),a.kelasTeks);rkIsiFilter();pilihJikaAda($('#rkMapel'),a.mapel);rkIsiFilter();pilihJikaAda($('#rkBab'),a.bab)}
-  else if(t==='analisis'){isiPilihanKM($('#anKelas'));pilihJikaAda($('#anKelas'),a.kunciKM)}
+  if(t==='rekap'){rkIsiFilter();pilihJikaAda($('#rkKelas'),a.kelasTeks);rkIsiFilter();pilihJikaAda($('#rkMapel'),a.mapel);rkIsiFilter();pilihJikaAda($('#rkBab'),a.bab);rkIsiFilter();pilihJikaAda($('#rkMateri'),a.materi)}
+  else if(t==='analisis'){isiPilihanKM($('#anKelas'));pilihJikaAda($('#anKelas'),a.kunciKM);isiAnMateri();pilihJikaAda($('#anMateri'),a.materi)}
   else if(t==='rapor'){isiPilihanKM($('#rpKelas'));pilihJikaAda($('#rpKelas'),a.kunciKM)}
   else if(t==='rm'){isiPilihanKM($('#rmKelas'));pilihJikaAda($('#rmKelas'),a.kunciKM);rmIsiBab();pilihJikaAda($('#rmBab'),a.bab)}
-  else if(t==='hasil'){filterMapel=a.mapel||null;renderHasil()}
+  else if(t==='hasil'){filterMapel=a.mapel||null;filterMateri=a.materi||null;renderHasil()}
 }
 function dorongRekap(){
   var k=$('#rkKelas').value,m=$('#rkMapel').value,b=$('#rkBab').value,p={};
   if(k.indexOf('Kelas ')===0){var q=k.slice(6).split(' ');p.kelas=q[0];p.rombel=q[1]||''}
-  if(m&&m!=='Semua'&&m.charAt(0)!=='('){p.mapel=m;p.bab=(b&&b!=='Semua'&&b.charAt(0)!=='(')?b:''}
+  if(m&&m!=='Semua'&&m.charAt(0)!=='('){p.mapel=m;p.bab=(b&&b!=='Semua'&&b.charAt(0)!=='(')?b:'';var x=$('#rkMateri').value;p.materi=(x&&x!=='Semua'&&x.charAt(0)!=='(')?x:''}
   aturNilai(p,'rekap');
 }
 function dorongKM(sel,sumber,babSel){
@@ -4455,6 +4676,7 @@ function dorongKM(sel,sumber,babSel){
   aturNilai(p,sumber);
 }
 $('#anKelas').addEventListener('change',function(){dorongKM(this,'analisis')});
+$('#anMateri').addEventListener('change',function(){tampilAnalisisTersimpan();if(this.value!=='Semua'&&this.value.charAt(0)!=='(')aturNilai({materi:this.value},'analisis')});
 $('#rpKelas').addEventListener('change',function(){dorongKM(this,'rapor')});
 $('#rmKelas').addEventListener('change',function(){rmIsiBab();dorongKM(this,'rm',$('#rmBab'))});
 $('#rmBab').addEventListener('change',function(){if(this.value)aturNilai({bab:this.value},'rm')});
@@ -4465,7 +4687,7 @@ function segarkanTab(t){
   if(t==='rapor'){isiPilihanKM($('#rpKelas'));renderRapor()}
   if(t==='rm'){isiPilihanKM($('#rmKelas'));rmIsiBab();renderRM()}
   if(t==='rekap'){rkIsiFilter();renderRekap()}
-  if(t==='set'){isiGabung()}
+  if(t==='set'){isiGabung();isiNamaItem()}
   if(t==='soal'){renderBank();if(!$('#soalLabel').value&&$('#label').value)$('#soalLabel').value=$('#label').value}
 }
 
