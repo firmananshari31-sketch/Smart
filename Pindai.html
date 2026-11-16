@@ -252,7 +252,7 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v86</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v88</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon">✨ Neon</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <nav>
   <button data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
@@ -596,7 +596,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 86 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 88 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -609,7 +609,6 @@ nav button.nav-sembunyi{display:none}
     <p class="hint" style="margin-top:0">Data di browser bisa hilang kalau cache atau data situs dibersihkan. Simpan cadangan secara berkala ke file, lalu pulihkan kapan saja. Cadangan berisi rubrik, daftar nama, label, dan hasil nilai. API key sengaja tidak ikut disimpan.</p>
     <div class="row" style="margin-top:10px">
       <button id="btnBackup">💾 Simpan cadangan (.json)</button>
-      <button id="btnKirimCadang">📤 Kirim cadangan (WA, email, Drive)</button>
       <button id="btnRestore">♻ Pulihkan dari cadangan</button>
       <button id="btnGabung">🔗 Gabung dengan cadangan lain</button>
     </div>
@@ -1042,9 +1041,9 @@ function renderRekap(){
   }),sum:[''].concat(sumRata.map(function(v){return v===null?'':v})).concat(['']),tuntas:[''].concat(sumTuntas.map(function(v){return v})).concat([''])};
 }
 function rkSimpan(){store.set('hasil',hasil)}
-$('#rkKelas').addEventListener('change',function(){$('#rkMapel').value='Semua';$('#rkBab').value='Semua';rkIsiFilter();renderRekap()});
-$('#rkMapel').addEventListener('change',function(){$('#rkBab').value='Semua';rkIsiFilter();renderRekap()});
-$('#rkBab').addEventListener('change',renderRekap);
+$('#rkKelas').addEventListener('change',function(){rkIsiFilter();renderRekap();dorongRekap()});
+$('#rkMapel').addEventListener('change',function(){$('#rkBab').value='Semua';rkIsiFilter();renderRekap();dorongRekap()});
+$('#rkBab').addEventListener('change',function(){renderRekap();dorongRekap()});
 $('#rkJenis').addEventListener('change',renderRekap);
 $('#rkCari').addEventListener('input',renderRekap);
 $('#rkTabel').addEventListener('change',function(e){
@@ -1343,6 +1342,7 @@ function isiDaftarLabel(){
   else{bSel.value='';$('#bab').hidden=true}
 }
 function updateLabel(){
+  sudahSinkron={};
   isiDaftarLabel();
   var mapelDaftar=daftarMapel();
   var mapelTeks=kanonikDari($('#mapel').value,mapelDaftar);
@@ -3014,7 +3014,6 @@ function blobCadangan(){
   return new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
 }
 $('#btnBackup').addEventListener('click',function(){unduhFile(blobCadangan(),'cadangan-penilai-'+hari()+'.json')});
-$('#btnKirimCadang').addEventListener('click',function(){kirimBerkas(blobCadangan(),'cadangan-penilai-'+hari()+'.json','application/json')});
 $('#btnRestore').addEventListener('click',function(){$('#fileRestore').click()});
 $('#fileRestore').addEventListener('change',async function(){
   var f=this.files[0];this.value='';
@@ -4087,7 +4086,61 @@ $('#tab-rm').addEventListener('click',function(e){
 });
 
 /* Muat ulang isi tab saat dibuka */
+/* ---------- Pilihan kelas, mapel, dan bab bersama ----------
+   Menu Nilai adalah sumber pilihan. Menu lain disesuaikan saat dibuka, dan
+   perubahan di menu lain dikembalikan ke menu Nilai. */
+var sudahSinkron={};
+function labelAktif(){
+  var kl=$('#kelas').value,rb=$('#rombel').value;
+  var kelasTeks=kl?('Kelas '+kl+(rb?' '+rb:'')):'';
+  var mapel=kanonikDari($('#mapel').value,daftarMapel());
+  var bab=kanonikDari($('#bab').value,daftarBab(mapel));
+  return {kelasTeks:kelasTeks,mapel:mapel,bab:bab,kunciKM:mapel?kelasTeks+' - '+mapel:''};
+}
+function pilihJikaAda(sel,nilai){
+  if(!sel||!nilai)return;
+  for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===nilai){sel.value=nilai;return}}
+}
+function aturNilai(p,sumber){
+  if(p.kelas!==undefined)$('#kelas').value=p.kelas;
+  if(p.rombel!==undefined)$('#rombel').value=p.rombel;
+  if(p.mapel!==undefined){mapelBaruAktif=false;$('#mapel').value=p.mapel}
+  if(p.bab!==undefined){babBaruAktif=false;$('#bab').value=p.bab}
+  updateLabel();
+  syncRoster();isiDaftarSiswa();
+  if(sumber)sudahSinkron[sumber]=true;
+}
+function sinkronTab(t){
+  if(sudahSinkron[t])return;
+  sudahSinkron[t]=true;
+  var a=labelAktif();
+  if(t==='rekap'){rkIsiFilter();pilihJikaAda($('#rkKelas'),a.kelasTeks);rkIsiFilter();pilihJikaAda($('#rkMapel'),a.mapel);rkIsiFilter();pilihJikaAda($('#rkBab'),a.bab)}
+  else if(t==='analisis'){isiPilihanKM($('#anKelas'));pilihJikaAda($('#anKelas'),a.kunciKM)}
+  else if(t==='rapor'){isiPilihanKM($('#rpKelas'));pilihJikaAda($('#rpKelas'),a.kunciKM)}
+  else if(t==='rm'){isiPilihanKM($('#rmKelas'));pilihJikaAda($('#rmKelas'),a.kunciKM);rmIsiBab();pilihJikaAda($('#rmBab'),a.bab)}
+  else if(t==='hasil'){filterMapel=a.mapel||null;renderHasil()}
+}
+function dorongRekap(){
+  var k=$('#rkKelas').value,m=$('#rkMapel').value,b=$('#rkBab').value,p={};
+  if(k.indexOf('Kelas ')===0){var q=k.slice(6).split(' ');p.kelas=q[0];p.rombel=q[1]||''}
+  if(m&&m!=='Semua'&&m.charAt(0)!=='('){p.mapel=m;p.bab=(b&&b!=='Semua'&&b.charAt(0)!=='(')?b:''}
+  aturNilai(p,'rekap');
+}
+function dorongKM(sel,sumber,babSel){
+  var k=sel.value;if(!k)return;
+  var i=k.indexOf(' - ');
+  var kel=i<0?k:k.slice(0,i),mp=i<0?'':k.slice(i+3),p={};
+  if(kel.indexOf('Kelas ')===0){var q=kel.slice(6).split(' ');p.kelas=q[0];p.rombel=q[1]||''}
+  if(mp&&mp.charAt(0)!=='('){p.mapel=mp;p.bab=babSel?babSel.value:''}
+  aturNilai(p,sumber);
+}
+$('#anKelas').addEventListener('change',function(){dorongKM(this,'analisis')});
+$('#rpKelas').addEventListener('change',function(){dorongKM(this,'rapor')});
+$('#rmKelas').addEventListener('change',function(){rmIsiBab();dorongKM(this,'rm',$('#rmBab'))});
+$('#rmBab').addEventListener('change',function(){if(this.value)aturNilai({bab:this.value},'rm')});
+$('#filterMapel').addEventListener('change',function(){if(this.value!=='__semua__')aturNilai({mapel:this.value,bab:''},'hasil')});
 function segarkanTab(t){
+  sinkronTab(t);
   if(t==='analisis'){isiPilihanKM($('#anKelas'));tampilAnalisisTersimpan()}
   if(t==='rapor'){isiPilihanKM($('#rpKelas'));renderRapor()}
   if(t==='rm'){isiPilihanKM($('#rmKelas'));rmIsiBab();renderRM()}
