@@ -252,7 +252,7 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v85</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" type="button" aria-label="Bantuan" title="Bantuan">?</button><span class="badge">v86</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon">✨ Neon</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <nav>
   <button data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
@@ -596,7 +596,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 85 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 86 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -2528,22 +2528,20 @@ var JENIS_LABEL={PG:'Pilihan ganda',MCMA:'PG kompleks',BS:'Benar-salah',Menjodoh
 async function kirimBerkas(blob,fn,mime){
   var gagal='';
   if(navigator.share){
-    /* Coba beberapa tipe file; Chrome kadang menolak tipe tertentu */
-    var tipe=[mime,'application/octet-stream'];
-    for(var i=0;i<tipe.length;i++){
-      try{
-        var file=new File([blob],fn,{type:tipe[i]});
-        await navigator.share({files:[file],title:fn});
-        return;
-      }catch(e){
-        if(e&&e.name==='AbortError')return;
-        gagal=(e&&e.name?e.name:'error')+(e&&e.message?': '+e.message:'');
-      }
+    /* Satu kali coba saja: Chrome hanya mengizinkan berbagi file bila klik masih berlaku.
+       Tipe text/plain dipakai karena Chrome Android lebih sering menerimanya; nama tetap .json */
+    try{
+      var file=new File([blob],fn,{type:'text/plain'});
+      await navigator.share({files:[file],title:fn});
+      return;
+    }catch(e){
+      if(e&&e.name==='AbortError')return;
+      gagal=(e&&e.name?e.name:'error');
     }
   }else{gagal='browser tidak mendukung berbagi (buka lewat https)'}
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(a.href)},60000);
-  toast('File disimpan ke Unduhan. Berbagi tidak berhasil'+(gagal?' ('+gagal+')':'')+'.');
+  toast('File disimpan ke Unduhan. Berbagi tidak berhasil ('+gagal+').');
 }
 function pdfTeksBuat(blok,opsi){
   opsi=opsi||{};var dua=opsi.kolom===2;
