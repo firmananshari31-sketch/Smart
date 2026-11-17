@@ -267,6 +267,15 @@ nav button.nav-sembunyi{display:none}
 .hal-dot{flex:0 0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:0 6px 0 2px}
 .hal-titik{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer}
 .hal-titik.on{background:var(--accent)}
+/* Filter seragam: bar ringkas di setiap menu, lembar pilihan sama untuk semua menu */
+.flt-sembunyi{display:none!important}
+.flt-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font-size:14px;text-align:left;font-weight:600}
+.flt-bar .flt-isi{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.flt-bar .flt-ub{color:var(--accent);font-weight:700;white-space:nowrap}
+.lf-latar{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.lf-latar[hidden]{display:none}
+.lf-kotak{background:var(--bg);color:var(--text);width:100%;max-width:640px;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
+.lf-atas{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 /* Bar menu: satu baris yang bisa digeser kiri-kanan */
 nav{overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;justify-content:flex-start;gap:8px;scroll-snap-type:x proximity;scrollbar-width:none;touch-action:pan-x;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 nav button{flex:0 0 auto;width:auto;min-width:0;max-width:none;padding:8px 14px;scroll-snap-align:center}
@@ -277,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v110</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v111</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -348,6 +357,10 @@ nav button.nav-sembunyi{display:flex}
 <p class="hint" style="margin-top:18px">© 2026 Firman Anshari · SDIT Qardhan Hasana · Hak cipta dilindungi. Aplikasi ini untuk keperluan internal sekolah.</p>
 </div>
 </div>
+<div id="lembarFilter" class="lf-latar" hidden><div class="lf-kotak" role="dialog" aria-modal="true" aria-labelledby="lfJudul">
+<div class="lf-atas"><b id="lfJudul">Pilih kelas dan mapel</b><button id="lfSelesai" class="primary" type="button">Selesai</button></div>
+<div id="lfIsi"></div>
+</div></div>
 <nav>
   <button data-no="1" data-tab="nilai" class="on"><span class="ic">📝</span><span class="nm">Nilai</span></button>
   <button data-no="2" data-tab="rubrik"><span class="ic">🗝</span><span class="nm">Rubrik</span></button>
@@ -707,7 +720,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 110 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 111 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1460,6 +1473,7 @@ function isiDaftarLabel(){
 }
 function updateLabel(){
   sudahSinkron={};
+  if(typeof updateFltBar==='function')updateFltBar();
   isiDaftarLabel();
   isiDaftarMateri();
   var mapelDaftar=daftarMapel();
@@ -4305,6 +4319,43 @@ $('#rpHaluskan').addEventListener('click',async function(){
   }catch(e){msg.textContent='Gagal: '+(e.message||e)}
   finally{btn.disabled=false}
 });
+/* ---------- Filter seragam di semua menu ---------- */
+(function(){
+  var lf=$('#lembarFilter'),isiLf=$('#lfIsi');
+  var kartu=document.getElementById('kelas')&&document.getElementById('kelas').closest('.card');
+  if(kartu)isiLf.appendChild(kartu);
+  var sembunyi={tab_rekap:['rkKelas','rkMapel','rkBab','rkMateri'],tab_hasil:['filterHasil','filterMapel','filterMateri'],tab_analisis:['anKelas','anMateri','anBab'],tab_rapor:['rpKelas','rpBab','rpMateri'],tab_rm:['rmKelas','rmBab']};
+  Object.keys(sembunyi).forEach(function(t){
+    sembunyi[t].forEach(function(id){
+      var el=document.getElementById(id);if(!el)return;
+      el.classList.add('flt-sembunyi');
+      var lb=document.querySelector('label[for="'+id+'"]');if(lb)lb.classList.add('flt-sembunyi');
+      var row=el.parentElement;
+      if(row&&row.classList.contains('row')&&[].every.call(row.children,function(c){return c.classList.contains('flt-sembunyi')||c.tagName==='LABEL'&&c.classList.contains('flt-sembunyi')}))row.classList.add('flt-sembunyi');
+    });
+  });
+  document.querySelectorAll('section.tab').forEach(function(sec){
+    var bar=document.createElement('button');
+    bar.type='button';bar.className='flt-bar';bar.setAttribute('data-flt','1');
+    bar.innerHTML='<span class="flt-isi">Memuat...</span><span class="flt-ub">Ubah ▾</span>';
+    sec.insertBefore(bar,sec.firstChild);
+  });
+  document.querySelectorAll('[data-flt]').forEach(function(b){b.addEventListener('click',function(){lf.hidden=false})});
+  $('#lfSelesai').addEventListener('click',function(){
+    lf.hidden=true;
+    var aktif=document.querySelector('nav button.on');
+    if(aktif)segarkanTab(aktif.dataset.tab);
+    updateFltBar();
+  });
+  lf.addEventListener('click',function(e){if(e.target===lf){lf.hidden=true;updateFltBar()}});
+  updateFltBar();
+})();
+function updateFltBar(){
+  var a=labelAktif();
+  var teks=(a.kelasTeks||'')?[a.kelasTeks,a.mapel,a.bab,a.materi&&a.materi!=='(tanpa materi)'?a.materi:''].filter(function(x){return x&&x.trim()}).join(' · '):'';
+  var isi=teks||'Belum memilih kelas dan mapel';
+  document.querySelectorAll('[data-flt] .flt-isi').forEach(function(el){el.textContent=isi});
+}
 function rapor2Halaman(doc,r,judul){
   var M=18,W=210-2*M,y=M;
   function tulis(t,size,gaya){
