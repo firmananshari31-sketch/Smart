@@ -271,7 +271,7 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v101</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v102</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -508,7 +508,8 @@ nav button.nav-sembunyi{display:none}
     <p class="hint">Semakin jelas skor maksimal dan aturan skor sebagian per soal, semakin konsisten nilainya. Bisa diunggah dari Word (.docx), teks (.txt), PDF, atau foto. File .doc lama: simpan ulang sebagai .docx dulu.</p>
     <details style="margin-top:12px">
       <summary style="font-weight:600;cursor:pointer">Kebijakan penilaian (sudah berisi standar, bisa diubah)</summary>
-      <textarea id="kebijakan" rows="10" style="margin-top:8px"></textarea>
+      <textarea id="kebijakan" rows="6" style="margin-top:8px"></textarea>
+      <p class="hint" id="kebijakanInfo" style="margin-top:4px"></p>
       <div class="row" style="margin-top:8px"><select id="pilihStandar" style="flex:2"><option value="0">1. Standar awal</option><option value="1">2. Standar + Lampiran Asesmen SD</option></select><button id="btnKebijakanStandar">Muat standar terpilih</button></div><div class="row" style="margin-top:8px"><button id="btnUnggahKebijakan">📎 Unggah kebijakan (.docx, .xlsx, .pdf, .txt)</button><input type="file" id="fileKebijakan" accept=".docx,.xlsx,.xls,.pdf,.txt,text/plain" hidden></div><p class="hint" id="kebijakanUnggahInfo" style="margin-top:6px"></p><div class="row" style="margin-top:8px"><button id="btnJadikanStandar">Jadikan standar untuk kunci baru</button></div>
       <p class="hint">Kebijakan berlaku untuk rubrik yang sedang dipilih. Umumnya guru cukup mengisi kunci jawaban saja.</p>
     </details>
@@ -691,7 +692,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 101 (16 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 102 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -758,7 +759,7 @@ var $=function(s){return document.querySelector(s)};
 var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
 var store={
   get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},
-  set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
 };
 var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
 var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
@@ -3492,7 +3493,20 @@ function simpanRubrikAktif(kunci){
 function simpanKebijakanAktif(teks){
   ensureRubrik();
   var r=ambilRubriks(),id=store.get('rubrikAktif','');
-  r[id].kebijakan=teks;store.set('rubriks',r);
+  r[id].kebijakan=teks;return store.set('rubriks',r);
+}
+function tampilKebijakanInfo(){
+  var el=$('#kebijakan'),info=$('#kebijakanInfo');
+  fitTinggi(el);
+  info.className='hint';
+  info.textContent=el.value.length.toLocaleString('id-ID')+' karakter';
+}
+function perbaruiKebijakan(el){
+  var ok=simpanKebijakanAktif(el.value);
+  fitTinggi(el);
+  var info=$('#kebijakanInfo');
+  info.className=ok?'hint':'flag';
+  info.textContent=el.value.length.toLocaleString('id-ID')+' karakter'+(ok?'':'. TIDAK TERSIMPAN: penyimpanan browser penuh. Persingkat teks ini, lalu coba lagi.');
 }
 function isiRubrikUI(){
   ensureRubrik();
@@ -3503,12 +3517,13 @@ function isiRubrikUI(){
   $('#rubrik').value=r[id].kunci||'';
   $('#kunciAktifNama').textContent=r[id]&&r[id].nama?r[id].nama:'-';
   $('#kebijakan').value=r[id].kebijakan||'';
+  tampilKebijakanInfo();
   if($('#kunciCek'))renderKunciCek();
 }
 function setRubrikTerkunci(kunci){
   ['#pilihRubrik','#btnRubrikBaru','#btnRubrikHapus','#kebijakan','#btnKebijakanStandar','#btnJadikanStandar','#pilihStandar','#btnUnggahKebijakan'].forEach(function(s){$(s).disabled=kunci});
 }
-$('#kebijakan').addEventListener('input',function(){simpanKebijakanAktif(this.value)});
+$('#kebijakan').addEventListener('input',function(){perbaruiKebijakan(this)});
 function paraTeks(p){return [].map.call(p.getElementsByTagName('w:t'),function(t){return t.textContent}).join('').trim()}
 function teksWord(body){
   var out=[];
