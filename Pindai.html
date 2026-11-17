@@ -277,7 +277,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v109</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v110</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -589,9 +589,10 @@ nav button.nav-sembunyi{display:flex}
     <input type="text" id="rpCari" placeholder="Ketik nama siswa">
     <div class="row" style="margin-top:8px"><select id="rpStatus"><option value="semua">Semua status</option><option value="belum">Belum ada catatan</option><option value="sudah">Sudah ada catatan</option></select><select id="rpUrut"><option value="nama">Nama A–Z</option><option value="tinggi">Nilai tertinggi</option><option value="rendah">Nilai terendah</option></select></div>
     <div class="row" style="margin-top:8px"><button class="primary" id="rpPdfSatu">📄 PDF satu berkas</button><button id="rpZip">📦 ZIP per siswa</button><button id="rpXlsx">📊 Excel</button></div>
-    <div class="row" style="margin-top:6px"><button id="rpHaluskan">✨ Haluskan catatan kolom (AI)</button></div>
+    <div class="row" style="margin-top:6px"><button id="rpHaluskan">✨ Buat catatan kolom (AI)</button></div>
     <p class="hint" id="rpJumlah"></p>
   </div>
+  <div class="card"><label>Kategori capaian per materi</label><p class="hint" id="rpKatInfo"></p><div id="rpKatBox" class="chips"></div></div>
   <div class="card"><label>Catatan kolom untuk rapor</label><p class="hint">Kolom kiri untuk capaian tertinggi, kolom kanan untuk bab atau materi yang perlu ditingkatkan. Bisa disalin langsung ke rapor.</p><div id="rpKolom"></div></div>
   <div id="rpDaftar"></div>
   <div id="rpSheet" class="sheet-bg" hidden><div class="sheet-card"><div class="sheet-top"><span class="sheet-grip"></span><button id="rpSheetTutup" type="button">Tutup ✕</button></div><b id="rpSheetJudul" style="display:block;margin-bottom:8px"></b><textarea id="rpSheetTeks" rows="12"></textarea><p class="hint">Perubahan langsung tersimpan.</p></div></div>
@@ -706,7 +707,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 109 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 110 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -4169,7 +4170,7 @@ function raporTerfilter(){
 function fitTA(t){t.style.height='auto';t.style.height=Math.min(t.scrollHeight+2,200)+'px'}
 function cekBukaSemua(t){var b=t.parentNode.querySelector('[data-rp-buka]');if(b)b.hidden=t.scrollHeight<=202}
 function renderRapor(){
-  isiRpFilter();
+  isiRpFilter();renderKatBox();
   var semua=siswaKM($('#rpKelas').value),list=raporTerfilter(),w=$('#rpDaftar');
   var belum=semua.filter(function(o){return !o.rapor}).length;
   $('#rpJumlah').textContent=semua.length?(list.length+' dari '+semua.length+' siswa · belum ada catatan: '+belum):'';
@@ -4197,6 +4198,30 @@ function isiRpFilter(){
   sm.innerHTML='<option value="Semua">Semua materi</option>'+materi.map(function(m){return '<option value="'+esc(m)+'">'+esc(m)+'</option>'}).join('');
   sm.value=materi.indexOf(km)>=0?km:'Semua';
 }
+var KATEGORI_CAPAIAN=['Pemahaman konsep','Berhitung dan prosedur','Ketelitian menjawab','Penalaran soal cerita','Kemampuan menjelaskan'];
+function kunciMateriRapor(o){return mapelDari(o)+'|'+babDari(o)+'|'+materiDari(o)}
+function kategoriUntuk(o){var k=store.get('kategoriMateri',{});return k[kunciMateriRapor(o)]||[]}
+function renderKatBox(){
+  var box=$('#rpKatBox'),info=$('#rpKatInfo');if(!box)return;
+  var m=$('#rpMateri').value,kunci=$('#rpKelas').value,b=$('#rpBab').value;
+  if(!m||m==='Semua'){
+    box.innerHTML='';info.textContent='Pilih satu materi di atas untuk memilih kategori capaiannya. Jika belum dipilih, AI menentukan kategori sendiri dari kesalahan soal.';return;
+  }
+  var contoh=siswaKM(kunci).filter(function(o){return materiDari(o)===m&&(!b||babDari(o)===b)})[0];
+  if(!contoh){box.innerHTML='';info.textContent='';return}
+  var kunciM=kunciMateriRapor(contoh),simpan=store.get('kategoriMateri',{})[kunciM]||[];
+  info.textContent='Materi: '+m+'. Kategori yang dipilih akan menjadi dasar catatan untuk materi ini.';
+  box.innerHTML=KATEGORI_CAPAIAN.map(function(k){
+    return '<label class="chip" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" data-kat="'+esc(k)+'" data-km="'+esc(kunciM)+'" style="width:auto"'+(simpan.indexOf(k)>=0?' checked':'')+'>'+esc(k)+'</label>';
+  }).join('');
+}
+$('#rpKatBox').addEventListener('change',function(e){
+  var t=e.target;if(!t.dataset||!t.dataset.kat)return;
+  var km=t.dataset.km,k=store.get('kategoriMateri',{});
+  var daftar=(k[km]||[]).filter(function(x){return x!==t.dataset.kat});
+  if(t.checked)daftar.push(t.dataset.kat);
+  k[km]=daftar;store.set('kategoriMateri',k);
+});
 function topikRapor(o){var mt=materiDari(o);return babDari(o)+(mt&&mt!=='(tanpa materi)'?', '+mt:'')}
 function judulRapor(){
   var b=$('#rpBab').value,m=$('#rpMateri').value;
@@ -4221,7 +4246,7 @@ function rapor2Baris(){
     var loTampil=(it.length>1&&hi&&lo&&nilai100(hi)!==nilai100(lo))?lo:null;
     var tinggiBaku=hi?'Sudah menguasai '+topikRapor(hi)+' dengan baik (nilai '+Math.round(nilai100(hi))+').':'-';
     var rendahBaku=loTampil?'Perlu meningkatkan pemahaman '+topikRapor(loTampil)+' (nilai '+Math.round(nilai100(loTampil))+').':'-';
-    return {ck:ck,nama:nama,nilai:nilai,perBab:perBab,
+    return {ck:ck,nama:nama,nilai:nilai,perBab:perBab,items:it,
       tinggi:simpan.tinggi!=null?simpan.tinggi:tinggiBaku,
       rendah:simpan.rendah!=null?simpan.rendah:rendahBaku};
   });
@@ -4248,28 +4273,35 @@ $('#rpHaluskan').addEventListener('click',async function(){
   var rows=rapor2Baris();
   if(!rows.length){msg.textContent='Belum ada siswa yang cocok dengan filter.';return}
   if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
-  btn.disabled=true;msg.textContent='Claude sedang menghaluskan catatan...';
-  var sys='Kamu menulis catatan singkat untuk rapor siswa SD di Indonesia dengan bahasa yang hangat dan sopan. Untuk setiap item, haluskan dua kalimat yang diberikan. Kalimat "tinggi" untuk capaian yang sudah dikuasai, kalimat "rendah" untuk bab atau materi yang perlu ditingkatkan. Setiap kalimat satu kalimat saja, tetap menyebut nama bab atau materi dan angka nilai, dan tidak menambah informasi lain. Jika kalimat "rendah" berisi "-", kembalikan "-". Balas hanya dengan JSON array berbentuk [{"id":1,"tinggi":"...","rendah":"..."}], tanpa teks lain.';
+  btn.disabled=true;msg.textContent='Claude sedang membuat catatan...';
+  var sys='Kamu menulis catatan capaian untuk rapor siswa SD di Indonesia dalam bahasa Indonesia yang sopan. Untuk setiap item, tulis dua kalimat: "tinggi" untuk capaian yang paling kuat, dan "rendah" untuk yang paling perlu ditingkatkan. Setiap kalimat harus spesifik: sebut bab atau materi dan kemampuan yang terlihat dari kesalahan soal. Setiap kalimat maksimal 20 kata dan hanya satu kalimat. Jika ada kategori yang diberikan untuk materi tertentu, fokuskan kalimat pada kategori itu. Jika tidak ada kategori, pilih sendiri dari kesalahan soal. Jika hanya ada satu materi dan tidak ada kesalahan, tulis "rendah" sebagai "-". Balas hanya dengan JSON array berbentuk [{"id":1,"tinggi":"...","rendah":"..."}], tanpa teks lain.';
   try{
     var c=store.get('catatanKolom',{}),model=store.get('model','claude-haiku-5-5');
     for(var i=0;i<rows.length;i+=30){
       var potong=rows.slice(i,i+30);
-      var isi=potong.map(function(r,j){return (i+j+1)+' | tinggi: '+r.tinggi+' | rendah: '+r.rendah}).join('\n');
+      var isi=potong.map(function(r,j){
+        var per=r.items.map(function(o){
+          var salah=(o.jawaban||[]).filter(function(x){return x.skor!=null&&x.skor<x.skor_maks}).slice(0,3).map(function(x){return 'soal '+x.no+': '+String(x.alasan||'belum tepat').slice(0,90)});
+          var kat=kategoriUntuk(o);
+          return '  - bab: '+babDari(o)+'; materi: '+materiDari(o)+'; nilai: '+Math.round(nilai100(o))+'; kategori: '+(kat.length?kat.join(', '):'(AI memilih)')+'; kesalahan: '+(salah.length?salah.join(' | '):'tidak ada');
+        }).join('\n');
+        return (i+j+1)+' | nilai akhir: '+(r.nilai==null?'-':r.nilai)+'\n'+per;
+      }).join('\n');
       ketPotong=false;
-      var teks=await apiText(sys,isi,4000,0,model);
+      var teks=await apiText(sys,isi,6000,0,model);
       if(ketPotong)throw new Error('jawaban terpotong, coba lagi dengan lebih sedikit siswa');
       var m=teks.match(/\[[\s\S]*\]/);
       if(!m)throw new Error('jawaban AI tidak terbaca, coba lagi');
       JSON.parse(m[0]).forEach(function(x){
         var r=rows[(+x.id)-1];if(!r)return;
         c[r.ck]=c[r.ck]||{};
-        c[r.ck].tinggi=String(x.tinggi||r.tinggi);
-        c[r.ck].rendah=r.rendah==='-'?'-':String(x.rendah||r.rendah);
+        c[r.ck].tinggi=String(x.tinggi||'-');
+        c[r.ck].rendah=r.rendah==='-'&&(!x.rendah||x.rendah==='-')?'-':String(x.rendah||'-');
       });
     }
     store.set('catatanKolom',c);
     renderKolom();
-    msg.textContent='Catatan kolom sudah dihaluskan. Periksa sebelum dipakai.';
+    msg.textContent='Catatan sudah dibuat. Periksa dan sunting sebelum dipakai.';
   }catch(e){msg.textContent='Gagal: '+(e.message||e)}
   finally{btn.disabled=false}
 });
