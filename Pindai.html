@@ -271,7 +271,7 @@ nav button.nav-sembunyi{display:none}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v103</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v104</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -464,8 +464,9 @@ nav button.nav-sembunyi{display:none}
   <div class="row" style="margin-top:8px;margin-bottom:12px">
     
     
-    <button id="btnClear">Hapus semua</button>
+    <button id="btnHapusFilter">🗑 Hapus hasil yang difilter</button>
   </div>
+  <div id="undoBar" class="card" hidden style="position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:25;margin:0;box-shadow:0 4px 16px rgba(0,0,0,.25)"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span id="undoTeks"></span><button id="btnBatalHapus" class="primary">Batalkan</button></div></div>
   <p class="small" style="margin:0 0 12px">Excel berisi dua lembar kerja: <b>Rekap</b> (satu baris per siswa) dan <b>Detail</b> (satu baris per soal). Ketuk kartu untuk melihat detail. Semua isian bisa diubah sebelum diunduh atau dicetak.</p>
   <p class="small" id="biaya" style="margin:0 0 12px"></p>
   <div class="row" style="margin-bottom:12px"><button id="btnPeriksa">✔ Periksa yang ragu</button></div>
@@ -693,7 +694,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 103 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 104 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -2673,8 +2674,33 @@ function siapkanUlang(o){
   setMsgSiswa('Foto ulang lembar "'+o.nama+'", lalu tekan Tambah siswa ini ke antrean. Hasil lama akan diganti.');
   window.scrollTo(0,0);
 }
-$('#btnClear').addEventListener('click',function(){
-  if(hasil.length&&confirm('Hapus SEMUA hasil di HP ini? Simpan cadangan dulu jika perlu.')){hasil=[];store.set('hasil',hasil);renderHasil()}
+var undoPasangan=null,undoTimer=null;
+$('#btnHapusFilter').addEventListener('click',function(){
+  var idx=indeksTampil();
+  if(!idx.length){alert('Tidak ada hasil yang sesuai filter ini.');return}
+  if(!confirm('Hapus '+idx.length+' hasil yang sesuai filter ini?\n\nBisa dibatalkan selama 10 detik.'))return;
+  var dipilih={};idx.forEach(function(i){dipilih[i]=1});
+  var pasangan=[];
+  hasil.forEach(function(o,i){if(dipilih[i])pasangan.push({i:i,o:o})});
+  hasil=hasil.filter(function(o,i){return !dipilih[i]});
+  store.set('hasil',hasil);
+  renderHasil();
+  tampilUndo(pasangan);
+});
+function tampilUndo(pasangan){
+  clearTimeout(undoTimer);
+  undoPasangan=pasangan;
+  $('#undoTeks').textContent=pasangan.length+' hasil dihapus.';
+  $('#undoBar').hidden=false;
+  undoTimer=setTimeout(function(){$('#undoBar').hidden=true;undoPasangan=null},10000);
+}
+$('#btnBatalHapus').addEventListener('click',function(){
+  if(!undoPasangan)return;
+  undoPasangan.forEach(function(x){hasil.splice(x.i,0,x.o)});
+  store.set('hasil',hasil);
+  undoPasangan=null;clearTimeout(undoTimer);
+  $('#undoBar').hidden=true;
+  renderHasil();
 });
 
 /* ---------- Cetak lembar per siswa ---------- */
