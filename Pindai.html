@@ -277,7 +277,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v107</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v108</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -549,15 +549,16 @@ nav button.nav-sembunyi{display:flex}
     <label for="anKelas">Kelas dan mapel</label>
     <select id="anKelas"></select>
     <select id="anMateri" style="margin-top:8px"><option value="Semua">Semua materi</option></select>
+    <div class="row" style="margin-top:8px"><select id="anBab"><option value="">Semua bab</option></select></div>
+    <div class="row"><select id="anMode"><option value="satu">Satu rombel</option><option value="banding">Banding semua rombel</option></select><select id="anTampilan"><option value="gabung">Gabung semua bab</option><option value="pisah">Pisah per bab</option></select></div>
     <div class="row" style="margin-top:10px"><button class="primary" id="anBuat">✨ Buat analisis AI</button></div>
+    <div class="row" style="margin-top:8px"><button id="lapPdf">📄 Laporan gabungan PDF</button><button id="lapWord">📝 Laporan gabungan Word</button></div>
     <p class="hint">Ringkasan angka dihitung di perangkat. AI hanya menerima ringkasan per bab dan per soal, tanpa nama siswa.</p>
     <div class="msg" id="anMsg"></div>
   </div>
   <div class="card" id="anStat" hidden></div>
   <div class="card" id="grafCard" hidden>
     <label>Grafik kelas dan mapel</label>
-    <div class="row"><select id="grafMode"><option value="satu">Satu rombel</option><option value="banding">Banding semua rombel</option></select><select id="grafTampilan"><option value="gabung">Gabung semua bab</option><option value="pisah">Pisah per bab</option></select></div>
-    <div class="row" style="margin-top:8px"><select id="grafBab"><option value="">Semua bab</option></select></div>
     <div class="row"><select id="grafSoalJenis"><option value="tegak">Soal: batang tegak</option><option value="mendatar">Soal: batang mendatar</option></select><select id="grafSoalUrut"><option value="sulit">Urut: paling sulit</option><option value="nomor">Urut: nomor soal</option></select></div>
     <div class="row" style="margin-top:8px"><select id="grafTrenJenis"><option value="garis">Tren: garis</option><option value="batang">Tren: batang</option></select></div>
     <div class="row" style="margin-top:8px"><label style="flex:1;display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="grafAngka" checked style="width:auto">Tampilkan angka</label><label style="flex:1;display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="grafAmbang" checked style="width:auto">Garis KKM</label></div>
@@ -701,7 +702,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 107 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 108 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -3791,7 +3792,18 @@ function isiPilihanKM(sel){
   if(list.indexOf(keep)>=0)sel.value=keep;
 }
 function siswaKM(key){return hasil.filter(function(o){return o.label&&kunciKM(o)===key})}
-function siswaAn(key){var m=$('#anMateri')?$('#anMateri').value:'Semua';return siswaKM(key).filter(function(o){return !m||m==='Semua'||materiDari(o)===m})}
+function siswaAn(key,abaikanBab){
+  var m=$('#anMateri')?$('#anMateri').value:'Semua',b=(!abaikanBab&&$('#anBab'))?$('#anBab').value:'';
+  return siswaKM(key).filter(function(o){return (!m||m==='Semua'||materiDari(o)===m)&&(!b||babDari(o)===b)});
+}
+function kunciAn(){
+  var k=$('#anKelas').value,m=$('#anMateri')?$('#anMateri').value:'Semua',b=$('#anBab')?$('#anBab').value:'';
+  return k+(m&&m!=='Semua'?' | materi: '+m:'')+(b?' | bab: '+b:'');
+}
+function rincianFilterAn(){
+  var m=$('#anMateri')?$('#anMateri').value:'Semua',b=$('#anBab')?$('#anBab').value:'';
+  return (m&&m!=='Semua'?'\nMateri: '+m:'')+(b?'\nBab: '+b:'');
+}
 function isiAnMateri(){
   var daftar=rkUnik(siswaKM($('#anKelas').value).map(materiDari)),sel=$('#anMateri'),keep=sel.value;
   sel.innerHTML='<option value="Semua">Semua materi</option>'+daftar.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('');
@@ -3825,14 +3837,15 @@ function renderStatAn(s){
     '<p class="small" style="margin-top:12px"><b>Soal paling sulit</b></p>'+s.soal.slice(0,5).map(function(x){return '<div class="small">No '+esc(x.no)+': '+x.persen+'% benar</div>'}).join('');
 }
 function tampilAnalisisTersimpan(){
-  var key=$('#anKelas').value;isiAnMateri();var s=statKM(siswaAn(key));
-  renderStatAn(s);renderGrafik();
-  var simpan=store.get('analisis',{})[key];
+  var key=$('#anKelas').value;isiAnMateri();renderGrafik();var s=statKM(siswaAn(key));
+  renderStatAn(s);
+  var k=kunciAn(),simpan=store.get('analisis',{})[k];
   $('#anHasil').hidden=!simpan;
-  if(simpan){$('#anJudul').textContent='Analisis AI · '+key;$('#anWaktu').textContent=tglIndo(simpan.waktu)+' · '+simpan.n+' siswa';$('#anIsi').textContent=simpan.teks}
+  if(simpan){$('#anJudul').textContent='Analisis AI · '+k;$('#anWaktu').textContent=tglIndo(simpan.waktu)+' · '+simpan.n+' siswa';$('#anIsi').textContent=simpan.teks}
   $('#anMsg').textContent='';
 }
 $('#anKelas').addEventListener('change',tampilAnalisisTersimpan);
+$('#anBab').addEventListener('change',tampilAnalisisTersimpan);
 
 /* ---------- Grafik analisis (SVG, dihitung di perangkat) ---------- */
 var PAL_LAYAR={teks:'var(--text)',muda:'var(--muted)',garis:'var(--line)',bar:'#38e1ff',kurang:'#fbbf24'};
@@ -3944,20 +3957,20 @@ function grafTrenSeri(tren,jenis,angka,ambang,P,warnaSeri){
 }
 function renderGrafik(){
   var key=$('#anKelas').value,card=$('#grafCard');
-  if(!key||!siswaAn(key).length){card.hidden=true;grafTerakhir=null;return}
+  if(!key||!siswaAn(key,true).length){card.hidden=true;grafTerakhir=null;return}
   card.hidden=false;
-  var banding=$('#grafMode').value==='banding';
+  var banding=$('#anMode').value==='banding';
   var keys=banding?kunciBanding(key):[key];
   if(keys.indexOf(key)<0)keys.unshift(key);
-  var seriList=keys.map(function(k){return {nama:k.split(' - ')[0],list:siswaAn(k)}}).filter(function(s){return s.list.length});
+  var seriList=keys.map(function(k){return {nama:k.split(' - ')[0],list:siswaAn(k,true)}}).filter(function(s){return s.list.length});
   var babs=[];
   seriList.forEach(function(s){s.list.forEach(function(o){var b=babDari(o);if(babs.indexOf(b)<0)babs.push(b)})});
   babs.sort(function(a,b){return cmpNatural(babPendek(a),babPendek(b))});
-  var sel=$('#grafBab'),keep=sel.value;
+  var sel=$('#anBab'),keep=sel.value;
   sel.innerHTML='<option value="">Semua bab</option>'+babs.map(function(b){return '<option value="'+esc(b)+'">'+esc(b)+'</option>'}).join('');
   sel.value=babs.indexOf(keep)>=0?keep:'';
   var babFilter=sel.value?[sel.value]:babs;
-  var gabung=$('#grafTampilan').value==='gabung';
+  var gabung=$('#anTampilan').value==='gabung';
   var angka=$('#grafAngka').checked,jenis=$('#grafSoalJenis').value,urut=$('#grafSoalUrut').value;
   var blok=[];
   if(gabung){
@@ -3974,7 +3987,7 @@ function renderGrafik(){
   var htmlSoal=blok.map(function(b){var sv=grafSoalSeri(b.seri,jenis,angka,PAL_LAYAR,SERI_LAYAR,urut);return sv?'<p class="small" style="margin-top:8px"><b>'+esc(b.judul)+'</b></p>'+sv:''}).join('');
   $('#grafIsi').innerHTML=htmlSoal+'<p class="small" style="margin-top:12px"><b>Tren per bab</b></p>'+grafTrenSeri(tren,grafTerakhir.trenJenis,angka,grafTerakhir.ambang,PAL_LAYAR,SERI_LAYAR);
 }
-['#grafMode','#grafTampilan','#grafBab','#grafSoalJenis','#grafSoalUrut','#grafTrenJenis','#grafAngka','#grafAmbang'].forEach(function(s){$(s).addEventListener('change',renderGrafik)});
+['#anMode','#anTampilan','#anBab','#grafSoalJenis','#grafSoalUrut','#grafTrenJenis','#grafAngka','#grafAmbang'].forEach(function(s){$(s).addEventListener('change',renderGrafik)});
 function grafUkuran(svg){var m=/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/.exec(svg);return {w:+m[1],h:+m[2]}}
 function grafPng(svg){
   var u=grafUkuran(svg);
@@ -4031,6 +4044,11 @@ async function docxGrafik(judul,list){
   var zip=new Z(),body='',rels='';
   body+='<w:p><w:r><w:rPr><w:b/><w:sz w:val="32"/></w:rPr><w:t xml:space="preserve">'+xmlEsc(judul)+'</w:t></w:r></w:p>';
   list.forEach(function(g,i){
+    if(g.teks!==undefined){
+      if(g.judul)body+='<w:p><w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">'+xmlEsc(g.judul)+'</w:t></w:r></w:p>';
+      g.teks.split('\n').forEach(function(l){body+='<w:p><w:r><w:t xml:space="preserve">'+xmlEsc(l)+'</w:t></w:r></w:p>'});
+      return;
+    }
     var rid='rIdG'+(i+1),nama='grafik'+(i+1)+'.png',cx=5486400,cy=Math.round(5486400*g.h/g.w);
     zip.file('word/media/'+nama,g.png.split(',')[1],{base64:true});
     rels+='<Relationship Id="'+rid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/'+nama+'"/>';
@@ -4051,11 +4069,11 @@ async function docxGrafik(judul,list){
   return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 $('#anBuat').addEventListener('click',async function(){
-  var key=$('#anKelas').value,list=siswaAn(key);
-  if(!key||!list.length){alert('Belum ada hasil untuk kelas dan mapel ini.');return}
+  var key=kunciAn(),list=siswaAn($('#anKelas').value);
+  if(!list.length){alert('Belum ada hasil untuk filter ini.');return}
   if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
   var s=statKM(list),btn=this;btn.disabled=true;$('#anMsg').textContent='Claude sedang menganalisis...';
-  var rinci='Kelas dan mapel: '+key+'\nJumlah siswa: '+s.n+'\nRata-rata nilai: '+s.rata+'\nBatas KKM: '+KKM()+'\nSiswa tuntas: '+s.tuntas+' dari '+s.n+
+  var rinci='Kelas dan mapel: '+$('#anKelas').value+rincianFilterAn()+'\nJumlah siswa: '+s.n+'\nRata-rata nilai: '+s.rata+'\nBatas KKM: '+KKM()+'\nSiswa tuntas: '+s.tuntas+' dari '+s.n+
     '\nPer bab:\n'+s.bab.map(function(b){return '- '+b.nama+': '+b.n+' siswa, rata-rata '+b.rata+', tuntas '+b.tuntas+'%'}).join('\n')+
     '\nSoal dari yang paling sulit:\n'+s.soal.slice(0,8).map(function(x){return '- No '+x.no+': '+x.persen+'% benar'+(x.alasan.length?'. Contoh alasan salah: '+x.alasan.slice(0,3).join('; '):'')}).join('\n');
   var sys='Kamu membantu guru SD di Indonesia menganalisis hasil penilaian kelas. Data yang diberikan hanya ringkasan kelas, tanpa nama siswa. Tulis analisis singkat dalam bahasa Indonesia sederhana dengan format persis:\nKekuatan:\n- ...\nKelemahan:\n- ...\nSoal yang perlu diulang:\n- ...\nSaran untuk pertemuan berikutnya:\n- ...\nIsi setiap bagian dengan 1 sampai 3 butir yang konkret dan berdasarkan data. Jangan menulis judul lain, markdown, atau pujian kosong.';
@@ -4069,8 +4087,59 @@ $('#anBuat').addEventListener('click',async function(){
   }catch(e){$('#anMsg').textContent='Gagal: '+e.message}
   finally{btn.disabled=false}
 });
+function laporanNama(ext){return 'Laporan_'+kunciAn().replace(/[^\w]+/g,'_')+'.'+ext}
+async function laporanItems(){
+  var key=$('#anKelas').value;
+  if(!key)throw new Error('Pilih kelas dan mapel dulu.');
+  var list=siswaAn(key);
+  if(!list.length)throw new Error('Belum ada hasil untuk filter ini.');
+  var s=statKM(list);
+  renderGrafik();
+  if(!grafTerakhir)throw new Error('Grafik untuk filter ini belum tersedia.');
+  var a=store.get('analisis',{})[kunciAn()];
+  var bab=$('#anBab').value||'Semua bab',materi=$('#anMateri').value==='Semua'?'Semua materi':$('#anMateri').value;
+  var items=[{judul:'Laporan Analisis Hasil',teks:key+'\nBab: '+bab+'\nMateri: '+materi+'\nKKM '+KKM()+' · '+s.n+' siswa · rata-rata '+s.rata+' · tuntas '+s.tuntas+' dari '+s.n+' siswa'}];
+  items.push({judul:'Analisis AI',teks:a?a.teks:'Analisis AI belum dibuat untuk filter ini. Tekan "Buat analisis AI", lalu buat laporan lagi.'});
+  var grafik=await grafSiapCetak();
+  grafik.forEach(function(g){items.push(g)});
+  return items;
+}
+$('#lapPdf').addEventListener('click',async function(){
+  var msg=$('#anMsg');msg.textContent='Membuat laporan PDF...';
+  try{
+    var J=window.jspdf&&window.jspdf.jsPDF;
+    if(!J)throw new Error('Pembuat PDF belum termuat. Periksa koneksi internet.');
+    var items=await laporanItems(),doc=new J({unit:'mm',format:'a4'}),y=15;
+    items.forEach(function(it){
+      if(it.teks!==undefined){
+        if(y+10>285){doc.addPage();y=15}
+        doc.setFont(undefined,'bold');doc.setFontSize(12);doc.text(it.judul,10,y+4);y+=8;
+        doc.setFont(undefined,'normal');doc.setFontSize(10);
+        it.teks.split('\n').forEach(function(par){
+          doc.splitTextToSize(par||' ',190).forEach(function(l){if(y+5>285){doc.addPage();y=15}doc.text(l,10,y+4);y+=5});
+        });
+        y+=5;
+      }else{
+        var tinggi=190*it.h/it.w;
+        if(y+tinggi+12>285){doc.addPage();y=15}
+        doc.setFont(undefined,'bold');doc.setFontSize(10);doc.text(it.judul,10,y+4);y+=7;
+        doc.addImage(it.png,'PNG',10,y,190,tinggi);y+=tinggi+8;
+      }
+    });
+    await kirimBerkas(doc.output('blob'),laporanNama('pdf'),'application/pdf');
+    msg.textContent='';
+  }catch(e){msg.textContent=e.message||'Gagal membuat laporan PDF'}
+});
+$('#lapWord').addEventListener('click',async function(){
+  var msg=$('#anMsg');msg.textContent='Membuat laporan Word...';
+  try{
+    var items=await laporanItems(),blob=await docxGrafik('Laporan Analisis · '+$('#anKelas').value,items);
+    await kirimBerkas(blob,laporanNama('docx'),'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    msg.textContent='';
+  }catch(e){msg.textContent=e.message||'Gagal membuat laporan Word'}
+});
 $('#anPdf').addEventListener('click',function(){
-  var key=$('#anKelas').value,a=store.get('analisis',{})[key];if(!a)return;
+  var key=kunciAn(),a=store.get('analisis',{})[key];if(!a)return;
   pdfTeksBagikan(blokAnalisis(key,a),'Analisis_'+key.replace(/[^\w]+/g,'_')+'.pdf');
 });
 
