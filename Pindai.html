@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v113</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v114</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -719,7 +719,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 113 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 114 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -919,6 +919,8 @@ function segarHalaman(){
 }
 $$('nav button').forEach(function(b){
   b.addEventListener('click',function(){
+    var sudahAktif=b.classList.contains('on');
+    if(!navRiwayat&&!sudahAktif)dorongRiwayat(b.dataset.tab);
     $$('nav button').forEach(function(x){x.classList.toggle('on',x===b)});
     $$('.tab').forEach(function(t){t.classList.toggle('active',t.id==='tab-'+b.dataset.tab)});
     window.scrollTo(0,0);
@@ -4324,6 +4326,28 @@ $('#rpHaluskan').addEventListener('click',async function(){
   }catch(e){msg.textContent='Gagal: '+(e.message||e)}
   finally{btn.disabled=false}
 });
+/* ---------- Tombol kembali: kembali ke menu sebelumnya ---------- */
+var navRiwayat=false,stateSekarang=null;
+function dorongRiwayat(m){stateSekarang={m:m};try{history.pushState(stateSekarang,'')}catch(e){}}
+window.addEventListener('popstate',function(e){
+  var lf=$('#lembarFilter'),pd=$('#panduan'),rs=$('#rpSheet');
+  function tetap(){try{history.pushState(stateSekarang,'')}catch(x){}}
+  if(lf&&!lf.hidden){lf.hidden=true;tetap();return}
+  if(pd&&!pd.hidden){pd.hidden=true;tetap();return}
+  if(rs&&!rs.hidden){tutupRapor();tetap();return}
+  var m=(e.state&&e.state.m)||'nilai';
+  var btn=document.querySelector('nav button[data-tab="'+m+'"]');
+  if(!btn)return;
+  navRiwayat=true;btn.click();navRiwayat=false;
+  stateSekarang={m:m};
+  try{history.replaceState(stateSekarang,'')}catch(x){}
+});
+(function(){
+  var aktif=document.querySelector('nav button.on');
+  stateSekarang={m:aktif?aktif.dataset.tab:'nilai'};
+  try{history.replaceState(stateSekarang,'')}catch(x){}
+})();
+
 /* ---------- Filter seragam di semua menu ---------- */
 (function(){
   var lf=$('#lembarFilter'),isiLf=$('#lfIsi');
