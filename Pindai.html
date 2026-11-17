@@ -267,11 +267,17 @@ nav button.nav-sembunyi{display:none}
 .hal-dot{flex:0 0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:0 6px 0 2px}
 .hal-titik{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer}
 .hal-titik.on{background:var(--accent)}
+/* Bar menu: satu baris yang bisa digeser kiri-kanan */
+nav{overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;justify-content:flex-start;gap:8px;scroll-snap-type:x proximity;scrollbar-width:none;touch-action:pan-x;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+nav button{flex:0 0 auto;width:auto;min-width:0;max-width:none;padding:8px 14px;scroll-snap-align:center}
+nav button .nm{overflow:visible;text-overflow:clip}
+nav button.nav-sembunyi{display:flex}
+#halDot{display:none}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v104</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v105</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -694,7 +700,7 @@ nav button.nav-sembunyi{display:none}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 104 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 105 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -887,19 +893,11 @@ function segarHasilBila(){
 /* Menu dibagi per halaman berisi 4 tombol */
 var MENU_PER_HAL=3;
 function segarHalaman(){
-  var m=$$('nav button');
-  var aktif=m.indexOf(document.querySelector('nav button.on'));
-  var hal=Math.floor((aktif<0?0:aktif)/MENU_PER_HAL);
-  m.forEach(function(b,i){b.classList.toggle('nav-sembunyi',Math.floor(i/MENU_PER_HAL)!==hal)});
-  var dot=$('#halDot'),jum=Math.ceil(m.length/MENU_PER_HAL),h='';
-  for(var k=0;k<jum;k++)h+='<span class="hal-titik'+(k===hal?' on':'')+'" data-hal="'+k+'" title="Halaman '+(k+1)+'"></span>';
-  dot.innerHTML=h;
+  var nav=document.querySelector('nav'),b=document.querySelector('nav button.on');
+  if(!nav||!b)return;
+  var ke=b.offsetLeft-(nav.clientWidth-b.offsetWidth)/2;
+  nav.scrollTo({left:Math.max(0,ke),behavior:(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth'});
 }
-$('#halDot').addEventListener('click',function(e){
-  var t=e.target.closest('[data-hal]');if(!t)return;
-  var m=$$('nav button'),i=+t.getAttribute('data-hal')*MENU_PER_HAL;
-  if(m[i])m[i].click();
-});
 $$('nav button').forEach(function(b){
   b.addEventListener('click',function(){
     $$('nav button').forEach(function(x){x.classList.toggle('on',x===b)});
@@ -952,6 +950,7 @@ $$('nav button').forEach(function(b){
   document.addEventListener('touchstart',function(e){
     st=null;
     if(sibuk||e.touches.length!==1)return;
+    if(e.target.closest&&e.target.closest('nav'))return;
     var t=e.touches[0];
     if(t.clientX<20||t.clientX>window.innerWidth-20)return;
     var g=document.getElementById('gerbang');
