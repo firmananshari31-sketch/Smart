@@ -277,7 +277,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v108</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v109</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -579,6 +579,7 @@ nav button.nav-sembunyi{display:flex}
   <div class="card">
     <label for="rpKelas">Kelas dan mapel</label>
     <select id="rpKelas"></select>
+    <div class="row" style="margin-top:8px"><select id="rpBab"><option value="">Semua bab</option></select><select id="rpMateri"><option value="Semua">Semua materi</option></select></div>
     <div class="row" style="margin-top:10px"><button class="primary" id="rpBuat">✨ Buat catatan untuk siswa yang belum punya</button></div>
     <p class="hint">Catatan dibuat dari nilai dan catatan perbaikan yang sudah ada. Periksa dan edit sebelum dibagikan. Nama siswa ikut dikirim ke AI agar catatannya personal.</p>
     <div class="msg" id="rpMsg"></div>
@@ -587,8 +588,11 @@ nav button.nav-sembunyi{display:flex}
     <label for="rpCari">Cari dan saring</label>
     <input type="text" id="rpCari" placeholder="Ketik nama siswa">
     <div class="row" style="margin-top:8px"><select id="rpStatus"><option value="semua">Semua status</option><option value="belum">Belum ada catatan</option><option value="sudah">Sudah ada catatan</option></select><select id="rpUrut"><option value="nama">Nama A–Z</option><option value="tinggi">Nilai tertinggi</option><option value="rendah">Nilai terendah</option></select></div>
+    <div class="row" style="margin-top:8px"><button class="primary" id="rpPdfSatu">📄 PDF satu berkas</button><button id="rpZip">📦 ZIP per siswa</button><button id="rpXlsx">📊 Excel</button></div>
+    <div class="row" style="margin-top:6px"><button id="rpHaluskan">✨ Haluskan catatan kolom (AI)</button></div>
     <p class="hint" id="rpJumlah"></p>
   </div>
+  <div class="card"><label>Catatan kolom untuk rapor</label><p class="hint">Kolom kiri untuk capaian tertinggi, kolom kanan untuk bab atau materi yang perlu ditingkatkan. Bisa disalin langsung ke rapor.</p><div id="rpKolom"></div></div>
   <div id="rpDaftar"></div>
   <div id="rpSheet" class="sheet-bg" hidden><div class="sheet-card"><div class="sheet-top"><span class="sheet-grip"></span><button id="rpSheetTutup" type="button">Tutup ✕</button></div><b id="rpSheetJudul" style="display:block;margin-bottom:8px"></b><textarea id="rpSheetTeks" rows="12"></textarea><p class="hint">Perubahan langsung tersimpan.</p></div></div>
 </section>
@@ -702,7 +706,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 108 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 109 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -4146,7 +4150,10 @@ $('#anPdf').addEventListener('click',function(){
 /* ---------- Tab Rapor ---------- */
 function raporTerfilter(){
   var kunci=$('#rpKelas').value,cari=$('#rpCari').value.trim().toLowerCase(),st=$('#rpStatus').value,urut=$('#rpUrut').value;
+  var bb=$('#rpBab').value,mm=$('#rpMateri').value;
   var list=siswaKM(kunci).filter(function(o){
+    if(bb&&babDari(o)!==bb)return false;
+    if(mm&&mm!=='Semua'&&materiDari(o)!==mm)return false;
     if(cari&&String(o.nama||'').toLowerCase().indexOf(cari)<0)return false;
     if(st==='belum')return !o.rapor;
     if(st==='sudah')return !!o.rapor;
@@ -4162,6 +4169,7 @@ function raporTerfilter(){
 function fitTA(t){t.style.height='auto';t.style.height=Math.min(t.scrollHeight+2,200)+'px'}
 function cekBukaSemua(t){var b=t.parentNode.querySelector('[data-rp-buka]');if(b)b.hidden=t.scrollHeight<=202}
 function renderRapor(){
+  isiRpFilter();
   var semua=siswaKM($('#rpKelas').value),list=raporTerfilter(),w=$('#rpDaftar');
   var belum=semua.filter(function(o){return !o.rapor}).length;
   $('#rpJumlah').textContent=semua.length?(list.length+' dari '+semua.length+' siswa · belum ada catatan: '+belum):'';
@@ -4175,7 +4183,165 @@ function renderRapor(){
       '<div class="row" style="margin-top:8px"><button data-rp-ulang>Ulangi AI</button><button data-rp-salin>Salin</button><button data-rp-pdf>PDF</button></div></div>';
   }).join('');
   w.querySelectorAll('[data-rp-teks]').forEach(function(t){fitTA(t);cekBukaSemua(t)});
+  renderKolom();
 }
+function isiRpFilter(){
+  var kunci=$('#rpKelas').value,semua=siswaKM(kunci);
+  var babs=rkUnik(semua.map(babDari)).sort(function(a,b){return cmpNatural(babPendek(a),babPendek(b))});
+  var sb=$('#rpBab'),kb=sb.value;
+  sb.innerHTML='<option value="">Semua bab</option>'+babs.map(function(b){return '<option value="'+esc(b)+'">'+esc(b)+'</option>'}).join('');
+  sb.value=babs.indexOf(kb)>=0?kb:'';
+  var bab=sb.value;
+  var materi=rkUnik(semua.filter(function(o){return !bab||babDari(o)===bab}).map(materiDari));
+  var sm=$('#rpMateri'),km=sm.value;
+  sm.innerHTML='<option value="Semua">Semua materi</option>'+materi.map(function(m){return '<option value="'+esc(m)+'">'+esc(m)+'</option>'}).join('');
+  sm.value=materi.indexOf(km)>=0?km:'Semua';
+}
+function topikRapor(o){var mt=materiDari(o);return babDari(o)+(mt&&mt!=='(tanpa materi)'?', '+mt:'')}
+function judulRapor(){
+  var b=$('#rpBab').value,m=$('#rpMateri').value;
+  return $('#rpKelas').value+(b?' · '+b:'')+(m&&m!=='Semua'?' · '+m:'');
+}
+function namaBerkasRapor(t){return String(t).replace(/[^\w]+/g,'_')}
+function rapor2Baris(){
+  var kunci=$('#rpKelas').value,b=$('#rpBab').value,m=$('#rpMateri').value;
+  var namaList=[];
+  raporTerfilter().forEach(function(o){if(namaList.indexOf(o.nama)<0)namaList.push(o.nama)});
+  namaList.sort(function(x,y){return String(x).localeCompare(String(y),'id',{sensitivity:'base'})});
+  var semua=siswaKM(kunci).filter(function(o){return (!b||babDari(o)===b)&&(m==='Semua'||materiDari(o)===m)});
+  var simpanSemua=store.get('catatanKolom',{});
+  return namaList.map(function(nama){
+    var it=semua.filter(function(o){return o.nama===nama});
+    var ck=kunci+'|'+b+'|'+m+'|'+nama,simpan=simpanSemua[ck]||{};
+    var nilai=it.length?Math.round(it.reduce(function(a,o){return a+nilai100(o)},0)/it.length*10)/10:null;
+    var grup={};it.forEach(function(o){var bb=babDari(o);(grup[bb]=grup[bb]||[]).push(nilai100(o))});
+    var perBab={};Object.keys(grup).forEach(function(bb){var v=grup[bb];perBab[bb]=Math.round(v.reduce(function(a,c){return a+c},0)/v.length*10)/10});
+    var hi=null,lo=null;
+    it.forEach(function(o){if(!hi||nilai100(o)>nilai100(hi))hi=o;if(!lo||nilai100(o)<nilai100(lo))lo=o});
+    var loTampil=(it.length>1&&hi&&lo&&nilai100(hi)!==nilai100(lo))?lo:null;
+    var tinggiBaku=hi?'Sudah menguasai '+topikRapor(hi)+' dengan baik (nilai '+Math.round(nilai100(hi))+').':'-';
+    var rendahBaku=loTampil?'Perlu meningkatkan pemahaman '+topikRapor(loTampil)+' (nilai '+Math.round(nilai100(loTampil))+').':'-';
+    return {ck:ck,nama:nama,nilai:nilai,perBab:perBab,
+      tinggi:simpan.tinggi!=null?simpan.tinggi:tinggiBaku,
+      rendah:simpan.rendah!=null?simpan.rendah:rendahBaku};
+  });
+}
+function renderKolom(){
+  var box=$('#rpKolom');if(!box)return;
+  var rows=rapor2Baris();
+  if(!rows.length){box.innerHTML='<p class="hint">Belum ada siswa yang cocok dengan filter.</p>';return}
+  box.innerHTML=rows.map(function(r){
+    return '<div class="sis" style="padding:10px;margin-bottom:8px" data-kolom="'+esc(r.ck)+'"><div class="sheet-h"><b>'+esc(r.nama)+'</b><span class="small">Nilai '+(r.nilai==null?'–':r.nilai)+'</span></div>'+
+      '<label class="small">Sudah dikuasai</label><textarea rows="2" data-kol="tinggi">'+esc(r.tinggi)+'</textarea>'+
+      '<label class="small">Perlu ditingkatkan</label><textarea rows="2" data-kol="rendah">'+esc(r.rendah)+'</textarea></div>';
+  }).join('');
+}
+$('#rpKolom').addEventListener('input',function(e){
+  var t=e.target;if(!t.dataset||!t.dataset.kol)return;
+  var ck=t.closest('[data-kolom]').dataset.kolom;
+  var c=store.get('catatanKolom',{});c[ck]=c[ck]||{};c[ck][t.dataset.kol]=t.value;store.set('catatanKolom',c);
+});
+$('#rpBab').addEventListener('change',renderRapor);
+$('#rpMateri').addEventListener('change',renderRapor);
+$('#rpHaluskan').addEventListener('click',async function(){
+  var msg=$('#rpMsg'),btn=this;
+  var rows=rapor2Baris();
+  if(!rows.length){msg.textContent='Belum ada siswa yang cocok dengan filter.';return}
+  if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+  btn.disabled=true;msg.textContent='Claude sedang menghaluskan catatan...';
+  var sys='Kamu menulis catatan singkat untuk rapor siswa SD di Indonesia dengan bahasa yang hangat dan sopan. Untuk setiap item, haluskan dua kalimat yang diberikan. Kalimat "tinggi" untuk capaian yang sudah dikuasai, kalimat "rendah" untuk bab atau materi yang perlu ditingkatkan. Setiap kalimat satu kalimat saja, tetap menyebut nama bab atau materi dan angka nilai, dan tidak menambah informasi lain. Jika kalimat "rendah" berisi "-", kembalikan "-". Balas hanya dengan JSON array berbentuk [{"id":1,"tinggi":"...","rendah":"..."}], tanpa teks lain.';
+  try{
+    var c=store.get('catatanKolom',{}),model=store.get('model','claude-haiku-5-5');
+    for(var i=0;i<rows.length;i+=30){
+      var potong=rows.slice(i,i+30);
+      var isi=potong.map(function(r,j){return (i+j+1)+' | tinggi: '+r.tinggi+' | rendah: '+r.rendah}).join('\n');
+      ketPotong=false;
+      var teks=await apiText(sys,isi,4000,0,model);
+      if(ketPotong)throw new Error('jawaban terpotong, coba lagi dengan lebih sedikit siswa');
+      var m=teks.match(/\[[\s\S]*\]/);
+      if(!m)throw new Error('jawaban AI tidak terbaca, coba lagi');
+      JSON.parse(m[0]).forEach(function(x){
+        var r=rows[(+x.id)-1];if(!r)return;
+        c[r.ck]=c[r.ck]||{};
+        c[r.ck].tinggi=String(x.tinggi||r.tinggi);
+        c[r.ck].rendah=r.rendah==='-'?'-':String(x.rendah||r.rendah);
+      });
+    }
+    store.set('catatanKolom',c);
+    renderKolom();
+    msg.textContent='Catatan kolom sudah dihaluskan. Periksa sebelum dipakai.';
+  }catch(e){msg.textContent='Gagal: '+(e.message||e)}
+  finally{btn.disabled=false}
+});
+function rapor2Halaman(doc,r,judul){
+  var M=18,W=210-2*M,y=M;
+  function tulis(t,size,gaya){
+    doc.setFont('helvetica',gaya||'normal');doc.setFontSize(size);
+    doc.splitTextToSize(String(t),W).forEach(function(l){if(y>280){doc.addPage();y=M}doc.text(l,M,y);y+=size*0.42+1.6});
+  }
+  tulis('Catatan Capaian Belajar',14,'bold');y+=2;
+  tulis('Kelas dan mapel: '+judul,10);
+  tulis('Nama: '+r.nama,11,'bold');
+  tulis('Nilai akhir: '+(r.nilai==null?'-':r.nilai),10);
+  y+=2;tulis('Nilai per bab:',10,'bold');
+  Object.keys(r.perBab).sort(function(a,b){return cmpNatural(babPendek(a),babPendek(b))}).forEach(function(bb){tulis('   '+bb+': '+r.perBab[bb],10)});
+  y+=2;tulis('Sudah dikuasai:',10,'bold');tulis(r.tinggi,10);
+  y+=2;tulis('Perlu ditingkatkan:',10,'bold');tulis(r.rendah,10);
+  y+=12;tulis('Guru kelas,',10);y+=14;tulis('(................................)',10);
+}
+function rapor2Pdf(rows,judul){
+  var J=window.jspdf&&window.jspdf.jsPDF;
+  if(!J)throw new Error('Pembuat PDF belum termuat. Periksa koneksi internet.');
+  var doc=new J({unit:'mm',format:'a4'});
+  rows.forEach(function(r,i){if(i)doc.addPage();rapor2Halaman(doc,r,judul)});
+  return doc;
+}
+function rapor2Excel(rows){
+  var babs=[];rows.forEach(function(r){Object.keys(r.perBab).forEach(function(b){if(babs.indexOf(b)<0)babs.push(b)})});
+  babs.sort(function(a,b){return cmpNatural(babPendek(a),babPendek(b))});
+  var aoa1=[['Nama','Nilai akhir'].concat(babs)].concat(rows.map(function(r){
+    return [r.nama,r.nilai==null?'':r.nilai].concat(babs.map(function(b){return r.perBab[b]==null?'':r.perBab[b]}))}));
+  var aoa2=[['Nama','Sudah dikuasai','Perlu ditingkatkan']].concat(rows.map(function(r){return [r.nama,r.tinggi,r.rendah]}));
+  var wb=XLSX.utils.book_new();
+  var ws1=XLSX.utils.aoa_to_sheet(aoa1),ws2=XLSX.utils.aoa_to_sheet(aoa2);
+  ws2['!cols']=[{wch:24},{wch:60},{wch:60}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Nilai');
+  XLSX.utils.book_append_sheet(wb,ws2,'Catatan');
+  var out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  return new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+function rapor2Cek(){
+  var rows=rapor2Baris();
+  if(!rows.length)throw new Error('Belum ada siswa yang cocok dengan filter.');
+  return rows;
+}
+$('#rpPdfSatu').addEventListener('click',async function(){
+  var msg=$('#rpMsg');msg.textContent='Membuat PDF...';
+  try{
+    var rows=rapor2Cek(),judul=judulRapor();
+    await kirimBerkas(rapor2Pdf(rows,judul).output('blob'),'Rapor_'+namaBerkasRapor(judul)+'.pdf','application/pdf');
+    msg.textContent='';
+  }catch(e){msg.textContent=e.message||'Gagal membuat PDF'}
+});
+$('#rpXlsx').addEventListener('click',async function(){
+  var msg=$('#rpMsg');msg.textContent='Membuat Excel...';
+  try{
+    var rows=rapor2Cek(),judul=judulRapor();
+    await kirimBerkas(rapor2Excel(rows),'Rapor_'+namaBerkasRapor(judul)+'.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    msg.textContent='';
+  }catch(e){msg.textContent=e.message||'Gagal membuat Excel'}
+});
+$('#rpZip').addEventListener('click',async function(){
+  var msg=$('#rpMsg');msg.textContent='Membuat ZIP...';
+  try{
+    if(!window.JSZip)throw new Error('Pembuat ZIP belum termuat. Periksa koneksi internet.');
+    var rows=rapor2Cek(),judul=judulRapor(),zip=new window.JSZip();
+    rows.forEach(function(r){zip.file('Rapor_'+namaBerkasRapor(r.nama)+'.pdf',rapor2Pdf([r],judul).output('blob'))});
+    var blob=await zip.generateAsync({type:'blob'});
+    await kirimBerkas(blob,'Rapor_'+namaBerkasRapor(judul)+'.zip','application/zip');
+    msg.textContent='';
+  }catch(e){msg.textContent=e.message||'Gagal membuat ZIP'}
+});
 var rpIdx=-1;
 function bukaRapor(i){
   var o=hasil[i];if(!o)return;
