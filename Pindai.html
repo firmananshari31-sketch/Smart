@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v112</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v113</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -377,7 +377,6 @@ nav button.nav-sembunyi{display:flex}
 </div>
 
 <section id="tab-nilai" class="tab active">
-  <span class="ctx-line" id="hdrCtx">Belum ada kelas dan mapel</span>
   <div class="stats" id="statNilai"></div>
   <div class="card">
     <label>Kelas dan mata pelajaran</label>
@@ -720,7 +719,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 112 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 113 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1482,7 +1481,7 @@ function updateLabel(){
   var v=[(d.kelas?'Kelas '+d.kelas+(d.rombel?' '+d.rombel:''):''),d.mapel,d.bab].filter(Boolean).join(' - ');
   $('#label').value=v;
   var ctx=[(d.kelas?'Kelas '+d.kelas+(d.rombel?'-'+d.rombel:''):''),d.mapel,d.bab].filter(Boolean).join(' · ');
-  $('#hdrCtx').textContent=ctx||'Belum ada kelas dan mapel';
+  if($('#hdrCtx'))$('#hdrCtx').textContent=ctx||'Belum ada kelas dan mapel';
   store.set('label',v);
   store.set('labelDetail',d);
   $('#labelHint').textContent=v?'Label: '+v:'Isi kelas dan mapel agar hasil mudah dikenali.';
@@ -1867,8 +1866,9 @@ function statusSiswa(o){
 var TXT_STATUS={ok:'Tuntas',warn:'Perlu dicek',no:'Belum tuntas'};
 function renderStats(){
   var el=$('#statNilai');if(!el)return;
-  if(!hasil.length){el.innerHTML='';return}
-  var d=ringkasanData(hasil);
+  var daftar=hasil.filter(cocokLembarHasil);
+  if(!daftar.length){el.innerHTML='<p class="small" style="margin:0">Belum ada hasil untuk pilihan kelas dan mapel ini.</p>';return}
+  var d=ringkasanData(daftar);
   var persen=d.n?Math.round(d.tuntas/d.n*100):0;
   el.innerHTML='<div class="stat"><b>'+d.n+'</b><span>Siswa dinilai</span></div>'+
     '<div class="stat"><b>'+d.rata+'</b><span>Rata-rata nilai</span></div>'+
@@ -4360,6 +4360,7 @@ function updateFltBar(){
   var teks=(a.kelasTeks||'')?[a.kelasTeks,a.mapel,a.bab,a.materi&&a.materi!=='(tanpa materi)'?a.materi:''].filter(function(x){return x&&x.trim()}).join(' · '):'';
   var isi=teks||'Belum memilih kelas dan mapel';
   document.querySelectorAll('[data-flt] .flt-isi').forEach(function(el){el.textContent=isi});
+  if(typeof renderStats==='function')renderStats();
 }
 function rapor2Halaman(doc,r,judul){
   var M=18,W=210-2*M,y=M;
