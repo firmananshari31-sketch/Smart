@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v119</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v120</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -704,10 +704,15 @@ nav button.nav-sembunyi{display:flex}
   <div class="card" style="margin-bottom:12px"><label for="tema">Tampilan</label><select id="tema"><option value="neon">Futuristik neon</option><option value="">Ikuti pengaturan HP</option><option value="light">Terang</option><option value="dark">Gelap</option></select><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px"><input type="checkbox" id="kurangiAnimasi" style="width:auto;margin:0">Kurangi animasi dan efek cahaya (lebih ringan untuk HP lama)</label></div>
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
   <div class="card" style="margin-bottom:12px"><h3>Gabungkan kelompok</h3>
-  <p class="hint">Dipakai untuk menyambung hasil yang terpisah karena label kelas, mapel, atau bab berbeda. Semua hasil dari kelompok asal dipindah ke kelompok tujuan. Cadangkan data dulu.</p>
-  <label for="gbDari">Dari kelompok (yang salah)</label><select id="gbDari"></select>
-  <label for="gbKe" style="margin-top:8px">Ke kelompok (yang benar)</label><select id="gbKe"></select>
-  <div class="row" style="margin-top:8px"><button type="button" id="gbCadang">💾 Cadangkan dulu</button><button class="primary" type="button" id="gbJalan">🔗 Gabungkan</button></div>
+  <p class="hint">Dipakai untuk menyambung hasil yang terpisah karena label kelas, mapel, bab, atau materi berbeda. Pilih asal sampai materi (kosongkan materi untuk semua materi), lalu pilih tujuan. Cadangkan data dulu.</p>
+  <p class="hint"><b>Asal (yang salah)</b></p>
+  <div class="row"><select id="gbDKelas" aria-label="Kelas asal"></select><select id="gbDMapel" aria-label="Mapel asal"></select></div>
+  <div class="row" style="margin-top:8px"><select id="gbDBab" aria-label="Bab asal"></select><select id="gbDMateri" aria-label="Materi asal"></select></div>
+  <p class="hint" style="margin-top:12px"><b>Tujuan (yang benar)</b></p>
+  <div class="row"><select id="gbKKelas" aria-label="Kelas tujuan"></select><select id="gbKMapel" aria-label="Mapel tujuan"></select></div>
+  <div class="row" style="margin-top:8px"><select id="gbKBab" aria-label="Bab tujuan"></select><select id="gbKMateri" aria-label="Materi tujuan"></select></div>
+  <p class="hint" id="gbPratinjau" style="margin-top:10px"></p>
+  <div class="row" style="margin-top:8px"><button type="button" id="gbCadang">💾 Cadangkan dulu</button><button class="primary" type="button" id="gbJalan" disabled>🔗 Gabungkan</button></div>
   <p class="hint" id="gbInfo"></p>
   </div>
   <div class="card" style="margin-bottom:12px"><h3>Model AI untuk kunci jawaban</h3>
@@ -718,7 +723,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 119 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 120 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1031,55 +1036,134 @@ $$('nav button').forEach(function(b){
 })();
 
 /* ---------- Gabungkan kelompok yang terpisah ---------- */
+/* Pilihan berjenjang: kelas > mapel > bab > materi. Sisi asal mengikuti data yang ada;
+   sisi tujuan memakai semua nilai yang pernah dipakai agar bisa memilih kombinasi baru. */
+function gbNilaiUnik(fn,daftar){
+  var r=[];
+  daftar.forEach(function(o){var v=fn(o);if(r.indexOf(v)<0)r.push(v)});
+  return r.sort(cmpNatural);
+}
+function gbIsi(sel,pilihan,nilai,kosong){
+  if(!sel)return;
+  var h='<option value="">'+esc(kosong)+'</option>';
+  pilihan.forEach(function(v){h+='<option value="'+esc(v)+'">'+esc(v)+'</option>'});
+  sel.innerHTML=h;
+  sel.value=pilihan.indexOf(nilai)>=0?nilai:'';
+}
+function gbMilik(sisi){
+  var p=sisi==='dari'?'#gbD':'#gbK';
+  return {kelas:$(p+'Kelas'),mapel:$(p+'Mapel'),bab:$(p+'Bab'),materi:$(p+'Materi')};
+}
+function gbNilai(sisi){
+  var s=gbMilik(sisi);
+  return {kelas:s.kelas?s.kelas.value:'',mapel:s.mapel?s.mapel.value:'',bab:s.bab?s.bab.value:'',materi:s.materi?s.materi.value:''};
+}
+function gbCocokAsal(o,n){
+  return kelasDari(o)===n.kelas&&mapelDari(o)===n.mapel&&babDari(o)===n.bab&&(!n.materi||materiDari(o)===n.materi);
+}
+function gbSusun(kelas,mapel,bab){
+  var p=[kelas];
+  if(mapel&&mapel.indexOf('(tanpa ')!==0)p.push(mapel);
+  if(bab&&bab.indexOf('(tanpa ')!==0)p.push(bab);
+  return p.join(' - ');
+}
 function isiGabung(){
-  var l=labelDaftar().filter(Boolean);
-  var dari=$('#gbDari'),ke=$('#gbKe');
-  if(!dari||!ke)return;
-  var pDari=dari.value,pKe=ke.value;
-  var opsi=l.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('');
-  dari.innerHTML=opsi;ke.innerHTML=opsi;
-  dari.value=l.indexOf(pDari)>=0?pDari:(l[0]||'');
-  ke.value=l.indexOf(pKe)>=0?pKe:(l[1]||l[0]||'');
-  $('#gbInfo').textContent=l.length?(l.length+' kelompok tersimpan.'):'Belum ada hasil.';
+  if(!$('#gbDKelas'))return;
+  var semua=hasil.filter(Boolean);
+  var d=gbNilai('dari'),k=gbNilai('ke');
+  /* asal: berjenjang */
+  var kl=gbNilaiUnik(kelasDari,semua);
+  var kelasV=kl.indexOf(d.kelas)>=0?d.kelas:(kl[0]||'');
+  var dM=semua.filter(function(o){return kelasDari(o)===kelasV});
+  var ml=gbNilaiUnik(mapelDari,dM);
+  var mapelV=ml.indexOf(d.mapel)>=0?d.mapel:(ml[0]||'');
+  var dB=dM.filter(function(o){return mapelDari(o)===mapelV});
+  var bl=gbNilaiUnik(babDari,dB);
+  var babV=bl.indexOf(d.bab)>=0?d.bab:(bl[0]||'');
+  var dX=dB.filter(function(o){return babDari(o)===babV});
+  var xl=gbNilaiUnik(materiDari,dX);
+  var materiV=xl.indexOf(d.materi)>=0?d.materi:'';
+  var sD=gbMilik('dari');
+  gbIsi(sD.kelas,kl,kelasV,'— pilih kelas —');
+  gbIsi(sD.mapel,ml,mapelV,'— pilih mapel —');
+  gbIsi(sD.bab,bl,babV,'— pilih bab —');
+  gbIsi(sD.materi,xl,materiV,'Semua materi');
+  /* tujuan: semua nilai yang ada */
+  var sK=gbMilik('ke');
+  gbIsi(sK.kelas,kl,k.kelas,'— pilih kelas —');
+  gbIsi(sK.mapel,gbNilaiUnik(mapelDari,semua),k.mapel,'— pilih mapel —');
+  gbIsi(sK.bab,gbNilaiUnik(babDari,semua),k.bab,'— pilih bab —');
+  gbIsi(sK.materi,gbNilaiUnik(materiDari,semua),k.materi,'Tetap (sama dengan asal)');
+  gbPratinjau();
+}
+function gbPratinjau(){
+  var d=gbNilai('dari'),k=gbNilai('ke');
+  var dOk=!!(d.kelas&&d.mapel&&d.bab),kOk=!!(k.kelas&&k.mapel&&k.bab);
+  var n=dOk?hasil.filter(function(o){return gbCocokAsal(o,d)}).length:0;
+  var lAsal=gbSusun(d.kelas,d.mapel,d.bab)+(d.materi?' · materi '+d.materi:' · semua materi');
+  var lKe=gbSusun(k.kelas,k.mapel,k.bab)+(k.materi?' · materi '+k.materi:'');
+  var sama=dOk&&kOk&&gbSusun(d.kelas,d.mapel,d.bab)===gbSusun(k.kelas,k.mapel,k.bab)&&(!k.materi||k.materi===d.materi);
+  var teks;
+  if(!dOk)teks='Pilih kelas, mapel, dan bab asal.';
+  else if(!n)teks='Tidak ada hasil di asal yang dipilih.';
+  else if(!kOk)teks='Pilih kelas, mapel, dan bab tujuan.';
+  else if(sama)teks='Asal dan tujuan sama. Pilih tujuan yang berbeda.';
+  else teks='Akan memindahkan '+n+' hasil dari "'+lAsal+'" ke "'+lKe+'"'+(k.materi?'. Materi hasil diubah menjadi "'+k.materi+'"':'')+'.';
+  var pr=$('#gbPratinjau');if(pr)pr.textContent=teks;
+  var btn=$('#gbJalan');if(btn)btn.disabled=!(dOk&&kOk&&n>0&&!sama);
 }
 function gantiKunciKelompok(key,dariKM,dariBab,keKM,keBab){
   var pre=dariKM+'|'+dariBab+'|';
   return key.indexOf(pre)===0?keKM+'|'+keBab+'|'+key.slice(pre.length):key;
 }
 function gabungKelompok(){
-  var dari=$('#gbDari').value,ke=$('#gbKe').value;
-  if(!dari||!ke||dari===ke){alert('Pilih dua kelompok yang berbeda.');return}
-  var n=hasil.filter(function(o){return o.label===dari}).length;
-  if(!n){alert('Tidak ada hasil di kelompok asal.');return}
-  if(!confirm('Pindahkan '+n+' hasil dari "'+dari+'" ke "'+ke+'"?\n\nSudah mencadangkan data? Tindakan ini tidak bisa dibatalkan dengan satu tombol.'))return;
-  hasil.forEach(function(o){if(o.label===dari)o.label=ke});
+  var d=gbNilai('dari'),k=gbNilai('ke');
+  if(!(d.kelas&&d.mapel&&d.bab&&k.kelas&&k.mapel&&k.bab)){alert('Lengkapi pilihan asal dan tujuan.');return}
+  var labelAsal=gbSusun(d.kelas,d.mapel,d.bab),labelKe=gbSusun(k.kelas,k.mapel,k.bab);
+  var asal=hasil.filter(function(o){return gbCocokAsal(o,d)});
+  var n=asal.length;
+  if(!n){alert('Tidak ada hasil di asal yang dipilih.');return}
+  if(labelAsal===labelKe&&(!k.materi||k.materi===d.materi)){alert('Asal dan tujuan sama.');return}
+  if(!confirm('Pindahkan '+n+' hasil dari "'+labelAsal+(d.materi?' · '+d.materi:'')+'" ke "'+labelKe+(k.materi?' · '+k.materi:'')+'"?'+(k.materi?'\n\nMateri hasil diubah menjadi "'+k.materi+'".':'')+'\n\nSudah mencadangkan data? Tindakan ini tidak bisa dibatalkan dengan satu tombol.'))return;
+  asal.forEach(function(o){o.label=labelKe;if(k.materi)o.materi=k.materi});
   store.set('hasil',hasil);
-  var pa=dari.split(' - '),pb=ke.split(' - ');
-  var dariKM=pa.slice(0,2).join(' - '),dariBab=pa.slice(2).join(' - ');
-  var keKM=pb.slice(0,2).join(' - '),keBab=pb.slice(2).join(' - ');
-  var rp=store.get('hasilRP',[]);
-  if(Array.isArray(rp)){rp.forEach(function(h){if(h.label===dari)h.label=ke});store.set('hasilRP',rp)}
-  var lr=store.get('lembarRP',[]);
-  if(Array.isArray(lr)){lr.forEach(function(it){
-    if(it.kunciKM===dariKM&&it.bab===dariBab){it.kunciKM=keKM;it.bab=keBab;it.id=keKM+'|'+keBab+'|'+it.jenis}
-  });store.set('lembarRP',lr)}
-  ['jejakRP','bandingRP'].forEach(function(k){
-    var obj=store.get(k,{});if(!obj||typeof obj!=='object')return;
-    var baru={};
-    Object.keys(obj).forEach(function(key){baru[gantiKunciKelompok(key,dariKM,dariBab,keKM,keBab)]=obj[key]});
-    store.set(k,baru);
-  });
+  /* catatan rapor dan jejak hanya bisa ikut pindah kalau seluruh bab dipindah */
+  var utuh=!d.materi&&!k.materi;
+  if(utuh){
+    var dariKM=gbSusun(d.kelas,d.mapel,''),dariBab=d.bab.indexOf('(tanpa ')===0?'':d.bab;
+    var keKM=gbSusun(k.kelas,k.mapel,''),keBab=k.bab.indexOf('(tanpa ')===0?'':k.bab;
+    var rp=store.get('hasilRP',[]);
+    if(Array.isArray(rp)){rp.forEach(function(h){if(h.label===labelAsal)h.label=labelKe});store.set('hasilRP',rp)}
+    var lr=store.get('lembarRP',[]);
+    if(Array.isArray(lr)){lr.forEach(function(it){
+      if(it.kunciKM===dariKM&&it.bab===dariBab){it.kunciKM=keKM;it.bab=keBab;it.id=keKM+'|'+keBab+'|'+it.jenis}
+    });store.set('lembarRP',lr)}
+    ['jejakRP','bandingRP'].forEach(function(key){
+      var obj=store.get(key,{});if(!obj||typeof obj!=='object')return;
+      var baru={};
+      Object.keys(obj).forEach(function(kk){baru[gantiKunciKelompok(kk,dariKM,dariBab,keKM,keBab)]=obj[kk]});
+      store.set(key,baru);
+    });
+  }
   var seen={},dup=[];
-  hasil.forEach(function(o){if(o.label!==ke)return;var k=(o.nama||'').trim().toLowerCase();if(seen[k])dup.push(o.nama||'(tanpa nama)');seen[k]=1});
+  hasil.forEach(function(o){if(o.label!==labelKe)return;var nk=(o.nama||'').trim().toLowerCase();if(seen[nk])dup.push(o.nama||'(tanpa nama)');seen[nk]=1});
   hasilTerakhirFp=null;
   isiGabung();isiDaftarLabel();
   if(typeof renderHasil==='function')renderHasil();
+  if(typeof updateFltBar==='function')updateFltBar();
   rkIsiFilter();renderRekap();
-  $('#gbInfo').textContent='Berhasil memindahkan '+n+' hasil ke "'+ke+'".'+(dup.length?' Perhatian: nama berikut muncul dua kali di kelompok tujuan, periksa di tab Hasil: '+dup.join(', ')+'.':'');
-  toast('Kelompok digabungkan');
+  $('#gbInfo').textContent='Berhasil memindahkan '+n+' hasil ke "'+labelKe+'".'+(utuh?'':' Catatan rapor yang sudah dibuat tidak ikut dipindah; buat ulang di menu Rapor.')+(dup.length?' Perhatian: nama berikut muncul dua kali di tujuan, periksa di tab Hasil: '+dup.join(', ')+'.':'');
+  toast('Hasil digabungkan');
 }
+['gbDKelas','gbDMapel','gbDBab','gbDMateri'].forEach(function(id){
+  $('#'+id).addEventListener('change',isiGabung);
+});
+['gbKKelas','gbKMapel','gbKBab','gbKMateri'].forEach(function(id){
+  $('#'+id).addEventListener('change',gbPratinjau);
+});
 $('#gbCadang').addEventListener('click',function(){$('#btnBackup').click()});
 $('#gbJalan').addEventListener('click',gabungKelompok);
+isiGabung();
 
 /* ---------- Rekap nilai per kelas: filter, edit, ekspor ---------- */
 var rkTerakhir=null;
