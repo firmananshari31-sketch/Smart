@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v114</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v115</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -607,7 +607,7 @@ nav button.nav-sembunyi{display:flex}
   <div class="card"><label>Kategori capaian per materi</label><p class="hint" id="rpKatInfo"></p><div id="rpKatBox" class="chips"></div></div>
   <div class="card"><label>Catatan kolom untuk rapor</label><p class="hint">Kolom kiri untuk capaian tertinggi, kolom kanan untuk bab atau materi yang perlu ditingkatkan. Bisa disalin langsung ke rapor.</p><div id="rpKolom"></div></div>
   <div id="rpDaftar"></div>
-  <div id="rpSheet" class="sheet-bg" hidden><div class="sheet-card"><div class="sheet-top"><span class="sheet-grip"></span><button id="rpSheetTutup" type="button">Tutup ✕</button></div><b id="rpSheetJudul" style="display:block;margin-bottom:8px"></b><textarea id="rpSheetTeks" rows="12"></textarea><p class="hint">Perubahan langsung tersimpan.</p></div></div>
+  <div id="rpSheet" class="sheet-bg" hidden><div class="sheet-card"><div class="sheet-top"><span class="sheet-grip"></span><button id="rpSheetTutup" type="button">Tutup ✕</button></div><b id="rpSheetJudul" style="display:block;margin-bottom:8px"></b><textarea maxlength="8000" id="rpSheetTeks" rows="12"></textarea><p class="hint small" id="rpSheetHitung" style="margin:4px 0 0"></p><p class="hint">Perubahan langsung tersimpan.</p></div></div>
 </section>
 
 <section id="tab-rm" class="tab">
@@ -719,7 +719,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 114 (17 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 115 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -4200,7 +4200,7 @@ function renderRapor(){
   w.innerHTML=list.map(function(o){
     var i=hasil.indexOf(o);
     return '<div class="card" data-rp="'+i+'"><div class="sheet-h"><b>'+esc(o.nama)+'</b><span class="small">'+Math.round(nilai100(o))+' · '+esc(babDari(o))+'</span></div>'+
-      '<textarea rows="3" data-rp-teks placeholder="Belum ada catatan. Tekan tombol di atas, atau tulis sendiri.">'+esc(o.rapor||'')+'</textarea>'+
+      '<textarea rows="3" maxlength="8000" data-rp-teks placeholder="Belum ada catatan. Tekan tombol di atas, atau tulis sendiri.">'+esc(o.rapor||'')+'</textarea>'+'<p class="hint small" data-rp-hitung style="margin:4px 0 0">'+String((o.rapor||'').length).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' / 8.000 karakter</p>'+
       '<button data-rp-buka hidden style="margin-top:6px">Lihat semua</button>'+
       '<div class="row" style="margin-top:8px"><button data-rp-ulang>Ulangi AI</button><button data-rp-salin>Salin</button><button data-rp-pdf>PDF</button></div></div>';
   }).join('');
@@ -4461,6 +4461,7 @@ function bukaRapor(i){
   rpIdx=i;
   $('#rpSheetJudul').textContent=o.nama+(o.label?' · '+o.label:'');
   $('#rpSheetTeks').value=o.rapor||'';
+  $('#rpSheetHitung').textContent=($('#rpSheetTeks').value.length).toLocaleString('id-ID')+' / 8.000 karakter';
   $('#rpSheet').hidden=false;document.body.style.overflow='hidden';
 }
 function tutupRapor(){$('#rpSheet').hidden=true;document.body.style.overflow='';rpIdx=-1;renderRapor()}
@@ -4468,6 +4469,7 @@ $('#rpSheetTutup').addEventListener('click',tutupRapor);
 $('#rpSheet').addEventListener('click',function(e){if(e.target===this)tutupRapor()});
 $('#rpSheetTeks').addEventListener('input',function(){
   var o=hasil[rpIdx];if(!o)return;
+  $('#rpSheetHitung').textContent=this.value.length.toLocaleString('id-ID')+' / 8.000 karakter';
   o.rapor=this.value;store.set('hasil',hasil);
 });
 async function buatRapor(o,model){
@@ -4475,8 +4477,9 @@ async function buatRapor(o,model){
   var sys='Kamu menulis catatan capaian belajar untuk siswa SD di Indonesia. Tulis 3 sampai 4 kalimat dalam satu paragraf dengan bahasa Indonesia yang hangat dan positif: (1) capaian belajar pada materi ini; (2) kekuatan yang terlihat; (3) hal yang perlu dibimbing dan satu saran latihan yang konkret. Jangan menyebut angka nilai, jangan memakai judul, daftar, atau tanda kutip, dan jangan menambah data yang tidak ada di rincian.';
   var isi='Nama: '+o.nama+'\nMateri: '+(o.label||'-')+'\nNilai: '+Math.round(nilai100(o))+' dari 100\nRincian per soal:\n'+rinci+(o.perbaikan?'\nCatatan perbaikan: '+o.perbaikan:'');
   ketPotong=false;
-  var t=(await apiText(sys,isi,900,0,model)).trim().replace(/^["']+|["']+$/g,'');
+  var t=(await apiText(sys,isi,3000,0,model)).trim().replace(/^["']+|["']+$/g,'');
   if(ketPotong)throw new Error('catatan terpotong karena terlalu panjang, coba Ulangi AI');
+  if(t.length>8000){var potong=t.slice(0,8000),akhir=potong.lastIndexOf('.');t=akhir>0?potong.slice(0,akhir+1):potong}
   if(t.length<20)throw new Error('catatan AI terlalu pendek');
   return t;
 }
@@ -4506,6 +4509,8 @@ $('#rpDaftar').addEventListener('input',function(e){
   var o=hasil[+t.closest('[data-rp]').dataset.rp];if(!o)return;
   o.rapor=t.value;store.set('hasil',hasil);
   fitTA(t);cekBukaSemua(t);
+  var hit=t.parentNode.querySelector('[data-rp-hitung]');
+  if(hit)hit.textContent=t.value.length.toLocaleString('id-ID')+' / 8.000 karakter';
 });
 $('#rpDaftar').addEventListener('click',async function(e){
   var card=e.target.closest('[data-rp]');if(!card)return;
