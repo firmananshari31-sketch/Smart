@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v121</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v122</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -701,9 +701,14 @@ nav button.nav-sembunyi{display:flex}
   <div class="card" style="margin-bottom:12px"><h3>Pemakaian dan saldo API</h3>
   <p class="hint">Isi harga per 1 juta token sesuai halaman harga Anthropic. Biaya hanya dihitung untuk model yang harganya sudah diisi. Harga yang diubah berlaku untuk perhitungan berikutnya.</p>
   <div id="hargaModelBox"></div>
+  <label for="csvPakai" style="margin-top:10px">Unggah CSV pemakaian dari Console (paling akurat)</label>
+  <input type="file" id="csvPakai" accept=".csv,text/csv">
+  <p class="hint" id="csvInfo"></p>
+  <div class="row" style="margin-top:6px"><button type="button" id="btnHapusCsv">🗑 Hapus data CSV</button></div>
   <label for="saldoJumlah" style="margin-top:10px">Saldo terakhir (USD) dari halaman billing Console</label>
-  <div class="row"><input type="number" step="0.01" min="0" id="saldoJumlah" placeholder="Contoh: 10"><button type="button" id="btnSimpanSaldo">💾 Simpan saldo hari ini</button></div>
-  <p class="hint">Simpan pada hari Bapak/Ibu mengecek saldo. Perkiraan sisa dihitung dari pemakaian sejak saat itu.</p>
+  <div class="row"><input type="number" step="0.01" min="0" id="saldoJumlah" placeholder="Contoh: 10"><input type="date" id="saldoTanggal"></div>
+  <div class="row" style="margin-top:6px"><button type="button" id="btnSimpanSaldo">💾 Simpan saldo</button></div>
+  <p class="hint">Pilih tanggal saat Bapak/Ibu melihat saldo. Pemakaian sejak tanggal itu dihitung dari CSV, atau dari panggilan di aplikasi kalau belum ada CSV.</p>
   <p class="hint" id="pakaiInfo"></p>
   </div>
   <div class="card" style="margin-bottom:12px"><label for="aturanAkhir">Aturan nilai akhir setelah remedial</label><select id="aturanAkhir"><option value="kkm">Dibatasi KKM (jika remedial tuntas, nilai akhir = KKM)</option><option value="tertinggi">Nilai tertinggi (asli atau remedial)</option><option value="asli">Nilai asli tetap (remedial hanya dicatat)</option></select><p class="hint">Hanya berlaku di menu Remedial. Nilai di tab Hasil tidak diubah.</p></div>
@@ -730,7 +735,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 121 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 122 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1985,10 +1990,33 @@ function updIkonTema(){
 }
 $('#tema').addEventListener('change',function(){store.set('tema',this.value);terapkanTema();updIkonTema()});
 $('#kurangiAnimasi').addEventListener('change',function(){store.set('animasi',this.checked?'kurang':'');terapkanTema()});
+$('#csvPakai').addEventListener('change',function(){
+  var f=this.files&&this.files[0];if(!f)return;
+  var input=this;
+  var rd=new FileReader();
+  rd.onload=function(){
+    var hs=bacaCsvPakai(String(rd.result||''));
+    if(hs.error){alert(hs.error);input.value='';return}
+    var lama=store.get('csvPakai',{})||{};
+    Object.keys(hs.rows).forEach(function(k){lama[k]=hs.rows[k]});
+    if(!store.set('csvPakai',lama)){alert('Penyimpanan browser penuh, data CSV tidak tersimpan.');return}
+    toast('CSV pemakaian dibaca: '+Object.keys(hs.rows).length+' baris');
+    renderBiaya();
+  };
+  rd.onerror=function(){alert('File tidak bisa dibaca.')};
+  rd.readAsText(f);
+  input.value='';
+});
+$('#btnHapusCsv').addEventListener('click',function(){
+  if(!confirm('Hapus semua data CSV pemakaian yang tersimpan?'))return;
+  store.set('csvPakai',{});
+  renderBiaya();
+});
 $('#btnSimpanSaldo').addEventListener('click',function(){
   var j=parseFloat($('#saldoJumlah').value);
   if(!(j>=0)){alert('Isi saldo dalam USD dengan angka.');return}
-  store.set('saldoCek',{jumlah:j,tanggal:tanggalLokal(),snap:store.get('pakaiSeumur',{})||{}});
+  var t=$('#saldoTanggal').value||tanggalLokal();
+  store.set('saldoCek',{jumlah:j,tanggal:t,snap:store.get('pakaiSeumur',{})||{}});
   toast('Saldo disimpan');renderBiaya();
 });
 $('#aturanAkhir').addEventListener('change',function(){store.set('aturanAkhir',this.value);if(typeof renderRM==='function')renderRM()});
@@ -2062,16 +2090,77 @@ function biayaPakai(perModel){
   });
   return {total:total,tanpaHarga:tanpaHarga};
 }
+function adaCsv(){var c=store.get('csvPakai',{});return !!c&&typeof c==='object'&&Object.keys(c).length>0}
+function csvTotal(filter){
+  var c=store.get('csvPakai',{})||{},pm={};
+  Object.keys(c).forEach(function(k){
+    var r=c[k];if(filter&&!filter(r))return;
+    var u=pm[r.model]||{masuk:0,keluar:0};
+    u.masuk+=r.masuk||0;u.keluar+=r.keluar||0;pm[r.model]=u;
+  });
+  return pm;
+}
+function csvRentang(){
+  var c=store.get('csvPakai',{})||{},mn='',mx='';
+  Object.keys(c).forEach(function(k){var t=c[k].tanggal;if(!mn||t<mn)mn=t;if(!mx||t>mx)mx=t});
+  return {min:mn,maks:mx,jumlah:Object.keys(c).length};
+}
+function parseCsvBaris(line){
+  var out=[],cur='',q=false;
+  for(var i=0;i<line.length;i++){
+    var ch=line[i];
+    if(q){if(ch==='"'){if(line[i+1]==='"'){cur+='"';i++}else q=false}else cur+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===','){out.push(cur);cur=''}
+    else cur+=ch;
+  }
+  out.push(cur);return out;
+}
+/* Membaca CSV pemakaian dari Console. Token cache ikut dijumlahkan sebagai token masuk. */
+function bacaCsvPakai(teks){
+  var baris=teks.replace(/\r/g,'').split('\n').filter(function(l){return l.trim()});
+  if(baris.length<2)return {error:'File kosong atau tidak berisi data.'};
+  var kepala=parseCsvBaris(baris[0]).map(function(x){return x.trim()});
+  var ix=function(nama){return kepala.indexOf(nama)};
+  var iT=ix('usage_date_utc'),iM=ix('model_version'),iK=ix('api_key'),iW=ix('workspace');
+  var iIn=ix('usage_input_tokens_no_cache'),iCW5=ix('usage_input_tokens_cache_write_5m'),iCW1=ix('usage_input_tokens_cache_write_1h'),iCR=ix('usage_input_tokens_cache_read'),iOut=ix('usage_output_tokens');
+  if(iT<0||iM<0||iIn<0||iOut<0)return {error:'Format CSV tidak dikenali. Unduh CSV pemakaian dari halaman usage di Console.'};
+  var angka=function(c,i){return i>=0?(parseInt(c[i],10)||0):0};
+  var hasil={};
+  for(var r=1;r<baris.length;r++){
+    var c=parseCsvBaris(baris[r]);
+    var tgl=(c[iT]||'').trim();
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(tgl))continue;
+    var m=(c[iM]||'').trim();
+    var kunci=tgl+'|'+m+'|'+(iK>=0?c[iK]:'')+'|'+(iW>=0?c[iW]:'');
+    hasil[kunci]={tanggal:tgl,model:m,masuk:angka(c,iIn)+angka(c,iCW5)+angka(c,iCW1)+angka(c,iCR),keluar:angka(c,iOut)};
+  }
+  return {rows:hasil};
+}
+function renderCsvInfo(){
+  var el=$('#csvInfo');if(!el)return;
+  var r=csvRentang();
+  el.textContent=r.jumlah?('Data CSV: '+r.jumlah+' baris, dari '+r.min+' sampai '+r.maks+' (tanggal UTC). Unggah ulang kapan saja; baris dengan tanggal dan model yang sama akan diganti.'):'Belum ada CSV. Unduh dari halaman usage di Console, lalu unggah di sini.';
+}
 function sisaSaldo(){
   var c=store.get('saldoCek',null);
   if(!c||typeof c!=='object'||!(c.jumlah>=0))return null;
-  var now=store.get('pakaiSeumur',{})||{},snap=c.snap||{},sejak={};
-  Object.keys(now).forEach(function(m){
-    var a=now[m]||{},b=snap[m]||{};
-    sejak[m]={masuk:Math.max(0,(a.masuk||0)-(b.masuk||0)),keluar:Math.max(0,(a.keluar||0)-(b.keluar||0))};
-  });
+  var sejak,catatan='';
+  if(adaCsv()){
+    var rg=csvRentang();
+    sejak=csvTotal(function(r){return r.tanggal>=c.tanggal});
+    if(rg.min>c.tanggal)catatan='Data CSV mulai '+rg.min+', setelah tanggal saldo. Unggah CSV yang mencakup tanggal saldo.';
+    else if(rg.maks<tanggalLokal())catatan='Data CSV baru sampai '+rg.maks+'. Unggah CSV terbaru untuk perkiraan yang lebih baru.';
+  }else{
+    var now=store.get('pakaiSeumur',{})||{},snap=c.snap||{};
+    sejak={};
+    Object.keys(now).forEach(function(m){
+      var a=now[m]||{},b=snap[m]||{};
+      sejak[m]={masuk:Math.max(0,(a.masuk||0)-(b.masuk||0)),keluar:Math.max(0,(a.keluar||0)-(b.keluar||0))};
+    });
+  }
   var bi=biayaPakai(sejak);
-  return {jumlah:c.jumlah,tanggal:c.tanggal,terpakai:bi.total,sisa:c.jumlah-bi.total,tanpaHarga:bi.tanpaHarga};
+  return {jumlah:c.jumlah,tanggal:c.tanggal,terpakai:bi.total,sisa:c.jumlah-bi.total,tanpaHarga:bi.tanpaHarga,catatan:catatan};
 }
 function renderHargaModel(){
   var box=$('#hargaModelBox');if(!box)return;
@@ -3929,12 +4018,19 @@ function renderBiaya(){
   var bulan=bulanLokal();
   var n=hasil.filter(function(h){return h.waktu&&bulanLokal(new Date(h.waktu))===bulan}).length;
   var b=(store.get('pakai',{})||{})[bulan]||{};
-  var pm=b.perModel||{};
+  var pm,teksSumber;
+  if(adaCsv()){
+    pm=csvTotal(function(r){return r.tanggal.slice(0,7)===bulan});
+    teksSumber='sumber: CSV Console';
+  }else{
+    pm=b.perModel||{};
+    teksSumber='sumber: panggilan di aplikasi ini, '+(b.panggilan||0)+' panggilan';
+  }
   var masuk=0,keluar=0;
   Object.keys(pm).forEach(function(m){masuk+=pm[m].masuk||0;keluar+=pm[m].keluar||0});
-  if(!b.perModel){masuk+=b.masuk||0;keluar+=b.keluar||0} /* data lama sebelum v121 */
+  if(!adaCsv()&&!b.perModel){masuk+=b.masuk||0;keluar+=b.keluar||0}
   var bi=biayaPakai(pm);
-  var teks='Bulan ini: '+n+' siswa dinilai, '+(b.panggilan||0)+' panggilan AI, '+masuk.toLocaleString('id-ID')+' token masuk, '+keluar.toLocaleString('id-ID')+' token keluar. Perkiraan biaya: $'+bi.total.toFixed(3)+'.';
+  var teks='Bulan ini: '+n+' siswa dinilai, '+masuk.toLocaleString('id-ID')+' token masuk, '+keluar.toLocaleString('id-ID')+' token keluar ('+teksSumber+'). Perkiraan biaya: $'+bi.total.toFixed(3)+'.';
   if(bi.tanpaHarga.length)teks+=' Harga belum diisi untuk: '+bi.tanpaHarga.join(', ')+'.';
   var s=sisaSaldo();
   if(s)teks+=' Perkiraan sisa saldo: $'+s.sisa.toFixed(2)+' (saldo $'+s.jumlah.toFixed(2)+' per '+s.tanggal+').';
@@ -3943,14 +4039,18 @@ function renderBiaya(){
 }
 function renderPakaiInfo(){
   var el=$('#pakaiInfo');if(!el)return;
+  renderCsvInfo();
+  var sd=$('#saldoTanggal');if(sd&&!sd.value)sd.value=tanggalLokal();
   var bulan=bulanLokal();
-  var b=(store.get('pakai',{})||{})[bulan]||{};
-  var bi=biayaPakai(b.perModel||{});
-  var s=sisaSaldo();
+  var pm=adaCsv()?csvTotal(function(r){return r.tanggal.slice(0,7)===bulan}):(((store.get('pakai',{})||{})[bulan]||{}).perModel||{});
+  var bi=biayaPakai(pm);
   var teks='Bulan ini: $'+bi.total.toFixed(3)+' (perkiraan).';
+  if(bi.tanpaHarga.length)teks+=' Harga belum diisi untuk: '+bi.tanpaHarga.join(', ')+'.';
+  var s=sisaSaldo();
   if(s){
-    teks+=' Saldo $'+s.jumlah.toFixed(2)+' dicek '+s.tanggal+'. Pemakaian sejak itu perkiraan $'+s.terpakai.toFixed(3)+', sisa perkiraan $'+s.sisa.toFixed(2)+'.';
+    teks+=' Saldo $'+s.jumlah.toFixed(2)+' per '+s.tanggal+'. Pemakaian sejak itu perkiraan $'+s.terpakai.toFixed(3)+', sisa perkiraan $'+s.sisa.toFixed(2)+'.';
     if(s.tanpaHarga.length)teks+=' Harga belum diisi untuk: '+s.tanpaHarga.join(', ')+'.';
+    if(s.catatan)teks+=' '+s.catatan;
   }else{
     teks+=' Belum ada saldo tersimpan.';
   }
