@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v116</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v117</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -473,7 +473,6 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="row" style="margin-bottom:8px"><input type="search" id="cariHasil" placeholder="Cari nama siswa" style="flex:1"><select id="urutHasil" style="flex:1"><option value="nama">Urut: nama (A–Z)</option><option value="rendah">Urut: nilai terendah dulu</option><option value="tinggi">Urut: nilai tertinggi dulu</option><option value="terbaru">Urut: terbaru dinilai</option><option value="status">Urut: perlu dicek dulu</option></select></div>
   </details>
-  <div class="card" id="rekapBab" style="margin-bottom:12px" hidden></div>
   <div class="row">
       <details class="menu-ekspor"><summary>⬇ Ekspor &amp; cetak ⋯</summary><div><button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button><button id="btnCsv">📄 Unduh CSV</button><button id="btnPrintAll">🖨 Cetak semua (guru)</button><button id="btnPrintParent">🖨 Cetak semua (orang tua)</button><button id="btnPdfSemuaGuru">📤 PDF semua (guru)</button><button id="btnPdfSemuaOrtu">📤 PDF semua (orang tua)</button><button id="btnIslami">✨ Tambahkan kalimat islami</button></div></details>
   <button id="btnLatihan">📝 Lembar latihan (AI)</button> <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button>  
@@ -719,7 +718,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 116 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 117 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -2417,6 +2416,7 @@ function barisBab(items){
 }
 function renderRekapBab(){
   var box=$('#rekapBab');
+  if(!box)return;
   var sumber=(rekapMode==='ikuti'&&filterAktif!==null)?hasil.filter(function(o){return (o.label||'')===filterAktif}):hasil;
   if(!sumber.length){box.hidden=true;box.innerHTML='';return}
   var semua=rekapMode==='semua';
@@ -2447,7 +2447,7 @@ function renderRekapBab(){
 
 var rekapMode='ikuti';
 function kelasDari(o){var p=(o.label||'').split(' - ');return p[0]||'(tanpa kelas)'}
-$('#rekapBab').addEventListener('click',function(e){
+if($('#rekapBab'))$('#rekapBab').addEventListener('click',function(e){
   var b=e.target.closest('[data-m]');if(!b)return;
   rekapMode=b.dataset.m;renderRekapBab();
 });
