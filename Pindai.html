@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v122</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v123</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -485,7 +485,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div id="undoBar" class="card" hidden style="position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:25;margin:0;box-shadow:0 4px 16px rgba(0,0,0,.25)"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span id="undoTeks"></span><button id="btnBatalHapus" class="primary">Batalkan</button></div></div>
   <p class="small" style="margin:0 0 12px">Excel berisi dua lembar kerja: <b>Rekap</b> (satu baris per siswa) dan <b>Detail</b> (satu baris per soal). Ketuk kartu untuk melihat detail. Semua isian bisa diubah sebelum diunduh atau dicetak.</p>
-  <p class="small" id="biaya" style="margin:0 0 12px"></p>
+  <div class="card small" id="biaya" style="margin:0 0 12px"></div>
   <div class="row" style="margin-bottom:12px"><button id="btnPeriksa">✔ Periksa yang ragu</button></div>
   <div id="panelPeriksa" class="card" hidden style="margin-bottom:12px"></div>
   <details id="kalibrasi" class="card" style="margin-bottom:12px">
@@ -704,6 +704,7 @@ nav button.nav-sembunyi{display:flex}
   <label for="csvPakai" style="margin-top:10px">Unggah CSV pemakaian dari Console (paling akurat)</label>
   <input type="file" id="csvPakai" accept=".csv,text/csv">
   <p class="hint" id="csvInfo"></p>
+  <div id="csvRingkas" style="margin-top:8px"></div>
   <div class="row" style="margin-top:6px"><button type="button" id="btnHapusCsv">🗑 Hapus data CSV</button></div>
   <label for="saldoJumlah" style="margin-top:10px">Saldo terakhir (USD) dari halaman billing Console</label>
   <div class="row"><input type="number" step="0.01" min="0" id="saldoJumlah" placeholder="Contoh: 10"><input type="date" id="saldoTanggal"></div>
@@ -735,7 +736,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 122 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 123 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -4018,23 +4019,46 @@ function renderBiaya(){
   var bulan=bulanLokal();
   var n=hasil.filter(function(h){return h.waktu&&bulanLokal(new Date(h.waktu))===bulan}).length;
   var b=(store.get('pakai',{})||{})[bulan]||{};
-  var pm,teksSumber;
+  var pm,sumber;
   if(adaCsv()){
     pm=csvTotal(function(r){return r.tanggal.slice(0,7)===bulan});
-    teksSumber='sumber: CSV Console';
+    sumber='CSV Console';
   }else{
     pm=b.perModel||{};
-    teksSumber='sumber: panggilan di aplikasi ini, '+(b.panggilan||0)+' panggilan';
+    if(!b.perModel&&(b.masuk||b.keluar))pm['(data lama)']={masuk:b.masuk||0,keluar:b.keluar||0};
+    sumber='panggilan di aplikasi ini ('+(b.panggilan||0)+' panggilan)';
   }
-  var masuk=0,keluar=0;
-  Object.keys(pm).forEach(function(m){masuk+=pm[m].masuk||0;keluar+=pm[m].keluar||0});
-  if(!adaCsv()&&!b.perModel){masuk+=b.masuk||0;keluar+=b.keluar||0}
   var bi=biayaPakai(pm);
-  var teks='Bulan ini: '+n+' siswa dinilai, '+masuk.toLocaleString('id-ID')+' token masuk, '+keluar.toLocaleString('id-ID')+' token keluar ('+teksSumber+'). Perkiraan biaya: $'+bi.total.toFixed(3)+'.';
-  if(bi.tanpaHarga.length)teks+=' Harga belum diisi untuk: '+bi.tanpaHarga.join(', ')+'.';
-  var s=sisaSaldo();
-  if(s)teks+=' Perkiraan sisa saldo: $'+s.sisa.toFixed(2)+' (saldo $'+s.jumlah.toFixed(2)+' per '+s.tanggal+').';
-  $('#biaya').textContent=teks;
+  var baris='',tM=0,tK=0;
+  Object.keys(pm).sort().forEach(function(m){
+    var u=pm[m]||{};tM+=u.masuk||0;tK+=u.keluar||0;
+    var o={};o[m]=u;
+    var bm=biayaPakai(o);
+    var biayaSel=bm.tanpaHarga.length?'<span style="opacity:.7">isi harga</span>':'$'+bm.total.toFixed(3);
+    baris+='<tr><td style="padding:4px 2px;border-bottom:1px solid rgba(128,128,128,.25)">'+esc(m)+'</td>'+
+      '<td align="right" style="padding:4px 2px;border-bottom:1px solid rgba(128,128,128,.25)">'+(u.masuk||0).toLocaleString('id-ID')+'</td>'+
+      '<td align="right" style="padding:4px 2px;border-bottom:1px solid rgba(128,128,128,.25)">'+(u.keluar||0).toLocaleString('id-ID')+'</td>'+
+      '<td align="right" style="padding:4px 2px;border-bottom:1px solid rgba(128,128,128,.25)">'+biayaSel+'</td></tr>';
+  });
+  var html='<div><b>Pemakaian bulan ini</b> <span style="opacity:.75">(sumber: '+esc(sumber)+')</span></div>';
+  if(baris){
+    html+='<table style="width:100%;font-size:13px;border-collapse:collapse;margin-top:6px">'+
+      '<tr><th align="left" style="padding:4px 2px">Model</th><th align="right" style="padding:4px 2px">Masuk</th><th align="right" style="padding:4px 2px">Keluar</th><th align="right" style="padding:4px 2px">Biaya</th></tr>'+
+      baris+
+      '<tr><th align="left" style="padding:4px 2px">Total</th><th align="right" style="padding:4px 2px">'+tM.toLocaleString('id-ID')+'</th><th align="right" style="padding:4px 2px">'+tK.toLocaleString('id-ID')+'</th><th align="right" style="padding:4px 2px">$'+bi.total.toFixed(3)+'</th></tr>'+
+      '</table>';
+  }else{
+    html+='<div style="margin-top:4px">Belum ada pemakaian bulan ini.</div>';
+  }
+  html+='<div style="margin-top:6px">Siswa dinilai bulan ini: '+n+'.</div>';
+  if(bi.tanpaHarga.length)html+='<div style="margin-top:4px">Isi harga per 1 juta token di Pengaturan untuk melihat biaya: '+bi.tanpaHarga.map(esc).join(', ')+'.</div>';
+  var s2=sisaSaldo();
+  if(s2){
+    html+='<div style="margin-top:6px"><b>Perkiraan sisa saldo: $'+s2.sisa.toFixed(2)+'</b> (saldo $'+s2.jumlah.toFixed(2)+' per '+esc(s2.tanggal)+')</div>';
+    if(s2.catatan)html+='<div style="margin-top:4px;opacity:.85">'+esc(s2.catatan)+'</div>';
+  }
+  $('#biaya').innerHTML=html;
+  var rk=$('#csvRingkas');if(rk)rk.innerHTML=html;
   renderPakaiInfo();
 }
 function renderPakaiInfo(){
