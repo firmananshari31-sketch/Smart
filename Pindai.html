@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v123</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v127</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -344,6 +344,26 @@ nav button.nav-sembunyi{display:flex}
 <p><b>Pindah ke HP lain</b></p>
 <ol><li>Buat cadangan di HP lama.</li><li>Pindahkan file cadangan ke HP baru, misalnya lewat WhatsApp ke nomor sendiri atau Google Drive.</li><li>Di HP baru, buka aplikasi, lalu pulihkan dari cadangan.</li></ol>
 <p>Pada sebagian HP, tombol kirim langsung ke aplikasi lain tidak selalu berhasil untuk file. Jika itu terjadi, simpan file dahulu, lalu kirim secara manual.</p>
+</details>
+<details><summary>Pemakaian dan biaya API</summary>
+<p><b>Apa itu token?</b> Token adalah potongan teks yang dibaca AI. Token bukan huruf dan bukan satu kata utuh. Kata pendek seperti "dan" biasanya satu token, sedangkan kata panjang bisa terbagi menjadi dua sampai tiga token. Kira-kira, satu token setara dengan tiga sampai empat huruf.</p>
+<p>Lembar jawaban berupa foto memakai banyak token masuk, karena gambarnya ikut dibaca AI. Jawaban tertulis yang dibuat AI dihitung sebagai token keluar.</p>
+<p><b>Harga</b> sudah terisi otomatis di menu Atur, dalam USD per 1 juta token. Ubah hanya kalau harga di halaman harga Anthropic berubah. Tombol <b>Kembalikan harga standar</b> mengembalikan angka bawaan.</p>
+<p><b>Mengunggah pemakaian dari Console</b></p>
+<ol>
+<li>Buka console.anthropic.com, lalu cari halaman penggunaan (usage). Nama menunya bisa sedikit berbeda.</li>
+<li>Pilih rentang tanggal, lalu unduh file CSV-nya.</li>
+<li>Buka menu <b>Atur</b>, lalu tekan <b>Unggah CSV pemakaian</b> dan pilih file tadi.</li>
+</ol>
+<p>Mengunggah ulang file yang lebih baru aman. Baris yang tanggal dan modelnya sama akan diganti, bukan dijumlahkan dua kali.</p>
+<p><b>Mengecek sisa saldo</b></p>
+<ol>
+<li>Buka halaman billing di Console dan lihat saldo yang tersisa.</li>
+<li>Di menu Atur, isi jumlah saldo dan pilih tanggalnya, lalu tekan <b>Simpan saldo</b>.</li>
+</ol>
+<p>Aplikasi lalu menghitung perkiraan sisa saldo dari pemakaian sejak tanggal itu. Angkanya perkiraan, jadi tetap cocokkan dengan halaman billing.</p>
+<p><b>Membaca ringkasan.</b> Tabel pemakaian bulan ini tampil di menu Atur dan di bagian atas tab Hasil. Di sana terlihat token masuk, token keluar, dan perkiraan biaya per model.</p>
+<p>Catatan: tanggal di CSV memakai UTC, jadi pemakaian dekat tengah malam WITA bisa masuk ke hari atau bulan yang berbeda.</p>
 </details>
 <details><summary>Pertanyaan yang sering muncul</summary>
 <p><b>Nilai tidak muncul atau proses gagal.</b> Periksa API key di menu Atur, lalu periksa koneksi internet. Jika masih gagal, periksa kuota akun Anthropic.</p>
@@ -699,8 +719,18 @@ nav button.nav-sembunyi{display:flex}
   <button class="primary" id="btnSave" style="width:100%">Simpan pengaturan</button>
   <div class="card" style="margin-bottom:12px"><label for="kkm">KKM (nilai tuntas, 0 sampai 100)</label><input type="number" id="kkm" min="0" max="100" step="1"></div>
   <div class="card" style="margin-bottom:12px"><h3>Pemakaian dan saldo API</h3>
-  <p class="hint">Isi harga per 1 juta token sesuai halaman harga Anthropic. Biaya hanya dihitung untuk model yang harganya sudah diisi. Harga yang diubah berlaku untuk perhitungan berikutnya.</p>
+  <p class="hint">Harga standar per 1 juta token (USD) sudah terisi, sesuai halaman harga Anthropic per 18 November 2026. Ubah kalau harga Anthropic berubah. Haiku punya tarif lebih tinggi untuk prompt di atas 100.000 token; aplikasi belum menghitung tarif itu.</p>
   <div id="hargaModelBox"></div>
+  <details id="penjelasanToken" class="card" style="margin-top:10px">
+  <summary><b>ℹ Apa itu token dan contoh hitung biaya?</b></summary>
+  <p class="hint">Token adalah potongan teks yang dibaca AI. Token bukan huruf dan bukan satu kata utuh. Kata pendek seperti "dan" biasanya satu token, sedangkan kata panjang seperti "pemakaian" bisa terbagi menjadi dua sampai tiga token. Kira-kira, satu token setara dengan tiga sampai empat huruf.</p>
+  <p class="hint">Lembar jawaban berupa foto memakai banyak token masuk, karena gambarnya ikut dibaca AI. Jawaban tertulis yang dibuat AI dihitung sebagai token keluar.</p>
+  <p class="hint"><b>Coba hitung sendiri</b></p>
+  <label for="kalkModel">Model</label>
+  <select id="kalkModel"></select>
+  <div class="row" style="margin-top:6px"><label style="flex:1 1 auto;font-size:12px">Token masuk<input type="number" min="0" step="1000" id="kalkMasuk" placeholder="Contoh: 500000"></label><label style="flex:1 1 auto;font-size:12px">Token keluar<input type="number" min="0" step="1000" id="kalkKeluar" placeholder="Contoh: 50000"></label></div>
+  <p class="small" id="kalkHasil" style="margin-top:8px"></p>
+  </details>
   <label for="csvPakai" style="margin-top:10px">Unggah CSV pemakaian dari Console (paling akurat)</label>
   <input type="file" id="csvPakai" accept=".csv,text/csv">
   <p class="hint" id="csvInfo"></p>
@@ -736,7 +766,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 123 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 127 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -2013,6 +2043,20 @@ $('#btnHapusCsv').addEventListener('click',function(){
   store.set('csvPakai',{});
   renderBiaya();
 });
+/* Kalkulator biaya sederhana untuk menjelaskan token. */
+function hitungKalkulator(){
+  var out=$('#kalkHasil');if(!out)return;
+  var m=$('#kalkModel').value||'claude-haiku-5-5';
+  var h=hargaModelAmbil()[m]||{};
+  var mm=parseFloat(h.masuk)||0,kk=parseFloat(h.keluar)||0;
+  var tm=parseFloat($('#kalkMasuk').value)||0,tk=parseFloat($('#kalkKeluar').value)||0;
+  if(!(mm||kk)){out.textContent='Isi harga untuk model ini di atas dulu.';return}
+  var bm=(tm/1000000)*mm,bk=(tk/1000000)*kk;
+  out.textContent='Biaya: $'+(bm+bk).toFixed(4)+' (token masuk $'+bm.toFixed(4)+' + token keluar $'+bk.toFixed(4)+') untuk '+m+', memakai harga di atas.';
+}
+['kalkModel','kalkMasuk','kalkKeluar'].forEach(function(id){
+  var el=$('#'+id);if(el)el.addEventListener(id==='kalkModel'?'change':'input',hitungKalkulator);
+});
 $('#btnSimpanSaldo').addEventListener('click',function(){
   var j=parseFloat($('#saldoJumlah').value);
   if(!(j>=0)){alert('Isi saldo dalam USD dengan angka.');return}
@@ -2065,7 +2109,26 @@ $('#antrean').addEventListener('click',function(e){
 function bulanLokal(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function tanggalLokal(d){d=d||new Date();return bulanLokal(d)+'-'+String(d.getDate()).padStart(2,'0')}
 var MODEL_HARGA=['claude-opus-5-5','claude-sonnet-5-5','claude-haiku-5-5'];
-function hargaModelAmbil(){var h=store.get('hargaModel',{});return h&&typeof h==='object'?h:{}}
+/* Harga standar per 1 juta token (USD), halaman harga Anthropic, 18 November 2026. */
+var HARGA_STANDAR={
+  'claude-haiku-5-5':{masuk:0.10,keluar:0.50},
+  'claude-sonnet-5-5':{masuk:2,keluar:10},
+  'claude-opus-5-5':{masuk:4,keluar:20}
+};
+/* Harga yang efektif: isian pengguna kalau ada, selain itu harga standar. */
+function hargaModelAmbil(){
+  var simpan=store.get('hargaModel',{});
+  if(!simpan||typeof simpan!=='object')simpan={};
+  var hasil={};
+  MODEL_HARGA.forEach(function(m){
+    var std=HARGA_STANDAR[m]||{},s2=simpan[m]||{};
+    hasil[m]={
+      masuk:(s2.masuk!==undefined&&s2.masuk!=='')?s2.masuk:std.masuk,
+      keluar:(s2.keluar!==undefined&&s2.keluar!=='')?s2.keluar:std.keluar
+    };
+  });
+  return hasil;
+}
 function catatPakai(masuk,keluar,model){
   var m=model||store.get('model','claude-haiku-5-5');
   var bulan=bulanLokal();
@@ -2168,17 +2231,24 @@ function renderHargaModel(){
   var h=hargaModelAmbil();
   box.innerHTML=MODEL_HARGA.map(function(m){
     var p=h[m]||{};
-    return '<div class="row" style="margin-bottom:6px;align-items:center"><span style="flex:2 1 auto;font-size:13px">'+esc(m)+'</span>'+
-      '<input type="number" step="0.01" min="0" placeholder="Masuk" data-hm="'+m+'" data-k="masuk" value="'+esc(p.masuk!==undefined?p.masuk:'')+'">'+
-      '<input type="number" step="0.01" min="0" placeholder="Keluar" data-hm="'+m+'" data-k="keluar" value="'+esc(p.keluar!==undefined?p.keluar:'')+'"></div>';
-  }).join('');
+    return '<div style="margin-bottom:10px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">'+esc(m)+'</div>'+
+      '<div class="row">'+
+      '<label style="flex:1 1 auto;font-size:12px">Input (USD per 1 juta token)<input type="number" step="0.01" min="0" placeholder="Input" data-hm="'+m+'" data-k="masuk" value="'+esc(p.masuk!==undefined?p.masuk:'')+'"></label>'+
+      '<label style="flex:1 1 auto;font-size:12px">Output (USD per 1 juta token)<input type="number" step="0.01" min="0" placeholder="Output" data-hm="'+m+'" data-k="keluar" value="'+esc(p.keluar!==undefined?p.keluar:'')+'"></label>'+
+      '</div></div>';
+  }).join('')+'<div class="row" style="margin-top:6px"><button type="button" id="btnHargaStandar">↺ Kembalikan harga standar</button></div>';
   box.querySelectorAll('input[data-hm]').forEach(function(inp){
     inp.addEventListener('input',function(){
-      var all=hargaModelAmbil(),m=this.getAttribute('data-hm'),k=this.getAttribute('data-k');
+      var all=store.get('hargaModel',{})||{},m=this.getAttribute('data-hm'),k=this.getAttribute('data-k');
       all[m]=all[m]||{};all[m][k]=this.value;
       store.set('hargaModel',all);renderBiaya();
     });
   });
+  var ks=$('#kalkModel');
+  if(ks&&!ks.options.length){ks.innerHTML=MODEL_HARGA.map(function(m){return '<option value="'+m+'">'+m+'</option>'}).join('');ks.value='claude-haiku-5-5'}
+  hitungKalkulator();
+  var rb=$('#btnHargaStandar');
+  if(rb)rb.addEventListener('click',function(){store.set('hargaModel',{});renderHargaModel();toast('Harga dikembalikan ke standar')});
   renderBiaya();
 }
 var ketPotong=false;
