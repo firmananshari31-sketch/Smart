@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v117</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v119</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -718,7 +718,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 117 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 119 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -2505,6 +2505,7 @@ function analisisHtml(list){
     '</tbody></table><p class="small">Soal dengan % benar rendah perlu diulang di kelas.</p></details>';
 }
 function renderHasil(){
+  updatePeriksaLabel();
   var jumlahAktif=(filterAktif!==null?1:0)+(filterMapel!==null?1:0)+(filterStatus!=='semua'?1:0)+(filterCari.trim()?1:0)+(urutHasil!=='nama'?1:0);
   $('#panelSum').textContent='Filter & urutan'+(jumlahAktif?' · '+jumlahAktif+' aktif':'');
   renderBiaya();
@@ -2605,14 +2606,19 @@ $('#tab-hasil').addEventListener('input',function(e){
 });
 /* ---------- Periksa yang ragu (berurutan) ---------- */
 var periksaPos=0;
-function antrianRagu(){var r=[];hasil.forEach(function(o,i){if((o.ragu&&o.ragu.length)||o.pending>0)r.push(i)});return r}
+function antrianRagu(){var r=[];hasil.forEach(function(o,i){if(cocokLembarHasil(o)&&((o.ragu&&o.ragu.length)||o.pending>0))r.push(i)});return r}
+function updatePeriksaLabel(){
+  var b=$('#btnPeriksa');if(!b)return;
+  var n=antrianRagu().length;
+  b.textContent=n?'✔ Periksa '+n+' yang ragu di filter ini':'✔ Periksa yang ragu';
+}
 function bukaPeriksa(){
-  if(!antrianRagu().length){alert('Tidak ada yang perlu diperiksa.');return}
+  if(!antrianRagu().length){alert('Tidak ada hasil yang ragu di filter ini.');return}
   periksaPos=0;$('#panelPeriksa').hidden=false;renderPeriksa();
 }
 function renderPeriksa(){
   var q=antrianRagu(),p=$('#panelPeriksa');
-  if(!q.length){p.innerHTML='<p>Semua sudah diperiksa.</p><div class="row"><button id="btnPkTutup">Tutup</button></div>';return}
+  if(!q.length){p.innerHTML='<p>Semua hasil ragu di filter ini sudah diperiksa.</p><div class="row"><button id="btnPkTutup">Tutup</button></div>';updatePeriksaLabel();return}
   if(periksaPos>=q.length)periksaPos=q.length-1;
   var o=hasil[q[periksaPos]];
   p.innerHTML='<div class="small">Siswa '+(periksaPos+1)+' dari '+q.length+'</div>'+
@@ -2646,8 +2652,9 @@ $('#btnPeriksa').addEventListener('click',bukaPeriksa);
 /* ---------- Kalibrasi: bandingkan dengan penilaian guru ---------- */
 function renderKalibrasi(){
   var sel=$('#kalSiswa'),cur=sel.value;
-  sel.innerHTML=hasil.map(function(o,i){return '<option value="'+i+'">'+esc(o.nama)+(o.label?' ('+esc(o.label)+')':'')+'</option>'}).join('');
-  if(cur!==''&&hasil[+cur])sel.value=cur;
+  var daftar=hasil.map(function(o,i){return {o:o,i:i}}).filter(function(x){return cocokLembarHasil(x.o)});
+  sel.innerHTML=daftar.map(function(x){return '<option value="'+x.i+'">'+esc(x.o.nama)+(x.o.label?' ('+esc(x.o.label)+')':'')+'</option>'}).join('');
+  if(daftar.some(function(x){return String(x.i)===cur}))sel.value=cur;
   renderKalTabel();renderKalRingkas();
 }
 function renderKalTabel(){
@@ -2672,7 +2679,8 @@ $('#kalTabel').addEventListener('input',function(e){
 });
 function renderKalRingkas(){
   var n=0,cocok=0,per={};
-  hasil.forEach(function(o){
+  var lingkup=labelAktif().kunciKM?'Untuk filter ini':'Untuk semua hasil';
+  hasil.filter(cocokLembarHasil).forEach(function(o){
     if(!o.skorGuru)return;
     o.jawaban.forEach(function(x){
       var g=o.skorGuru[x.no];
@@ -2681,10 +2689,10 @@ function renderKalRingkas(){
       per[x.no]=per[x.no]||{n:0,beda:0};per[x.no].n++;if(!ok)per[x.no].beda++;
     });
   });
-  if(!n){$('#kalRingkas').textContent='Belum ada skor guru yang diisi.';return}
+  if(!n){$('#kalRingkas').textContent='Belum ada skor guru yang diisi. '+lingkup+'.';return}
   var pct=Math.round(cocok/n*100);
   var sering=Object.keys(per).filter(function(k){return per[k].beda>0}).sort(urutNo).map(function(k){return k+' ('+per[k].beda+' dari '+per[k].n+' beda)'});
-  $('#kalRingkas').innerHTML='Kesesuaian: <b>'+pct+'%</b> ('+cocok+' dari '+n+' soal). '+(pct>=80?'Sudah cukup sesuai.':'Di bawah 80%: periksa kunci dan kebijakan.')+
+  $('#kalRingkas').innerHTML=lingkup+' · kesesuaian: <b>'+pct+'%</b> ('+cocok+' dari '+n+' soal). '+(pct>=80?'Sudah cukup sesuai.':'Di bawah 80%: periksa kunci dan kebijakan.')+
     (sering.length?'<br>Soal yang berbeda: '+esc(sering.join(', ')):'');
 }
 
@@ -4393,6 +4401,8 @@ function updateFltBar(){
   var isi=teks||'Belum memilih kelas dan mapel';
   document.querySelectorAll('[data-flt] .flt-isi').forEach(function(el){el.textContent=isi});
   if(typeof renderStats==='function')renderStats();
+  if(typeof updatePeriksaLabel==='function')updatePeriksaLabel();
+  if(typeof renderKalibrasi==='function'&&$('#kalSiswa'))renderKalibrasi();
 }
 function rapor2Halaman(doc,r,judul){
   var M=18,W=210-2*M,y=M;
