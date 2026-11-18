@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v127</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v128</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -764,9 +764,14 @@ nav button.nav-sembunyi{display:flex}
   <label for="modelPeriksa" style="margin-top:8px">Memeriksa draf kunci</label><select id="modelPeriksa"><option value="claude-opus-5-5">Claude Opus 5.5 (paling teliti, lebih mahal)</option><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (teliti, biaya sedang)</option><option value="claude-haiku-5-5">Claude Haiku 5.5 (paling hemat)</option></select><p class="hint">Dipakai untuk pemeriksaan kedua setelah draf dibuat.</p>
   <label for="modelRemedial" style="margin-top:8px">Lembar remedial dan pengayaan</label><select id="modelRemedial"><option value="claude-opus-5-5">Claude Opus 5.5 (paling teliti, lebih mahal)</option><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (teliti, biaya sedang)</option><option value="claude-haiku-5-5">Claude Haiku 5.5 (paling hemat)</option></select><p class="hint">Dipakai untuk membuat soal remedial, pengayaan, tahap 2, dan perbandingan.</p>
   </div>
+  <div class="card" style="margin-bottom:12px"><h3>Mode pemakaian AI</h3>
+  <p class="hint" id="modeInfo"></p>
+  <div class="row"><button type="button" id="btnModeHemat">🌿 Mode hemat</button><button type="button" id="btnModeTeliti">🎯 Mode teliti</button></div>
+  <p class="hint">Mode mengatur model untuk draf kunci, pemeriksaan kunci, nilai ulang siswa yang ragu, dan remedial. Model penilaian di atas tidak diubah oleh mode. Setelah ditekan, tiap pilihan tetap bisa diubah sendiri.<br>Mode hemat: draf dan periksa kunci memakai Sonnet, nilai ulang dimatikan. Mode teliti: draf dan periksa kunci memakai Opus, nilai ulang dengan Sonnet dinyalakan.</p>
+  </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 127 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 128 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -839,6 +844,13 @@ var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){r
 var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
 var hari=function(){return new Date().toISOString().slice(0,10)};
 
+/* Mode pemakaian AI: hemat (default) atau teliti. Hanya mengatur model draf, pemeriksaan kunci, nilai ulang, dan remedial. */
+var MODE_PRESET={
+  hemat:{modelDraf:'claude-sonnet-5-5',modelPeriksa:'claude-sonnet-5-5',modelRemedial:'claude-haiku-5-5',ulangSonnet:false},
+  teliti:{modelDraf:'claude-opus-5-5',modelPeriksa:'claude-opus-5-5',modelRemedial:'claude-haiku-5-5',ulangSonnet:true}
+};
+function modeAI(){var m=store.get('modeAI','hemat');return MODE_PRESET[m]?m:'hemat'}
+function modelDefault(k){var v=store.get(k,undefined);return v!==undefined?v:MODE_PRESET[modeAI()][k]}
 var hasil=store.get('hasil',[]);
 var pages=[];      // halaman siswa yang sedang difoto: {id,dataURL}
 var antrean=[];    // {id,nama,pages:[dataURL...]}
@@ -1483,10 +1495,11 @@ function isiForm(){
   $('#batasPengayaan').value=store.get('batasPengayaan',90);
   $('#aturanAkhir').value=store.get('aturanAkhir','kkm');
   $('#namaGuru').value=store.get('namaGuru','');
-  $('#ulangSonnet').checked=store.get('ulangSonnet',true);
-  $('#modelDraf').value=store.get('modelDraf','claude-opus-5-5');
-  $('#modelPeriksa').value=store.get('modelPeriksa','claude-opus-5-5');
-  $('#modelRemedial').value=store.get('modelRemedial','claude-haiku-5-5');
+  $('#ulangSonnet').checked=modelDefault('ulangSonnet');
+  $('#modelDraf').value=modelDefault('modelDraf');
+  $('#modelPeriksa').value=modelDefault('modelPeriksa');
+  $('#modelRemedial').value=modelDefault('modelRemedial');
+  tampilMode();
   isiRosterUI();
   $('#key').value=store.get('key','');
   $('#model').value=store.get('model','claude-haiku-5-5');
@@ -2038,11 +2051,28 @@ $('#csvPakai').addEventListener('change',function(){
   rd.readAsText(f);
   input.value='';
 });
+$('#btnModeHemat').addEventListener('click',function(){terapkanMode('hemat')});
+$('#btnModeTeliti').addEventListener('click',function(){terapkanMode('teliti')});
 $('#btnHapusCsv').addEventListener('click',function(){
   if(!confirm('Hapus semua data CSV pemakaian yang tersimpan?'))return;
   store.set('csvPakai',{});
   renderBiaya();
 });
+function tampilMode(){
+  var el=$('#modeInfo');if(!el)return;
+  el.textContent='Mode aktif: '+(modeAI()==='hemat'?'hemat':'teliti')+'.';
+}
+function terapkanMode(m){
+  var p=MODE_PRESET[m];if(!p)return;
+  store.set('modeAI',m);
+  Object.keys(p).forEach(function(k){store.set(k,p[k])});
+  $('#modelDraf').value=p.modelDraf;
+  $('#modelPeriksa').value=p.modelPeriksa;
+  $('#modelRemedial').value=p.modelRemedial;
+  $('#ulangSonnet').checked=p.ulangSonnet;
+  tampilMode();
+  toast('Mode '+m+' diterapkan');
+}
 /* Kalkulator biaya sederhana untuk menjelaskan token. */
 function hitungKalkulator(){
   var out=$('#kalkHasil');if(!out)return;
@@ -2379,7 +2409,7 @@ $('#btnGo').addEventListener('click',async function(){
       var siswa=(out.siswa||[]);
       if(!siswa.length)throw new Error('AI tidak menemukan jawaban di lembar ini. Coba foto ulang dengan lebih terang.');
       var ob=normalisasi(siswa[0],label,list,a.nama);ob.rubrik=ambilRubrikAktif().nama;ob.waktu=new Date().toISOString();ob.model=store.get('model','claude-haiku-5-5');
-      if(store.get('ulangSonnet',true)&&(ob.ragu.length||ob.pending>0)){
+      if(modelDefault('ulangSonnet')&&(ob.ragu.length||ob.pending>0)){
         setMsg('Nilai ulang "'+a.nama+'" dengan Sonnet karena ada yang ragu...');
         try{
           var out2=await nilaiSiswa(a,'claude-sonnet-5-5');
@@ -2557,7 +2587,7 @@ $('#btnBuatDraf').addEventListener('click',async function(){
     var draf='';
     for(var coba=0;coba<2;coba++){
       ketPotong=false;
-      draf=(await apiText(sys,content,8000,0,store.get('modelDraf','claude-opus-5-5'))).trim();
+      draf=(await apiText(sys,content,8000,0,modelDefault('modelDraf'))).trim();
       if(ketPotong)throw new Error('Hasil AI terpotong karena foto soal terlalu banyak. Bagi foto menjadi dua bagian lalu scan ulang.');
       if(draf&&parseKunci(draf).soal.length>0)break;
       draf='';
@@ -2565,7 +2595,7 @@ $('#btnBuatDraf').addEventListener('click',async function(){
     if(!draf)throw new Error('Format kunci dari AI tidak sesuai setelah dua kali coba. Periksa perintah tambahan atau pakai foto soal yang lebih jelas.');
     kmsg('Claude Opus memeriksa draf kunci...');
     var sysCek='Kamu memeriksa draf kunci jawaban SD. Tugasmu: (1) pastikan setiap kunci benar dan sesuai tujuan pembelajaran; (2) untuk isian dan uraian, tambahkan [terima: ...] berisi jawaban lain yang juga benar dan masuk akal, termasuk ejaan yang sering salah; (3) tambahkan [umpan: ...] singkat, ramah, dan sesuai usia SD untuk tiap soal; (4) tulis masalah atau keraguan dalam baris yang diawali "CATATAN:". Keluarkan seluruh kunci lengkap dengan format yang sama seperti draf, satu baris per soal, lalu baris CATATAN. Tanpa markdown dan tanpa komentar lain. Pastikan skor setiap baris sesuai KEBIJAKAN PENILAIAN.'+aturanSkorDraf();
-    var cek=''; try{cek=(await apiText(sysCek,[{type:'text',text:'Label: '+(label||'-')+(tpDraf?'\nTujuan pembelajaran: '+tpDraf:'')+'\n\nDRAF KUNCI:\n'+draf}],8000,0,store.get('modelPeriksa','claude-opus-5-5'))).trim()}catch(eCek){cek=''}
+    var cek=''; try{cek=(await apiText(sysCek,[{type:'text',text:'Label: '+(label||'-')+(tpDraf?'\nTujuan pembelajaran: '+tpDraf:'')+'\n\nDRAF KUNCI:\n'+draf}],8000,0,modelDefault('modelPeriksa'))).trim()}catch(eCek){cek=''}
     var barisCek=cek.split(/\r?\n/).map(function(l){return l.trim()}).filter(Boolean);
     var catatanBaru=barisCek.filter(function(l){return /^CATATAN:/i.test(l)}).map(function(l){return l.replace(/^CATATAN:\s*/i,'')});
     var kunciCek=barisCek.filter(function(l){return !/^CATATAN:/i.test(l)});
@@ -5366,7 +5396,7 @@ async function rmBanding(jenis,btn){
   if(btn)btn.disabled=true;
   try{
     ketPotong=false;
-    var text=await apiText(sys,'Materi: '+label+'\n'+baris,1800,0,store.get('modelRemedial','claude-haiku-5-5'))||'';
+    var text=await apiText(sys,'Materi: '+label+'\n'+baris,1800,0,modelDefault('modelRemedial'))||'';
     if(ketPotong)throw new Error('terlalu panjang, coba lagi.');
     var ring=rmBlokAI(text,'RINGKASAN'),sis=rmBlokAI(text,'SISWA');
     if(ring.length<10)throw new Error('format jawaban AI tidak sesuai. Coba lagi.');
