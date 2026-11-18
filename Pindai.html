@@ -286,7 +286,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v120</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v121</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -698,7 +698,14 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <button class="primary" id="btnSave" style="width:100%">Simpan pengaturan</button>
   <div class="card" style="margin-bottom:12px"><label for="kkm">KKM (nilai tuntas, 0 sampai 100)</label><input type="number" id="kkm" min="0" max="100" step="1"></div>
-  <div class="card" style="margin-bottom:12px"><label for="hargaMasuk">Harga API (USD per 1 juta token)</label><div class="row"><input type="number" step="0.01" min="0" id="hargaMasuk" placeholder="Token masuk"><input type="number" step="0.01" min="0" id="hargaKeluar" placeholder="Token keluar"></div><p class="hint">Isi sesuai halaman harga Anthropic untuk model yang dipakai. Kosongkan kalau tidak ingin melihat perkiraan biaya.</p></div>
+  <div class="card" style="margin-bottom:12px"><h3>Pemakaian dan saldo API</h3>
+  <p class="hint">Isi harga per 1 juta token sesuai halaman harga Anthropic. Biaya hanya dihitung untuk model yang harganya sudah diisi. Harga yang diubah berlaku untuk perhitungan berikutnya.</p>
+  <div id="hargaModelBox"></div>
+  <label for="saldoJumlah" style="margin-top:10px">Saldo terakhir (USD) dari halaman billing Console</label>
+  <div class="row"><input type="number" step="0.01" min="0" id="saldoJumlah" placeholder="Contoh: 10"><button type="button" id="btnSimpanSaldo">💾 Simpan saldo hari ini</button></div>
+  <p class="hint">Simpan pada hari Bapak/Ibu mengecek saldo. Perkiraan sisa dihitung dari pemakaian sejak saat itu.</p>
+  <p class="hint" id="pakaiInfo"></p>
+  </div>
   <div class="card" style="margin-bottom:12px"><label for="aturanAkhir">Aturan nilai akhir setelah remedial</label><select id="aturanAkhir"><option value="kkm">Dibatasi KKM (jika remedial tuntas, nilai akhir = KKM)</option><option value="tertinggi">Nilai tertinggi (asli atau remedial)</option><option value="asli">Nilai asli tetap (remedial hanya dicatat)</option></select><p class="hint">Hanya berlaku di menu Remedial. Nilai di tab Hasil tidak diubah.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="batasPengayaan">Batas nilai pengayaan (%)</label><input type="number" id="batasPengayaan" min="0" max="100" step="1"><p class="hint">Siswa dengan nilai sama dengan atau di atas angka ini masuk daftar pengayaan. Yang di bawah KKM masuk daftar remedial.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="tema">Tampilan</label><select id="tema"><option value="neon">Futuristik neon</option><option value="">Ikuti pengaturan HP</option><option value="light">Terang</option><option value="dark">Gelap</option></select><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px"><input type="checkbox" id="kurangiAnimasi" style="width:auto;margin:0">Kurangi animasi dan efek cahaya (lebih ringan untuk HP lama)</label></div>
@@ -723,7 +730,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 120 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 121 (18 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1436,8 +1443,7 @@ function isiForm(){
   $('#kkm').value=KKM();
   $('#tema').value=store.get('tema','neon');
   $('#kurangiAnimasi').checked=store.get('animasi','')==='kurang';
-  $('#hargaMasuk').value=store.get('hargaMasuk','');
-  $('#hargaKeluar').value=store.get('hargaKeluar','');
+  renderHargaModel();
   $('#batasPengayaan').value=store.get('batasPengayaan',90);
   $('#aturanAkhir').value=store.get('aturanAkhir','kkm');
   $('#namaGuru').value=store.get('namaGuru','');
@@ -1979,8 +1985,12 @@ function updIkonTema(){
 }
 $('#tema').addEventListener('change',function(){store.set('tema',this.value);terapkanTema();updIkonTema()});
 $('#kurangiAnimasi').addEventListener('change',function(){store.set('animasi',this.checked?'kurang':'');terapkanTema()});
-$('#hargaMasuk').addEventListener('input',function(){store.set('hargaMasuk',this.value);renderBiaya()});
-$('#hargaKeluar').addEventListener('input',function(){store.set('hargaKeluar',this.value);renderBiaya()});
+$('#btnSimpanSaldo').addEventListener('click',function(){
+  var j=parseFloat($('#saldoJumlah').value);
+  if(!(j>=0)){alert('Isi saldo dalam USD dengan angka.');return}
+  store.set('saldoCek',{jumlah:j,tanggal:tanggalLokal(),snap:store.get('pakaiSeumur',{})||{}});
+  toast('Saldo disimpan');renderBiaya();
+});
 $('#aturanAkhir').addEventListener('change',function(){store.set('aturanAkhir',this.value);if(typeof renderRM==='function')renderRM()});
 $('#batasPengayaan').addEventListener('input',function(){store.set('batasPengayaan',parseFloat(this.value)||90)});
 function bukaMenuTema(buka){
@@ -2022,12 +2032,64 @@ $('#antrean').addEventListener('click',function(e){
 });
 
 /* ---------- Panggil Claude ---------- */
-function catatPakai(masuk,keluar){
-  var bulan=new Date().toISOString().slice(0,7);
-  var p=store.get('pakai',{});
-  var b=p[bulan]||{masuk:0,keluar:0,panggilan:0};
-  b.masuk+=masuk||0;b.keluar+=keluar||0;b.panggilan+=1;
+/* Pemakaian dicatat per model dan per bulan (waktu lokal), plus total seumur hidup untuk hitung sisa saldo. */
+function bulanLokal(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function tanggalLokal(d){d=d||new Date();return bulanLokal(d)+'-'+String(d.getDate()).padStart(2,'0')}
+var MODEL_HARGA=['claude-opus-5-5','claude-sonnet-5-5','claude-haiku-5-5'];
+function hargaModelAmbil(){var h=store.get('hargaModel',{});return h&&typeof h==='object'?h:{}}
+function catatPakai(masuk,keluar,model){
+  var m=model||store.get('model','claude-haiku-5-5');
+  var bulan=bulanLokal();
+  var p=store.get('pakai',{})||{};
+  var b=p[bulan]||{};
+  b.panggilan=(b.panggilan||0)+1;
+  b.perModel=b.perModel||{};
+  var u=b.perModel[m]||{masuk:0,keluar:0};
+  u.masuk+=masuk||0;u.keluar+=keluar||0;b.perModel[m]=u;
   p[bulan]=b;store.set('pakai',p);
+  var s=store.get('pakaiSeumur',{})||{};
+  var su=s[m]||{masuk:0,keluar:0};
+  su.masuk+=masuk||0;su.keluar+=keluar||0;s[m]=su;store.set('pakaiSeumur',s);
+}
+/* Biaya dari pemakaian per model. Model tanpa harga tidak dihitung dan dilaporkan. */
+function biayaPakai(perModel){
+  var h=hargaModelAmbil(),total=0,tanpaHarga=[];
+  Object.keys(perModel||{}).forEach(function(m){
+    var u=perModel[m]||{},p=h[m]||{};
+    var mm=parseFloat(p.masuk)||0,kk=parseFloat(p.keluar)||0;
+    if(!(mm||kk)){if((u.masuk||0)+(u.keluar||0)>0)tanpaHarga.push(m);return}
+    total+=((u.masuk||0)/1000000)*mm+((u.keluar||0)/1000000)*kk;
+  });
+  return {total:total,tanpaHarga:tanpaHarga};
+}
+function sisaSaldo(){
+  var c=store.get('saldoCek',null);
+  if(!c||typeof c!=='object'||!(c.jumlah>=0))return null;
+  var now=store.get('pakaiSeumur',{})||{},snap=c.snap||{},sejak={};
+  Object.keys(now).forEach(function(m){
+    var a=now[m]||{},b=snap[m]||{};
+    sejak[m]={masuk:Math.max(0,(a.masuk||0)-(b.masuk||0)),keluar:Math.max(0,(a.keluar||0)-(b.keluar||0))};
+  });
+  var bi=biayaPakai(sejak);
+  return {jumlah:c.jumlah,tanggal:c.tanggal,terpakai:bi.total,sisa:c.jumlah-bi.total,tanpaHarga:bi.tanpaHarga};
+}
+function renderHargaModel(){
+  var box=$('#hargaModelBox');if(!box)return;
+  var h=hargaModelAmbil();
+  box.innerHTML=MODEL_HARGA.map(function(m){
+    var p=h[m]||{};
+    return '<div class="row" style="margin-bottom:6px;align-items:center"><span style="flex:2 1 auto;font-size:13px">'+esc(m)+'</span>'+
+      '<input type="number" step="0.01" min="0" placeholder="Masuk" data-hm="'+m+'" data-k="masuk" value="'+esc(p.masuk!==undefined?p.masuk:'')+'">'+
+      '<input type="number" step="0.01" min="0" placeholder="Keluar" data-hm="'+m+'" data-k="keluar" value="'+esc(p.keluar!==undefined?p.keluar:'')+'"></div>';
+  }).join('');
+  box.querySelectorAll('input[data-hm]').forEach(function(inp){
+    inp.addEventListener('input',function(){
+      var all=hargaModelAmbil(),m=this.getAttribute('data-hm'),k=this.getAttribute('data-k');
+      all[m]=all[m]||{};all[m][k]=this.value;
+      store.set('hargaModel',all);renderBiaya();
+    });
+  });
+  renderBiaya();
 }
 var ketPotong=false;
 function apiText(system,content,maxTokens,attempt,model){
@@ -2046,7 +2108,7 @@ function apiText(system,content,maxTokens,attempt,model){
       if(r.status===400&&/credit/i.test(m))m='Saldo API habis. Isi saldo di console.anthropic.com.';
       throw new Error(m);
     }
-    if(j.usage)catatPakai(j.usage.input_tokens,j.usage.output_tokens);
+    if(j.usage)catatPakai(j.usage.input_tokens,j.usage.output_tokens,model);
     if(j.stop_reason==='max_tokens')ketPotong=true;
     return (j.content||[]).filter(function(b){return b.type==='text'}).map(function(b){return b.text}).join('');
   });
@@ -3864,18 +3926,35 @@ window.addEventListener('beforeunload',function(e){
 /* ---------- Perkiraan biaya bulan ini ---------- */
 var HARGA_PER_SISWA={'claude-haiku-5-5':0.0015,'claude-sonnet-5-5':0.02};
 function renderBiaya(){
-  var bulan=new Date().toISOString().slice(0,7);
-  var n=hasil.filter(function(h){return (h.waktu||'').slice(0,7)===bulan}).length;
-  var b=(store.get('pakai',{})||{})[bulan]||{masuk:0,keluar:0,panggilan:0};
-  var hm=parseFloat(store.get('hargaMasuk',''))||0,hk=parseFloat(store.get('hargaKeluar',''))||0;
-  var teks='Bulan ini: '+n+' siswa dinilai, '+b.panggilan+' panggilan AI, '+b.masuk.toLocaleString('id-ID')+' token masuk, '+b.keluar.toLocaleString('id-ID')+' token keluar.';
-  if(hm||hk){
-    var biaya=(b.masuk/1000000)*hm+(b.keluar/1000000)*hk;
-    teks+=' Perkiraan biaya: $'+biaya.toFixed(3)+' (memakai harga yang Anda isi di Pengaturan).';
-  }else{
-    teks+=' Isi harga di Pengaturan untuk melihat perkiraan biaya.';
-  }
+  var bulan=bulanLokal();
+  var n=hasil.filter(function(h){return h.waktu&&bulanLokal(new Date(h.waktu))===bulan}).length;
+  var b=(store.get('pakai',{})||{})[bulan]||{};
+  var pm=b.perModel||{};
+  var masuk=0,keluar=0;
+  Object.keys(pm).forEach(function(m){masuk+=pm[m].masuk||0;keluar+=pm[m].keluar||0});
+  if(!b.perModel){masuk+=b.masuk||0;keluar+=b.keluar||0} /* data lama sebelum v121 */
+  var bi=biayaPakai(pm);
+  var teks='Bulan ini: '+n+' siswa dinilai, '+(b.panggilan||0)+' panggilan AI, '+masuk.toLocaleString('id-ID')+' token masuk, '+keluar.toLocaleString('id-ID')+' token keluar. Perkiraan biaya: $'+bi.total.toFixed(3)+'.';
+  if(bi.tanpaHarga.length)teks+=' Harga belum diisi untuk: '+bi.tanpaHarga.join(', ')+'.';
+  var s=sisaSaldo();
+  if(s)teks+=' Perkiraan sisa saldo: $'+s.sisa.toFixed(2)+' (saldo $'+s.jumlah.toFixed(2)+' per '+s.tanggal+').';
   $('#biaya').textContent=teks;
+  renderPakaiInfo();
+}
+function renderPakaiInfo(){
+  var el=$('#pakaiInfo');if(!el)return;
+  var bulan=bulanLokal();
+  var b=(store.get('pakai',{})||{})[bulan]||{};
+  var bi=biayaPakai(b.perModel||{});
+  var s=sisaSaldo();
+  var teks='Bulan ini: $'+bi.total.toFixed(3)+' (perkiraan).';
+  if(s){
+    teks+=' Saldo $'+s.jumlah.toFixed(2)+' dicek '+s.tanggal+'. Pemakaian sejak itu perkiraan $'+s.terpakai.toFixed(3)+', sisa perkiraan $'+s.sisa.toFixed(2)+'.';
+    if(s.tanpaHarga.length)teks+=' Harga belum diisi untuk: '+s.tanpaHarga.join(', ')+'.';
+  }else{
+    teks+=' Belum ada saldo tersimpan.';
+  }
+  el.textContent=teks;
 }
 
 /* ---------- Awal ---------- */
