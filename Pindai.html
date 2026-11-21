@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v135</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v136</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 135 (21 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 136 (21 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1862,13 +1862,27 @@ async function mulaiStreamDasar(id){
   catch(e){return navigator.mediaDevices.getUserMedia({video:Object.assign({facingMode:{ideal:'environment'}},res),audio:false})}
 }
 async function mulaiStream(id){
-  var s=await mulaiStreamDasar(id);
-  try{
-    var t=s.getVideoTracks()[0],cap=(t&&t.getCapabilities)?t.getCapabilities():{};
-    if(cap.focusMode&&cap.focusMode.indexOf('continuous')>=0)await t.applyConstraints({advanced:[{focusMode:'continuous'}]});
-  }catch(e){}
-  return s;
+  return mulaiStreamDasar(id);
 }
+/* Pengaturan paling sederhana, dipakai kalau kamera dengan resolusi tinggi tidak mengirim gambar. */
+async function mulaiStreamSederhana(id){
+  if(id){try{return await navigator.mediaDevices.getUserMedia({video:{deviceId:{exact:id}},audio:false})}catch(e){}}
+  try{return await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false})}
+  catch(e){return navigator.mediaDevices.getUserMedia({video:true,audio:false})}
+}
+/* Menunggu sampai video benar-benar mengirim gambar. */
+function tungguVideo(ms){
+  return new Promise(function(res){
+    var v=$('#video'),mulai=Date.now();
+    try{v.play()}catch(e){}
+    (function cek(){
+      if(v.videoWidth>0)return res(true);
+      if(Date.now()-mulai>ms)return res(false);
+      setTimeout(cek,100);
+    })();
+  });
+}
+var gagalJepret=0;
 function siapkanKontrol(){
   var track=stream&&stream.getVideoTracks()[0];
   var caps=(track&&track.getCapabilities)?track.getCapabilities():{};
@@ -1891,6 +1905,14 @@ async function bukaKamera(){
     if(track&&track.getSettings().deviceId){kameraTerpilih=track.getSettings().deviceId;store.set('kameraId',kameraTerpilih)}
     $('#video').srcObject=stream;
     $('#kamera').hidden=false;
+    var jalan=await tungguVideo(3000);
+    if(!jalan){
+      stream.getTracks().forEach(function(t){t.stop()});
+      stream=await mulaiStreamSederhana($('#pilihKamera').value||kameraTerpilih);
+      $('#video').srcObject=stream;
+      jalan=await tungguVideo(3000);
+      if(!jalan){$('#kamera').hidden=true;throw new Error('Kamera tidak mengirim gambar')}
+    }
     siapkanKontrol();
     daftarKamera(true);
     updateKamHint();
@@ -1940,16 +1962,28 @@ function bunyiJepret(){
 }
 $('#btnJepret').addEventListener('click',function(){
   var v=$('#video');
-  if(!v.videoWidth)return;
-  if(pages.length>=MAX_HAL){setMsgSiswa('Maksimal '+MAX_HAL+' halaman per siswa.',true);return}
-  bunyiJepret();
-  var s=Math.min(1,maxSisi()/Math.max(v.videoWidth,v.videoHeight));
-  var c=document.createElement('canvas');
-  c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
-  c.getContext('2d').drawImage(v,0,0,c.width,c.height);
-  var rc=rapikanCanvas(c);
-  if(!rc){setMsgSiswa('Halaman ini tampak kosong, tidak ditambahkan.',true);return}
-  bukaPratinjau(rc.toDataURL('image/jpeg',0.88));
+  if(!v.videoWidth){
+    gagalJepret++;
+    if(gagalJepret>=2){
+      gagalJepret=0;tutupKamera();
+      setMsgSiswa('Kamera aplikasi belum mengirim gambar. Membuka kamera HP bawaan.',true);
+      $('#fileKameraCadangan').click();return;
+    }
+    setMsgSiswa('Kamera belum siap, tunggu sebentar lalu coba lagi.',true);
+    return;
+  }
+  gagalJepret=0;
+  try{
+    if(pages.length>=MAX_HAL){setMsgSiswa('Maksimal '+MAX_HAL+' halaman per siswa.',true);return}
+    bunyiJepret();
+    var s=Math.min(1,maxSisi()/Math.max(v.videoWidth,v.videoHeight));
+    var c=document.createElement('canvas');
+    c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
+    c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+    var rc=rapikanCanvas(c);
+    if(!rc){setMsgSiswa('Halaman ini tampak kosong, tidak ditambahkan.',true);return}
+    bukaPratinjau(rc.toDataURL('image/jpeg',0.88));
+  }catch(e){setMsgSiswa('Foto gagal: '+e.message,true)}
 });
 $('#btnSelesaiKamera').addEventListener('click',tutupKamera);
 
