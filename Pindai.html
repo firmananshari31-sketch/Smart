@@ -48,6 +48,9 @@ details.card summary{padding:4px 0;font-size:15px;color:var(--text)}
 .sheet-card{width:100%;max-width:640px;max-height:88vh;overflow:auto;background:var(--card);border-radius:20px 20px 0 0;padding:10px 14px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px rgba(0,0,0,.3)}
 .sheet-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .sheet-grip{flex:1;width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto}
+/* Pratinjau foto sebelum masuk daftar halaman. */
+.pf-area{height:58vh;overflow:auto;background:#000;border-radius:12px;display:flex;align-items:center;justify-content:center;touch-action:pan-x pan-y}
+.pf-area img{max-width:100%;max-height:100%;width:100%;height:auto;object-fit:contain;-webkit-user-drag:none;user-select:none}
 /* Baris Tutup di lembar siswa (Hasil) tetap terlihat saat isi digulir. */
 #sheet .sheet-top{position:sticky;top:0;z-index:2;background:var(--card);padding-top:10px;margin-top:-10px;margin-bottom:6px}
 .sheet-top button{margin:0;padding:6px 12px}
@@ -288,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v134</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v142</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -459,6 +462,12 @@ nav button.nav-sembunyi{display:flex}
 </section>
 
 <section id="tab-hasil" class="tab">
+<div id="pratinjauFoto" class="sheet-bg" hidden style="z-index:70"><div class="sheet-card">
+  <div class="sheet-top"><span class="sheet-grip"></span><button id="pfUlang" type="button">↺ Ulang</button><button class="primary" id="pfPakai" type="button">✔ Pakai</button></div>
+  <div class="pf-area" id="pfArea"><img id="pfImg" alt="Pratinjau foto"></div>
+  <div class="row" style="margin-top:8px"><button type="button" id="pfMinus">−</button><button type="button" id="pfPlus">+</button><button type="button" id="pfReset">Ukuran pas</button></div>
+  <p class="hint">Cubit layar untuk memperbesar, atau pakai tombol + dan −. Foto baru masuk daftar setelah Pakai.</p>
+</div></div>
 <div id="sheet" class="sheet-bg" hidden><div class="sheet-card"><div class="sheet-top"><span class="sheet-grip"></span><button id="sheetTutup" type="button">Tutup ✕</button></div><div id="sheetBody"></div></div></div>
 <div id="latihanBox" class="card" hidden>
   <div id="latihanPilih">
@@ -773,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 134 (21 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 142 (21 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1847,19 +1856,33 @@ function kameraUtama(list){
 }
 /* Meminta resolusi tinggi agar foto setajam kamera HP bawaan. Kalau HP tidak mendukung, browser memakai yang terbaik yang ada. */
 async function mulaiStreamDasar(id){
-  var res={width:{ideal:1920},height:{ideal:1080}};
+  var res={};
   if(id){try{return await navigator.mediaDevices.getUserMedia({video:Object.assign({deviceId:{exact:id}},res),audio:false})}catch(e){}}
   try{return await navigator.mediaDevices.getUserMedia({video:Object.assign({facingMode:{exact:'environment'}},res),audio:false})}
   catch(e){return navigator.mediaDevices.getUserMedia({video:Object.assign({facingMode:{ideal:'environment'}},res),audio:false})}
 }
 async function mulaiStream(id){
-  var s=await mulaiStreamDasar(id);
-  try{
-    var t=s.getVideoTracks()[0],cap=(t&&t.getCapabilities)?t.getCapabilities():{};
-    if(cap.focusMode&&cap.focusMode.indexOf('continuous')>=0)await t.applyConstraints({advanced:[{focusMode:'continuous'}]});
-  }catch(e){}
-  return s;
+  return mulaiStreamDasar(id);
 }
+/* Pengaturan paling sederhana, dipakai kalau kamera dengan resolusi tinggi tidak mengirim gambar. */
+async function mulaiStreamSederhana(id){
+  if(id){try{return await navigator.mediaDevices.getUserMedia({video:{deviceId:{exact:id}},audio:false})}catch(e){}}
+  try{return await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false})}
+  catch(e){return navigator.mediaDevices.getUserMedia({video:true,audio:false})}
+}
+/* Menunggu sampai video benar-benar mengirim gambar. */
+function tungguVideo(ms){
+  return new Promise(function(res){
+    var v=$('#video'),mulai=Date.now();
+    try{v.play()}catch(e){}
+    (function cek(){
+      if(v.videoWidth>0)return res(true);
+      if(Date.now()-mulai>ms)return res(false);
+      setTimeout(cek,100);
+    })();
+  });
+}
+var gagalJepret=0;
 function siapkanKontrol(){
   var track=stream&&stream.getVideoTracks()[0];
   var caps=(track&&track.getCapabilities)?track.getCapabilities():{};
@@ -1882,6 +1905,14 @@ async function bukaKamera(){
     if(track&&track.getSettings().deviceId){kameraTerpilih=track.getSettings().deviceId;store.set('kameraId',kameraTerpilih)}
     $('#video').srcObject=stream;
     $('#kamera').hidden=false;
+    var jalan=await tungguVideo(3000);
+    if(!jalan){
+      stream.getTracks().forEach(function(t){t.stop()});
+      stream=await mulaiStreamSederhana($('#pilihKamera').value||kameraTerpilih);
+      $('#video').srcObject=stream;
+      jalan=await tungguVideo(3000);
+      if(!jalan){$('#kamera').hidden=true;throw new Error('Kamera tidak mengirim gambar')}
+    }
     siapkanKontrol();
     daftarKamera(true);
     updateKamHint();
@@ -1963,7 +1994,7 @@ function rapikanCanvas(c){
   for(r=0;r<rows;r++)for(k=0;k<cols;k++){
     if(L[r*cols+k]<batas){tinta++;if(r<minR)minR=r;if(r>maxR)maxR=r;if(k<minK)minK=k;if(k>maxK)maxK=k}
   }
-  if(tinta<Math.max(20,L.length*0.0005))return null;
+  if(tinta<Math.max(20,L.length*0.0005))return c;
   var pad=Math.round(Math.max(w,h)*0.02);
   var x0=Math.max(0,minK*langkah-pad),y0=Math.max(0,minR*langkah-pad);
   var x1=Math.min(w,maxK*langkah+pad),y1=Math.min(h,maxR*langkah+pad);
@@ -2098,6 +2129,47 @@ $('#csvPakai').addEventListener('change',function(){
   rd.readAsText(f);
   input.value='';
 });
+/* ---------- Pratinjau foto kamera sebelum masuk daftar ---------- */
+var pfDataURL=null,pfZoom=1,pfJarak0=0,pfZoom0=1;
+function pfTerapkanZoom(){
+  var im=$('#pfImg');if(!im)return;
+  im.style.width=(pfZoom*100)+'%';
+  im.style.maxWidth=pfZoom>1?'none':'100%';
+  im.style.maxHeight=pfZoom>1?'none':'100%';
+}
+function bukaPratinjau(dataURL){
+  pfDataURL=dataURL;pfZoom=1;
+  $('#pfImg').src=dataURL;
+  pfTerapkanZoom();
+  var area=$('#pfArea');area.scrollTop=0;area.scrollLeft=0;
+  $('#pratinjauFoto').hidden=false;
+}
+function tutupPratinjau(){
+  $('#pratinjauFoto').hidden=true;
+  pfDataURL=null;
+}
+function jarakSentuh(t){var dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.hypot(dx,dy)||1}
+$('#pfUlang').addEventListener('click',tutupPratinjau);
+$('#pfPakai').addEventListener('click',function(){
+  if(!pfDataURL){tutupPratinjau();return}
+  if(pages.length>=MAX_HAL){tutupPratinjau();setMsgSiswa('Maksimal '+MAX_HAL+' halaman per siswa.',true);return}
+  pages.push({id:++uid,dataURL:pfDataURL});
+  tutupPratinjau();
+  renderThumbs();updateKamHint();
+  if(pages.length>=MAX_HAL){tutupKamera();setMsgSiswa('Sudah '+MAX_HAL+' halaman. Tambahkan siswa ini ke antrean.')}
+});
+$('#pfPlus').addEventListener('click',function(){pfZoom=Math.min(4,pfZoom+0.5);pfTerapkanZoom()});
+$('#pfMinus').addEventListener('click',function(){pfZoom=Math.max(1,pfZoom-0.5);pfTerapkanZoom()});
+$('#pfReset').addEventListener('click',function(){pfZoom=1;pfTerapkanZoom();var a=$('#pfArea');a.scrollTop=0;a.scrollLeft=0});
+$('#pfArea').addEventListener('touchstart',function(e){
+  if(e.touches.length===2){pfJarak0=jarakSentuh(e.touches);pfZoom0=pfZoom}
+},{passive:true});
+$('#pfArea').addEventListener('touchmove',function(e){
+  if(e.touches.length===2&&pfJarak0){
+    pfZoom=Math.min(4,Math.max(1,pfZoom0*jarakSentuh(e.touches)/pfJarak0));
+    pfTerapkanZoom();e.preventDefault();
+  }
+},{passive:false});
 $('#btnModeHemat').addEventListener('click',function(){terapkanMode('hemat')});
 $('#btnModeTeliti').addEventListener('click',function(){terapkanMode('teliti')});
 $('#btnHapusCsv').addEventListener('click',function(){
@@ -4795,6 +4867,8 @@ function gulirKeAtasOverlay(el){
 window.addEventListener('popstate',function(e){
   var lf=$('#lembarFilter'),pd=$('#panduan'),rs=$('#rpSheet'),sh=$('#sheet');
   function tetap(){try{history.pushState(stateSekarang,'')}catch(x){}}
+  var pf=$('#pratinjauFoto');
+  if(pf&&!pf.hidden){tutupPratinjau();tetap();return}
   if(sh&&!sh.hidden){if(gulirKeAtasOverlay(sh)){tetap();return}tutupSheet();tetap();return}
   if(lf&&!lf.hidden){if(gulirKeAtasOverlay(lf)){tetap();return}lf.hidden=true;tetap();return}
   if(pd&&!pd.hidden){if(gulirKeAtasOverlay(pd)){tetap();return}pd.hidden=true;tetap();return}
