@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v139</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v140</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 139 (21 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 140 (21 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -1962,7 +1962,7 @@ function bunyiJepret(){
     g.gain.value=0.8;src.buffer=buf;src.connect(g);g.connect(ac.destination);src.start();
   }catch(e){}
 }
-$('#btnJepret').addEventListener('click',function(){
+$('#btnJepret').addEventListener('click',async function(){
   alert('[DIAG] Ambil foto ditekan. Video: '+$('#video').videoWidth+'x'+$('#video').videoHeight);
   var v=$('#video');
   if(!v.videoWidth){
@@ -1979,14 +1979,21 @@ $('#btnJepret').addEventListener('click',function(){
   try{
     if(pages.length>=MAX_HAL){$('#kamHint').textContent='Maksimal '+MAX_HAL+' halaman per siswa.';return}
     bunyiJepret();
-    var s=Math.min(1,maxSisi()/Math.max(v.videoWidth,v.videoHeight));
-    var c=document.createElement('canvas');
-    c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
-    c.getContext('2d').drawImage(v,0,0,c.width,c.height);
-    alert('[DIAG] Kanvas '+c.width+'x'+c.height);
-    var rc=rapikanCanvas(c);
-    alert('[DIAG] Hasil rapikan: '+(rc?rc.width+'x'+rc.height:'NULL (dianggap kosong)'));
-    if(!rc){$('#kamHint').textContent='Foto tampak kosong. Arahkan kamera ke lembar lalu coba lagi.';return}
+    var rc=null,coba;
+    for(coba=1;coba<=3&&!rc;coba++){
+      var s=Math.min(1,maxSisi()/Math.max(v.videoWidth,v.videoHeight));
+      var c=document.createElement('canvas');
+      c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
+      c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+      rc=rapikanCanvas(c);
+      alert('[DIAG] Percobaan '+coba+': '+(rc?'berhasil':'kosong'));
+      if(!rc)await new Promise(function(r){setTimeout(r,300)});
+    }
+    if(!rc){
+      tutupKamera();
+      setMsgSiswa('Kamera aplikasi belum bisa mengambil gambar. Silakan pakai tombol Kamera HP.',true);
+      return;
+    }
     bukaPratinjau(rc.toDataURL('image/jpeg',0.88));
   }catch(e){alert('[DIAG] Galat: '+e.name+' - '+e.message);$('#kamHint').textContent='Foto gagal: '+e.message}
 });
