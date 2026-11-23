@@ -5,7 +5,7 @@
   "start_url": "./Pindai.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#1e3fae",
   "lang": "id",
