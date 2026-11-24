@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v143</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v144</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -591,7 +591,7 @@ nav button.nav-sembunyi{display:flex}
     <label for="anKelas">Kelas dan mapel</label>
     <select id="anKelas"></select>
     <select id="anMateri" style="margin-top:8px"><option value="Semua">Semua materi</option></select>
-    <div class="row" style="margin-top:8px"><select id="anBab"><option value="">Semua bab</option></select></div>
+    <div style="margin-top:8px"><label>Bab yang dianalisis</label><div class="chips" id="anBabBox"></div><p class="hint">Bisa pilih lebih dari satu bab. Grafik dan analisis hanya menghitung bab yang dipilih.</p></div>
     <div class="row"><select id="anMode"><option value="satu">Satu rombel</option><option value="banding">Banding semua rombel</option></select><select id="anTampilan"><option value="gabung">Gabung semua bab</option><option value="pisah">Pisah per bab</option></select></div>
     <div class="row" style="margin-top:10px"><button class="primary" id="anBuat">✨ Buat analisis AI</button></div>
     <div class="row" style="margin-top:8px"><button id="lapPdf">📄 Laporan gabungan PDF</button><button id="lapWord">📝 Laporan gabungan Word</button></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 143 (23 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 144 (24 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -4336,16 +4336,18 @@ function isiPilihanKM(sel){
   if(list.indexOf(keep)>=0)sel.value=keep;
 }
 function siswaKM(key){return hasil.filter(function(o){return o.label&&kunciKM(o)===key})}
+var anBabPilih=[];
+function anBabTeks(){return anBabPilih.join(' + ')}
 function siswaAn(key,abaikanBab){
-  var m=$('#anMateri')?$('#anMateri').value:'Semua',b=(!abaikanBab&&$('#anBab'))?$('#anBab').value:'';
-  return siswaKM(key).filter(function(o){return (!m||m==='Semua'||materiDari(o)===m)&&(!b||babDari(o)===b)});
+  var m=$('#anMateri')?$('#anMateri').value:'Semua',b=abaikanBab?[]:anBabPilih;
+  return siswaKM(key).filter(function(o){return (!m||m==='Semua'||materiDari(o)===m)&&(!b.length||b.indexOf(babDari(o))>=0)});
 }
 function kunciAn(){
-  var k=$('#anKelas').value,m=$('#anMateri')?$('#anMateri').value:'Semua',b=$('#anBab')?$('#anBab').value:'';
+  var k=$('#anKelas').value,m=$('#anMateri')?$('#anMateri').value:'Semua',b=anBabTeks();
   return k+(m&&m!=='Semua'?' | materi: '+m:'')+(b?' | bab: '+b:'');
 }
 function rincianFilterAn(){
-  var m=$('#anMateri')?$('#anMateri').value:'Semua',b=$('#anBab')?$('#anBab').value:'';
+  var m=$('#anMateri')?$('#anMateri').value:'Semua',b=anBabTeks();
   return (m&&m!=='Semua'?'\nMateri: '+m:'')+(b?'\nBab: '+b:'');
 }
 function isiAnMateri(){
@@ -4389,7 +4391,13 @@ function tampilAnalisisTersimpan(){
   $('#anMsg').textContent='';
 }
 $('#anKelas').addEventListener('change',tampilAnalisisTersimpan);
-$('#anBab').addEventListener('change',tampilAnalisisTersimpan);
+$('#anBabBox').addEventListener('click',function(e){
+  var t=e.target.closest('.chip');if(!t)return;
+  var b=t.getAttribute('data-bab');
+  if(!b)anBabPilih=[];
+  else{var i=anBabPilih.indexOf(b);if(i>=0)anBabPilih.splice(i,1);else anBabPilih.push(b)}
+  tampilAnalisisTersimpan();
+});
 
 /* ---------- Grafik analisis (SVG, dihitung di perangkat) ---------- */
 var PAL_LAYAR={teks:'var(--text)',muda:'var(--muted)',garis:'var(--line)',bar:'#38e1ff',kurang:'#fbbf24'};
@@ -4510,16 +4518,15 @@ function renderGrafik(){
   var babs=[];
   seriList.forEach(function(s){s.list.forEach(function(o){var b=babDari(o);if(babs.indexOf(b)<0)babs.push(b)})});
   babs.sort(function(a,b){return cmpNatural(babPendek(a),babPendek(b))});
-  var sel=$('#anBab'),keep=sel.value;
-  sel.innerHTML='<option value="">Semua bab</option>'+babs.map(function(b){return '<option value="'+esc(b)+'">'+esc(b)+'</option>'}).join('');
-  sel.value=babs.indexOf(keep)>=0?keep:'';
-  var babFilter=sel.value?[sel.value]:babs;
+  anBabPilih=anBabPilih.filter(function(b){return babs.indexOf(b)>=0});
+  $('#anBabBox').innerHTML='<button type="button" class="chip'+(anBabPilih.length?'':' on')+'" data-bab="">Semua bab</button>'+babs.map(function(b){return '<button type="button" class="chip'+(anBabPilih.indexOf(b)>=0?' on':'')+'" data-bab="'+esc(b)+'">'+esc(b)+'</button>'}).join('');
+  var babFilter=anBabPilih.length?babs.filter(function(b){return anBabPilih.indexOf(b)>=0}):babs;
   var gabung=$('#anTampilan').value==='gabung';
   var angka=$('#grafAngka').checked,jenis=$('#grafSoalJenis').value,urut=$('#grafSoalUrut').value;
   var blok=[];
   if(gabung){
     var seri=seriList.map(function(s){return {nama:s.nama,data:hitungSoalBab(s.list).filter(function(x){return babFilter.indexOf(x.bab)>=0}).map(function(x){return {x:babPendek(x.bab)+'.'+x.no,persen:x.persen}})}});
-    blok.push({judul:babFilter.length===1?babFilter[0]:'Semua bab',seri:seri});
+    blok.push({judul:anBabPilih.length?babFilter.join(' + '):'Semua bab',seri:seri});
   }else{
     babFilter.forEach(function(b){
       var seri=seriList.map(function(s){return {nama:s.nama,data:hitungSoalBab(s.list).filter(function(x){return x.bab===b}).map(function(x){return {x:x.no,persen:x.persen}})}});
@@ -4531,7 +4538,7 @@ function renderGrafik(){
   var htmlSoal=blok.map(function(b){var sv=grafSoalSeri(b.seri,jenis,angka,PAL_LAYAR,SERI_LAYAR,urut);return sv?'<p class="small" style="margin-top:8px"><b>'+esc(b.judul)+'</b></p>'+sv:''}).join('');
   $('#grafIsi').innerHTML=htmlSoal+'<p class="small" style="margin-top:12px"><b>Tren per bab</b></p>'+grafTrenSeri(tren,grafTerakhir.trenJenis,angka,grafTerakhir.ambang,PAL_LAYAR,SERI_LAYAR);
 }
-['#anMode','#anTampilan','#anBab','#grafSoalJenis','#grafSoalUrut','#grafTrenJenis','#grafAngka','#grafAmbang'].forEach(function(s){$(s).addEventListener('change',renderGrafik)});
+['#anMode','#anTampilan','#grafSoalJenis','#grafSoalUrut','#grafTrenJenis','#grafAngka','#grafAmbang'].forEach(function(s){$(s).addEventListener('change',renderGrafik)});
 function grafUkuran(svg){var m=/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/.exec(svg);return {w:+m[1],h:+m[2]}}
 function grafPng(svg){
   var u=grafUkuran(svg);
@@ -4641,7 +4648,7 @@ async function laporanItems(){
   renderGrafik();
   if(!grafTerakhir)throw new Error('Grafik untuk filter ini belum tersedia.');
   var a=store.get('analisis',{})[kunciAn()];
-  var bab=$('#anBab').value||'Semua bab',materi=$('#anMateri').value==='Semua'?'Semua materi':$('#anMateri').value;
+  var bab=anBabTeks()||'Semua bab',materi=$('#anMateri').value==='Semua'?'Semua materi':$('#anMateri').value;
   var items=[{judul:'Laporan Analisis Hasil',teks:key+'\nBab: '+bab+'\nMateri: '+materi+'\nKKM '+KKM()+' · '+s.n+' siswa · rata-rata '+s.rata+' · tuntas '+s.tuntas+' dari '+s.n+' siswa'}];
   items.push({judul:'Analisis AI',teks:a?a.teks:'Analisis AI belum dibuat untuk filter ini. Tekan "Buat analisis AI", lalu buat laporan lagi.'});
   var grafik=await grafSiapCetak();
@@ -5632,7 +5639,7 @@ function sinkronTab(t){
   sudahSinkron[t]=true;
   var a=labelAktif();
   if(t==='rekap'){rkIsiFilter();pilihJikaAda($('#rkKelas'),a.kelasTeks);rkIsiFilter();pilihJikaAda($('#rkMapel'),a.mapel);rkIsiFilter();pilihJikaAda($('#rkBab'),a.bab);rkIsiFilter();pilihJikaAda($('#rkMateri'),a.materi)}
-  else if(t==='analisis'){isiPilihanKM($('#anKelas'));pilihJikaAda($('#anKelas'),a.kunciKM);isiAnMateri();pilihJikaAda($('#anMateri'),a.materi)}
+  else if(t==='analisis'){isiPilihanKM($('#anKelas'));pilihJikaAda($('#anKelas'),a.kunciKM);isiAnMateri();pilihJikaAda($('#anMateri'),a.materi);anBabPilih=a.bab?[a.bab]:[];renderGrafik()}
   else if(t==='rapor'){isiPilihanKM($('#rpKelas'));pilihJikaAda($('#rpKelas'),a.kunciKM)}
   else if(t==='rm'){isiPilihanKM($('#rmKelas'));pilihJikaAda($('#rmKelas'),a.kunciKM);rmIsiBab();pilihJikaAda($('#rmBab'),a.bab)}
   else if(t==='hasil'){filterMapel=a.mapel||null;filterMateri=a.materi||null;renderHasil()}
