@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v146</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v147</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 146 (24 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 147 (24 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -3646,10 +3646,12 @@ async function buatVarianCatatan(o,jumlah){
     (jumlah===1?'Tulis SATU versi. ':'Tulis '+jumlah+' versi yang berbeda. Pisahkan tiap versi dengan satu baris yang hanya berisi ###. ')+
     'Jangan menulis judul, nomor, atau penjelasan lain. '+
     'Setiap versi WAJIB merujuk minimal satu nomor soal, misalnya "Pada soal 3, ...". '+
-    'Tulis hanya hal yang didukung rincian soal atau alasan penilaian di bawah. Jika TUJUAN PEMBELAJARAN diberikan, kaitkan perbaikan dengan TP itu hanya bila jawaban siswa memang menunjukkannya. '+
+    'Tulis hanya hal yang didukung rincian soal atau alasan penilaian di bawah. '+
+    'Jika ada TUJUAN PEMBELAJARAN, kalimat PERTAMA setiap versi WAJIB menyebut TP itu secara singkat, lalu menyatakan apakah siswa sudah mencapainya atau belum, lalu merujuk nomor soal sebagai buktinya. Jika tidak ada TP, cukup merujuk nomor soal. '+
     'Jika bukti belum cukup, tulis kalimat yang jujur tentang itu dan jangan mengarang.';
   var rinci=o.jawaban.map(function(x){return 'Soal '+x.no+': skor '+(x.skor==null?'belum diputuskan':x.skor)+' dari '+x.skor_maks+'. Alasan: '+(x.alasan||'-')}).join('\n');
-  var isi='Nama: '+o.nama+'\nMateri: '+(o.label||'-')+'\nRincian per soal:\n'+rinci+tpTeks()+
+  var tpPakai=tpCatatan(o);
+  var isi='Nama: '+o.nama+'\nMateri: '+(o.label||'-')+'\nRincian per soal:\n'+rinci+(tpPakai?'\n\nTUJUAN PEMBELAJARAN:\n'+tpPakai:'')+
     '\nCatatan perbaikan sebelumnya: '+(o.perbaikan||'-')+
     (o.ragu&&o.ragu.length?'\nHal yang ragu: '+o.ragu.join('; '):'');
   var model=store.get('model','claude-haiku-5-5');
@@ -3661,8 +3663,10 @@ async function buatVarianCatatan(o,jumlah){
   if(!v.length)throw new Error('Jawaban AI kosong atau tidak terbaca. Lewati siswa ini atau coba lagi.');
   return v.slice(0,jumlah);
 }
+function tpCatatan(o){return String((o&&o.tp)||(store.get('labelDetail',null)||{}).tp||'').trim()}
 function tampilTulisVar(){
-  $('#tulisOpsi').innerHTML=tulisVar.map(function(t,i){
+  var tpInfo=tpCatatan(tulisQueue[tulisIdx]);
+  $('#tulisOpsi').innerHTML=(tpInfo?'<p class="small">TP yang dipakai: '+esc(tpInfo)+'</p>':'<p class="msg">TP belum diisi, jadi catatan ini tidak dikaitkan dengan TP.</p>')+tulisVar.map(function(t,i){
     return '<button class="tulisPilih" data-i="'+i+'" style="display:block;width:100%;text-align:left;margin-bottom:8px;white-space:normal">'+(i+1)+'. '+esc(t)+'</button>';
   }).join('')+(tulisVar.length<2?'<button type="button" class="tulisLain" style="margin-top:4px">✨ Buat versi lain (biaya tambahan)</button>':'');
 }
