@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v159</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v161</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -631,7 +631,6 @@ nav button.nav-sembunyi{display:flex}
     <input type="text" id="rpCari" placeholder="Ketik nama siswa">
     <div class="row" style="margin-top:8px"><select id="rpStatus"><option value="semua">Semua status</option><option value="belum">Belum ada catatan</option><option value="sudah">Sudah ada catatan</option></select><select id="rpUrut"><option value="nama">Nama A–Z</option><option value="tinggi">Nilai tertinggi</option><option value="rendah">Nilai terendah</option></select></div>
     <div class="row" style="margin-top:8px"><button class="primary" id="rpPdfSatu">📄 PDF satu berkas</button><button id="rpZip">📦 ZIP per siswa</button><button id="rpXlsx">📊 Excel</button></div>
-    <div class="row" style="margin-top:6px"><button id="rpHaluskan">✨ Buat catatan kolom (AI)</button></div>
     <p class="hint" id="rpJumlah"></p>
   </div>
   <div class="card"><label>Kategori capaian per materi</label><p class="hint" id="rpKatInfo"></p><div id="rpKatBox" class="chips"></div></div>
@@ -5076,44 +5075,8 @@ $('#rpKolom').addEventListener('input',function(e){
   var ck=t.closest('[data-kolom]').dataset.kolom;
   var c=store.get('catatanKolom',{});c[ck]=c[ck]||{};c[ck][t.dataset.kol]=t.value;store.set('catatanKolom',c);
 });
-$('#rpBab').addEventListener('change',renderRapor);
-$('#rpMateri').addEventListener('change',renderRapor);
-$('#rpHaluskan').addEventListener('click',async function(){
-  var msg=$('#rpMsg'),btn=this;
-  var rows=rapor2Baris();
-  if(!rows.length){msg.textContent='Belum ada siswa yang cocok dengan filter.';return}
-  if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
-  btn.disabled=true;msg.textContent='Claude sedang merapikan kalimat...';
-  var sys='Kamu merapikan dua kalimat catatan rapor SD dalam bahasa Indonesia. Kalimat "tinggi" berpola "[NAMA] menunjukkan penguasaan dalam ...". Kalimat "rendah" berpola "[NAMA] perlu bimbingan dalam ...". Rapikan tata bahasa, hapus tanda kutip, dan ringkas jika lebih dari 25 kata. Pertahankan "[NAMA]" dan pola kalimat tersebut. Jangan mengubah makna, jangan menambah informasi, dan jangan menambah nama lain. Jika kalimat "rendah" berisi "-", kembalikan "-". Balas hanya dengan JSON array berbentuk [{"id":1,"tinggi":"...","rendah":"..."}], tanpa teks lain.';
-  try{
-    var c=store.get('catatanKolom',{}),model=store.get('model','claude-haiku-5-5');
-    for(var i=0;i<rows.length;i+=30){
-      var potong=rows.slice(i,i+30);
-      var isi=potong.map(function(r,j){
-        return (i+j+1)+' | tinggi: '+String(r.tinggi).split(r.nama).join('[NAMA]')+' | rendah: '+String(r.rendah).split(r.nama).join('[NAMA]');
-      }).join('\n');
-      ketPotong=false;
-      var teks=await apiText(sys,isi,3000,0,model);
-      if(ketPotong)throw new Error('jawaban terpotong, coba lagi dengan lebih sedikit siswa');
-      var m=teks.match(/\[[\s\S]*\]/);
-      if(!m)throw new Error('jawaban AI tidak terbaca, coba lagi');
-      JSON.parse(m[0]).forEach(function(x){
-        var r=rows[(+x.id)-1];if(!r)return;
-        var t=String(x.tinggi||'').replace(/\[NAMA\]/g,r.nama).trim();
-        var l=String(x.rendah||'').replace(/\[NAMA\]/g,r.nama).trim();
-        var tOk=t.indexOf(r.nama)>=0&&/menunjukkan penguasaan/.test(t);
-        var lOk=r.rendah==='-'?true:(l.indexOf(r.nama)>=0&&/perlu bimbingan/.test(l));
-        c[r.ck]=c[r.ck]||{};
-        c[r.ck].tinggi=tOk?t:r.tinggi;
-        c[r.ck].rendah=r.rendah==='-'?'-':(lOk&&l&&l!=='-'?l:r.rendah);
-      });
-    }
-    store.set('catatanKolom',c);
-    renderKolom();
-    msg.textContent='Kalimat sudah dirapikan. Periksa sebelum dipakai.';
-  }catch(e){msg.textContent='Gagal: '+(e.message||e)}
-  finally{btn.disabled=false}
-});
+$('#rpBab').addEventListener('change',function(){isiRpFilter();aturNilai({bab:this.value},'rapor');renderRapor()});
+$('#rpMateri').addEventListener('change',function(){aturNilai({materi:this.value==='Semua'?'':this.value},'rapor');renderRapor()});
 /* ---------- Tombol kembali: kembali ke menu sebelumnya ---------- */
 var navRiwayat=false,stateSekarang=null;
 function dorongRiwayat(m){stateSekarang={m:m};try{history.pushState(stateSekarang,'')}catch(e){}}
@@ -5895,7 +5858,7 @@ function sinkronTab(t){
   var a=labelAktif();
   if(t==='rekap'){rkIsiFilter();pilihJikaAda($('#rkKelas'),a.kelasTeks);rkIsiFilter();pilihJikaAda($('#rkMapel'),a.mapel);rkIsiFilter();pilihJikaAda($('#rkBab'),a.bab);rkIsiFilter();pilihJikaAda($('#rkMateri'),a.materi)}
   else if(t==='analisis'){isiPilihanKM($('#anKelas'));pilihJikaAda($('#anKelas'),a.kunciKM);isiAnMateri();pilihJikaAda($('#anMateri'),a.materi);anBabPilih=a.bab?[a.bab]:[];renderGrafik()}
-  else if(t==='rapor'){isiPilihanKM($('#rpKelas'));pilihJikaAda($('#rpKelas'),a.kunciKM)}
+  else if(t==='rapor'){isiPilihanKM($('#rpKelas'));pilihJikaAda($('#rpKelas'),a.kunciKM);isiRpFilter();pilihJikaAda($('#rpBab'),a.bab);isiRpFilter();pilihJikaAda($('#rpMateri'),a.materi)}
   else if(t==='rm'){isiPilihanKM($('#rmKelas'));pilihJikaAda($('#rmKelas'),a.kunciKM);rmIsiBab();pilihJikaAda($('#rmBab'),a.bab)}
   else if(t==='hasil'){filterMapel=a.mapel||null;filterMateri=a.materi||null;renderHasil()}
 }
