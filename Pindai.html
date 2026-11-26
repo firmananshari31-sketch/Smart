@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v158</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v159</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -4801,20 +4801,73 @@ async function docxGrafik(judul,list,opsi){
   zip.file('[Content_Types].xml',XML+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
   return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
+function tpBaris(tp){
+  var t=String(tp||'').trim();if(!t)return [];
+  var bar=t.split(/\r?\n/).map(function(s){return s.trim()}).filter(Boolean);
+  if(bar.length===1)bar=t.split(/\s(?=\d+[.)]\s)/);
+  return bar.map(function(s){return s.replace(/^\d+[.)]\s*|^[-•]\s*/,'').trim()}).filter(function(s){return s.length>3});
+}
+function kelompokTP(list){
+  var peta={};
+  list.forEach(function(o){var k=String(o.tp||'').trim()||'(TP belum diisi)';(peta[k]=peta[k]||[]).push(o)});
+  return Object.keys(peta).map(function(k,i){
+    var lines=tpBaris(k==='(TP belum diisi)'?'':k);
+    if(!lines.length)lines=['TP belum diisi'];
+    return {id:'K'+(i+1),tp:k,lines:lines,list:peta[k]};
+  });
+}
 $('#anBuat').addEventListener('click',async function(){
   var key=kunciAn(),list=siswaAn($('#anKelas').value);
   if(!list.length){alert('Belum ada hasil untuk filter ini.');return}
   if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
-  var s=statKM(list),btn=this;btn.disabled=true;$('#anMsg').textContent='Claude sedang menganalisis...';
-  var rinci='Kelas dan mapel: '+$('#anKelas').value+rincianFilterAn()+'\nJumlah siswa: '+s.n+'\nRata-rata nilai: '+s.rata+'\nBatas KKM: '+KKM()+'\nSiswa tuntas: '+s.tuntas+' dari '+s.n+
-    '\nPer bab:\n'+s.bab.map(function(b){return '- '+b.nama+': '+b.n+' siswa, rata-rata '+b.rata+', tuntas '+b.tuntas+'%'}).join('\n')+
-    '\nSoal dari yang paling sulit:\n'+s.soal.slice(0,8).map(function(x){return '- No '+x.no+': '+x.persen+'% benar'+(x.alasan.length?'. Contoh alasan salah: '+x.alasan.slice(0,3).join('; '):'')}).join('\n');
-  var sys='Kamu membantu guru SD di Indonesia menganalisis hasil penilaian kelas. Data yang diberikan hanya ringkasan kelas, tanpa nama siswa. Tulis analisis singkat dalam bahasa Indonesia sederhana dengan format persis:\nKekuatan:\n- ...\nKelemahan:\n- ...\nSoal yang perlu diulang:\n- ...\nSaran untuk pertemuan berikutnya:\n- ...\nIsi setiap bagian dengan 1 sampai 3 butir yang konkret dan berdasarkan data. Jangan menulis judul lain, markdown, atau pujian kosong.';
+  var s=statKM(list),btn=this;btn.disabled=true;$('#anMsg').textContent='Claude sedang menganalisis per tujuan pembelajaran...';
+  var grup=kelompokTP(list);
+  var rinci='Kelas dan mapel: '+$('#anKelas').value+rincianFilterAn()+'\nJumlah siswa: '+s.n+'\nRata-rata nilai: '+s.rata+'\nBatas KKM: '+KKM()+'\nSiswa tuntas: '+s.tuntas+' dari '+s.n;
+  grup.forEach(function(g){
+    var sg=statKM(g.list);
+    rinci+='\n\n== Kelompok '+g.id+' · '+g.list.length+' siswa · rata-rata '+sg.rata+' ==\nTujuan pembelajaran:\n'+
+      g.lines.map(function(t,j){return g.id+'-T'+(j+1)+': '+t}).join('\n')+
+      '\nSoal (no, % siswa benar, contoh alasan salah):\n'+
+      sg.soal.map(function(x){return '- No '+x.no+': '+x.persen+'% benar'+(x.alasan.length?'. Contoh alasan salah: '+x.alasan.slice(0,3).join('; '):'')}).join('\n');
+  });
+  rinci+='\n\nKUNCI JAWABAN (untuk memahami isi tiap soal):\n'+String(ambilRubrikAktif().kunci||'').slice(0,4000);
+  var sys='Kamu membantu guru SD di Indonesia menganalisis hasil penilaian kelas berdasarkan tujuan pembelajaran (TP). Data hanya ringkasan kelas tanpa nama siswa. Tugasmu: (1) petakan setiap nomor soal ke satu TP dalam kelompoknya yang paling sesuai, dengan memakai kunci jawaban untuk memahami isi soal; soal yang tidak jelas kaitannya dipetakan ke TP pertama kelompok itu. (2) tulis analisis singkat dalam bahasa Indonesia sederhana. Balas dengan format persis:\nPETA:\n[{"tp":"K1-T1","soal":["1","2"]}]\nANALISIS:\nKekuatan:\n- ...\nKelemahan:\n- ... (sebut TP yang paling rendah dan jawaban siswa yang sering salah)\nPerbandingan jawaban:\n- ... (sebut TP yang paling dikuasai dan jawaban siswa yang paling sering benar)\nSoal yang perlu diulang:\n- ...\nSaran untuk pertemuan berikutnya:\n- ...\nIsi setiap bagian dengan 1 sampai 3 butir yang konkret dan berdasarkan data. Jangan menulis judul lain, markdown, atau pujian kosong. Jangan menulis angka persentase per TP; angka itu dihitung aplikasi.';
   try{
     ketPotong=false;
-    var teks=(await apiText(sys,rinci,1800,0,store.get('model','claude-haiku-5-5'))).trim();
+    var raw=(await apiText(sys,rinci,2500,0,store.get('model','claude-haiku-5-5'))).trim();
     if(ketPotong)throw new Error('analisis terpotong karena terlalu panjang, coba lagi');
-    if(!teks)throw new Error('Jawaban AI kosong. Coba lagi.');
+    if(!raw)throw new Error('Jawaban AI kosong. Coba lagi.');
+    var iA=raw.search(/ANALISIS:/i);
+    var bagPeta=iA>=0?raw.slice(0,iA):'',bagAn=iA>=0?raw.slice(iA+9).trim():raw.replace(/PETA:[\s\S]*?(?=Kekuatan:|$)/i,'').trim();
+    var mPeta=bagPeta.match(/\[[\s\S]*\]/),peta=[];
+    try{peta=mPeta?JSON.parse(mPeta[0]):[]}catch(e){peta=[]}
+    var hasilTP=[];
+    grup.forEach(function(g){
+      var sg=statKM(g.list),persen={};
+      sg.soal.forEach(function(x){persen[normNo(x.no)]=x.persen});
+      g.lines.forEach(function(t,j){
+        var id=g.id+'-T'+(j+1),nos=[];
+        peta.forEach(function(p){
+          if(p&&p.tp===id&&Array.isArray(p.soal))p.soal.forEach(function(n){var k=normNo(String(n));if(persen[k]!=null&&nos.indexOf(k)<0)nos.push(k)});
+        });
+        if(!nos.length)return;
+        var rata=Math.round(nos.reduce(function(a,k){return a+persen[k]},0)/nos.length);
+        hasilTP.push({id:id,teks:t,rata:rata,nos:nos});
+      });
+    });
+    var blok=[];
+    if(hasilTP.length){
+      var urut=hasilTP.slice().sort(function(a,b){return b.rata-a.rata});
+      blok.push('Capaian per TP (dihitung dari hasil siswa):');
+      urut.forEach(function(t){
+        var tanda='';
+        if(urut.length>1&&t===urut[0])tanda=' · paling dikuasai';
+        else if(urut.length>1&&t===urut[urut.length-1]&&t.rata!==urut[0].rata)tanda=' · paling rendah';
+        var ringkas=t.teks.length>120?t.teks.slice(0,120)+'…':t.teks;
+        blok.push('- '+t.id+' ('+ringkas+'): rata-rata '+t.rata+'% benar, soal '+t.nos.join(', ')+tanda);
+      });
+    }
+    var teks=(blok.length?blok.join('\n')+'\n\n':'')+bagAn;
     var a=store.get('analisis',{});a[key]={teks:teks,waktu:new Date().toISOString(),n:s.n};store.set('analisis',a);
     tampilAnalisisTersimpan();
   }catch(e){$('#anMsg').textContent='Gagal: '+e.message}
@@ -4989,7 +5042,7 @@ function rapor2Baris(){
   var namaList=[];
   raporTerfilter().forEach(function(o){if(namaList.indexOf(o.nama)<0)namaList.push(o.nama)});
   namaList.sort(function(x,y){return String(x).localeCompare(String(y),'id',{sensitivity:'base'})});
-  var semua=siswaKM(kunci).filter(function(o){return (!b||babDari(o)===b)&&(m==='Semua'||materiDari(o)===m)});
+  var semua=raporTerfilter();
   var simpanSemua=store.get('catatanKolom',{});
   return namaList.map(function(nama){
     var it=semua.filter(function(o){return o.nama===nama});
@@ -5011,7 +5064,8 @@ function renderKolom(){
   var box=$('#rpKolom');if(!box)return;
   var rows=rapor2Baris();
   if(!rows.length){box.innerHTML='<p class="hint">Belum ada siswa yang cocok dengan filter.</p>';return}
-  box.innerHTML=rows.map(function(r){
+  var info='<p class="hint small">Menampilkan '+rows.length+' siswa sesuai filter di atas (kelas, bab, materi, cari, status).</p>';
+  box.innerHTML=info+rows.map(function(r){
     return '<div class="sis" style="padding:10px;margin-bottom:8px" data-kolom="'+esc(r.ck)+'"><div class="sheet-h"><b>'+esc(r.nama)+'</b><span class="small">Nilai '+(r.nilai==null?'–':r.nilai)+'</span></div>'+
       '<label class="small">Sudah dikuasai</label><textarea rows="2" data-kol="tinggi">'+esc(r.tinggi)+'</textarea>'+
       '<label class="small">Perlu ditingkatkan</label><textarea rows="2" data-kol="rendah">'+esc(r.rendah)+'</textarea></div>';
