@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v150</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v151</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 150 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 151 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -4632,6 +4632,10 @@ async function grafSiapCetak(){
   for(var i=0;i<daftar.length;i++){var p=await grafPng(daftar[i].svg);daftar[i].png=p.png;daftar[i].w=p.w;daftar[i].h=p.h}
   return daftar;
 }
+function ringkasanGrafik(){
+  if(!grafTerakhir)throw new Error('Belum ada grafik untuk kelas dan mapel ini.');
+  return ringkasanTeks(statKM(siswaAn(grafTerakhir.key)));
+}
 function grafNama(ext){return 'Grafik_'+grafTerakhir.key.replace(/[^\w]+/g,'_')+'.'+ext}
 $('#grafPdf').addEventListener('click',async function(){
   var msg=$('#grafMsg');msg.textContent='Membuat PDF...';
@@ -4641,6 +4645,12 @@ $('#grafPdf').addEventListener('click',async function(){
     var list=await grafSiapCetak(),doc=new J({unit:'mm',format:'a4'}),y=15;
     doc.setFont(undefined,'bold');doc.setFontSize(14);doc.text('Grafik '+grafTerakhir.key,10,y);y+=7;
     doc.setFont(undefined,'normal');doc.setFontSize(10);doc.text('KKM '+KKM()+' · '+tglIndo(new Date().toISOString()),10,y);y+=8;
+    doc.setFont(undefined,'bold');doc.setFontSize(12);doc.text('Ringkasan Kelas',10,y+4);y+=8;
+    doc.setFont(undefined,'normal');doc.setFontSize(10);
+    ringkasanGrafik().split('\n').forEach(function(par){
+      doc.splitTextToSize(par||' ',190).forEach(function(l){if(y+5>285){doc.addPage();y=15}doc.text(l,10,y+4);y+=5});
+    });
+    y+=5;
     list.forEach(function(g){
       var tinggi=190*g.h/g.w;
       if(y+tinggi+12>285){doc.addPage();y=15}
@@ -4654,7 +4664,7 @@ $('#grafPdf').addEventListener('click',async function(){
 $('#grafWord').addEventListener('click',async function(){
   var msg=$('#grafMsg');msg.textContent='Membuat Word...';
   try{
-    var list=await grafSiapCetak(),blob=await docxGrafik('Grafik '+grafTerakhir.key+' (KKM '+KKM()+')',list);
+    var list=[{judul:'Ringkasan Kelas',teks:ringkasanGrafik()}].concat(await grafSiapCetak()),blob=await docxGrafik('Grafik '+grafTerakhir.key+' (KKM '+KKM()+')',list);
     await kirimBerkas(blob,grafNama('docx'),'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
     msg.textContent='';
   }catch(e){msg.textContent=e.message||'Gagal membuat Word'}
