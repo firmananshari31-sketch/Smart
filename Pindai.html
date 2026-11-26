@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v149</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v150</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 149 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 150 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -4709,6 +4709,16 @@ $('#anBuat').addEventListener('click',async function(){
   finally{btn.disabled=false}
 });
 function laporanNama(ext){return 'Laporan_'+kunciAn().replace(/[^\w]+/g,'_')+'.'+ext}
+function ringkasanTeks(s){
+  var rentang=[[0,59],[60,69],[70,79],[80,89],[90,100]],hit=[0,0,0,0,0];
+  s.nilai.forEach(function(v){var i=v<60?0:Math.min(4,Math.floor(v/10)-5);hit[i]++});
+  var sebaran=rentang.map(function(r,i){return r[0]+'–'+r[1]+': '+hit[i]+' siswa'}).join(' · ');
+  var pct=s.n?Math.round(s.tuntas/s.n*100):0;
+  var baris=['Ketuntasan KKM '+KKM()+': '+s.tuntas+' dari '+s.n+' siswa ('+pct+'%)','Rata-rata kelas: '+s.rata,'Sebaran nilai: '+sebaran];
+  if(s.bab.length){baris.push('Per bab:');s.bab.forEach(function(b){baris.push('- '+b.nama+': rata-rata '+b.rata+', tuntas '+b.tuntas+'% ('+b.n+' siswa)')})}
+  if(s.soal.length){baris.push('Soal paling sulit:');s.soal.slice(0,5).forEach(function(x){baris.push('- No '+x.no+': '+x.persen+'% benar')})}
+  return baris.join('\n');
+}
 async function laporanItems(){
   var key=$('#anKelas').value;
   if(!key)throw new Error('Pilih kelas dan mapel dulu.');
@@ -4720,6 +4730,7 @@ async function laporanItems(){
   var a=store.get('analisis',{})[kunciAn()];
   var bab=anBabTeks()||'Semua bab',materi=$('#anMateri').value==='Semua'?'Semua materi':$('#anMateri').value;
   var items=[{judul:'Laporan Analisis Hasil',teks:key+'\nBab: '+bab+'\nMateri: '+materi+'\nKKM '+KKM()+' · '+s.n+' siswa · rata-rata '+s.rata+' · tuntas '+s.tuntas+' dari '+s.n+' siswa'}];
+  items.push({judul:'Ringkasan Kelas',teks:ringkasanTeks(s)});
   items.push({judul:'Analisis AI',teks:a?a.teks:'Analisis AI belum dibuat untuk filter ini. Tekan "Buat analisis AI", lalu buat laporan lagi.'});
   var grafik=await grafSiapCetak();
   grafik.forEach(function(g){items.push(g)});
