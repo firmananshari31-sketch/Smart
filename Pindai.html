@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v156</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v157</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -605,7 +605,7 @@ nav button.nav-sembunyi{display:flex}
     <div class="row" style="margin-top:8px"><select id="grafTrenJenis"><option value="garis">Tren: garis</option><option value="batang">Tren: batang</option></select></div>
     <div class="row" style="margin-top:8px"><label style="flex:1;display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="grafAngka" checked style="width:auto">Tampilkan angka</label><label style="flex:1;display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="grafAmbang" checked style="width:auto">Garis KKM</label></div>
     <div id="grafIsi" style="margin-top:10px"></div>
-    <div class="row" style="margin-top:10px"><button id="grafPdf">📄 Kirim PDF</button><button id="grafWord">📝 Kirim Word</button></div>
+    <div class="row" style="margin-top:10px"><button id="grafPdf">📄 Kirim PDF (laporan lengkap)</button><button id="grafWord">📝 Kirim Word (laporan lengkap)</button></div>
     <p class="hint">Grafik dihitung di perangkat dari hasil yang tersimpan. Tidak ada nama siswa di grafik.</p>
     <div class="msg" id="grafMsg"></div>
   </div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 156 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 157 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -832,7 +832,7 @@ nav button.nav-sembunyi{display:flex}
 <div id="print-area"></div>
 <div id="bagikanBox" class="card" hidden style="position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:8;box-shadow:0 8px 24px rgba(0,0,0,.3);margin:0">
   <b>Bagikan hasil sebagai PDF</b>
-  <div class="row" style="margin-top:10px"><button class="primary" id="bagGuru">Versi guru</button><button class="primary" id="bagOrtu">Versi orang tua</button></div>
+  <div class="row" style="margin-top:10px"><button class="primary" id="bagGuru">Versi guru</button><button class="primary" id="bagOrtu">Versi orang tua</button><button class="primary" id="bagGuruWord">Word versi guru</button><button class="primary" id="bagOrtuWord">Word versi orang tua</button></div>
   <button id="bagBatal" style="margin-top:8px;width:100%">Batal</button>
 </div>
 
@@ -3657,6 +3657,37 @@ function pilihBagikan(o){bagiTarget=o;$('#bagikanBox').hidden=false}
 $('#bagBatal').addEventListener('click',function(){$('#bagikanBox').hidden=true});
 $('#bagGuru').addEventListener('click',function(){$('#bagikanBox').hidden=true;bagikanPdf(bagiTarget,'guru')});
 $('#bagOrtu').addEventListener('click',function(){$('#bagikanBox').hidden=true;bagikanPdf(bagiTarget,'orangtua')});
+$('#bagGuruWord').addEventListener('click',function(){$('#bagikanBox').hidden=true;bagikanWord(bagiTarget,'guru')});
+$('#bagOrtuWord').addEventListener('click',function(){$('#bagikanBox').hidden=true;bagikanWord(bagiTarget,'orangtua')});
+function blokSiswa(o,mode){
+  var parent=mode==='orangtua';
+  var blok=[{k:'kop'},{k:'judul',s:parent?'Hasil Penilaian':'Hasil Penilaian (untuk guru)'}];
+  blok.push({k:'isi',s:(o.label?o.label+' · ':'')+'Nama: '+o.nama});
+  blok.push({k:'isi',s:'Tanggal penilaian: '+tglIndo(o.waktu)+(namaGuru()?' · Guru: '+namaGuru():'')});
+  blok.push({k:'',s:''});
+  (o.jawaban||[]).forEach(function(x){
+    blok.push({k:'isi',s:'No '+x.no+' — skor '+(x.skor==null?'belum diputuskan':x.skor)+' / '+x.skor_maks});
+    if(!parent&&x.transkripsi)blok.push({k:'isi',s:'   Jawaban siswa (hasil baca): '+x.transkripsi});
+    if(x.alasan)blok.push({k:'isi',s:'   Penjelasan: '+x.alasan});
+    if(x.tips)blok.push({k:'isi',s:'   Tips: '+x.tips});
+  });
+  blok.push({k:'',s:''});
+  blok.push({k:'isi',s:'Total: '+o.total+' / '+o.maks+' ('+nilai100(o)+'%)'});
+  if(o.perbaikan){
+    blok.push({k:'isi',s:(parent?'Yang perlu diperbaiki':'Catatan perbaikan')+':'});
+    String(o.perbaikan).split(/\r?\n/).forEach(function(l){blok.push({k:'isi',s:l})});
+  }
+  var islami=kalimatIslamiUntuk(o);
+  if(islami.length)blok.push({k:'isi',s:islami.join(' ')});
+  blok.push({k:'',s:''});
+  blok.push({k:'isi',s:parent?'Tanda tangan orang tua: ____________________   Guru: ____________________':'Paraf guru: ______________________'});
+  return blok;
+}
+async function bagikanWord(o,mode){
+  if(!o)return;
+  var fn='Hasil_'+String(o.nama||'siswa').replace(/[^\w]+/g,'_')+(mode==='guru'?'_guru':'_orangtua')+'.docx';
+  await wordBagikan(blokSiswa(o,mode),fn);
+}
 async function bagikanPdf(o,mode){
   if(!o)return;
   if(typeof html2pdf==='undefined'){alert('Pembuat PDF belum termuat. Periksa koneksi internet, lalu coba lagi.');return}
@@ -4693,6 +4724,7 @@ function ringkasanGrafik(){
 }
 function grafNama(ext){return 'Grafik_'+grafTerakhir.key.replace(/[^\w]+/g,'_')+'.'+ext}
 $('#grafPdf').addEventListener('click',async function(){
+  $('#lapPdf').click();return;
   var msg=$('#grafMsg');msg.textContent='Membuat PDF...';
   try{
     var J=window.jspdf&&window.jspdf.jsPDF;
@@ -4717,6 +4749,7 @@ $('#grafPdf').addEventListener('click',async function(){
   }catch(e){msg.textContent=e.message||'Gagal membuat PDF'}
 });
 $('#grafWord').addEventListener('click',async function(){
+  $('#lapWord').click();return;
   var msg=$('#grafMsg');msg.textContent='Membuat Word...';
   try{
     var list=[{judul:'Ringkasan Kelas',teks:ringkasanGrafik()}].concat(await grafSiapCetak()),blob=await docxGrafik('Grafik '+grafTerakhir.key+' (KKM '+KKM()+')',list);
