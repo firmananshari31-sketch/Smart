@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v151</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v152</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 151 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 152 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -4623,9 +4623,32 @@ function grafPng(svg){
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));
   });
 }
+function svgCincinCetak(persen){
+  var r=60,C=2*Math.PI*r,p=Math.max(0,Math.min(100,persen||0));
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">'+
+    '<circle cx="100" cy="100" r="'+r+'" fill="none" stroke="#e5e7eb" stroke-width="18"/>'+
+    '<circle cx="100" cy="100" r="'+r+'" fill="none" stroke="#2563eb" stroke-width="18" stroke-linecap="round" stroke-dasharray="'+(C*p/100).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 100 100)"/>'+
+    '<text x="100" y="112" text-anchor="middle" font-size="36" font-weight="700" fill="#111827" font-family="Arial">'+Math.round(p)+'%</text></svg>';
+}
+function svgHistogramCetak(nilai){
+  var bins=[['0–59',0,59],['60–69',60,69],['70–79',70,79],['80–89',80,89],['90–100',90,100]];
+  var hit=bins.map(function(b){return (nilai||[]).filter(function(v){return v>=b[1]&&v<=b[2]}).length});
+  var max=Math.max.apply(null,[1].concat(hit)),W=400,H=220,pad=20,bw=(W-pad*2)/bins.length,area=H-60;
+  var isi=hit.map(function(h,i){
+    var bh=area*h/max,x=pad+i*bw+bw*0.18,y=H-36-bh,w=bw*0.64;
+    var warna=bins[i][2]<KKM()?'#d97706':'#2563eb';
+    return '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="3" fill="'+warna+'"/>'+
+      '<text x="'+(x+w/2).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" text-anchor="middle" font-size="14" fill="#111827" font-family="Arial">'+h+'</text>'+
+      '<text x="'+(x+w/2).toFixed(1)+'" y="'+(H-16)+'" text-anchor="middle" font-size="12" fill="#4b5563" font-family="Arial">'+bins[i][0]+'</text>';
+  }).join('');
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'"><line x1="'+pad+'" y1="'+(H-36)+'" x2="'+(W-pad)+'" y2="'+(H-36)+'" stroke="#d1d5db"/>'+isi+'</svg>';
+}
 async function grafSiapCetak(){
   if(!grafTerakhir)throw new Error('Belum ada grafik untuk kelas dan mapel ini.');
   var g=grafTerakhir,daftar=[];
+  var sAn=statKM(siswaAn(g.key));
+  daftar.push({judul:'Ketuntasan KKM '+KKM(),svg:svgCincinCetak(sAn.n?sAn.tuntas/sAn.n*100:0)});
+  daftar.push({judul:'Sebaran nilai siswa',svg:svgHistogramCetak(sAn.nilai)});
   g.blok.forEach(function(b){var sv=grafSoalSeri(b.seri,g.jenis,g.angka,PAL_CETAK,SERI_CETAK,g.urut);if(sv)daftar.push({judul:'Soal: '+b.judul,svg:sv})});
   var tv=grafTrenSeri(g.tren,g.trenJenis,g.angka,g.ambang,PAL_CETAK,SERI_CETAK);
   if(tv)daftar.push({judul:'Rata-rata nilai per bab',svg:tv});
