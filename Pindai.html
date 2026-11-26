@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v147</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v149</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -441,6 +441,7 @@ nav button.nav-sembunyi{display:flex}
     </div>
     <input type="file" id="fileGaleri" accept="image/*" multiple hidden>
     <input type="file" id="fileKameraCadangan" accept="image/*" capture="environment" hidden>
+    <input type="file" id="fileUlangSoal" accept="image/*" multiple hidden>
     <div class="thumbs" id="thumbs"></div>
     <div class="row" style="margin-top:12px"><button id="btnTambahSiswa">Tambah siswa ini ke antrean</button></div>
     <div class="msg" id="msgSiswa"></div>
@@ -486,7 +487,6 @@ nav button.nav-sembunyi{display:flex}
   </div>
 </div>
 <div id="tulisBox" class="card" hidden>
-  <select id="tulisPembaca" style="margin-bottom:8px"><option value="ortu">Pembaca: orang tua</option><option value="siswa">Pembaca: siswa</option></select>
   <div class="small" id="tulisHead"></div>
   <div id="tulisOpsi" style="margin-top:8px"></div>
   <div class="row" style="margin-top:6px"><button id="tulisLewati">Lewati</button><button id="tulisBatal">Berhenti</button></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 147 (24 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 149 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -2998,9 +2998,9 @@ function renderHasil(){
         o.jawaban.map(function(x,j){
           return '<div class="item" data-j="'+j+'"><div class="item-h">No. '+esc(x.no)+
             ' <input type="number" class="sk" min="0" max="'+x.skor_maks+'" step="0.5" value="'+(x.skor==null?'':x.skor)+'" placeholder="kosong" aria-label="Skor"> / '+x.skor_maks+'</div>'+
-            '<div class="tr">'+esc(x.transkripsi)+'</div>'+
+            '<textarea class="tr-ed" rows="2" aria-label="Bacaan tulisan siswa">'+esc(x.transkripsi)+'</textarea>'+
             '<textarea class="al-ed" rows="2" placeholder="Deskripsi penilaian">'+esc(x.alasan)+'</textarea>'+
-            '<button class="jdk" style="margin-top:4px">Jadikan contoh penilaian</button></div>';
+            '<button class="jdk" style="margin-top:4px">Jadikan contoh penilaian</button>'+(o.ragu&&o.ragu.some(function(r){return raguUntukNo(r,x.no)})?'<button class="ulang-soal" style="margin-top:4px;margin-left:6px">✨ Nilai ulang soal ini (AI)</button>':'')+'</div>';
         }).join('')+
         '<label style="margin-top:10px">Catatan perbaikan untuk siswa</label>'+
         '<textarea class="pb" rows="3" placeholder="Saran perbaikan untuk siswa">'+esc(o.perbaikan||'')+'</textarea>'+
@@ -3054,6 +3054,7 @@ $('#tab-hasil').addEventListener('input',function(e){
   var o=hasil[+card.dataset.i];
   if(e.target.classList.contains('nm')){o.nama=e.target.value}
   else if(e.target.classList.contains('pb')){o.perbaikan=e.target.value}
+  else if(e.target.classList.contains('tr-ed')){var xt=o.jawaban[+e.target.closest('.item').dataset.j];xt.transkripsi=e.target.value;xt.diubahGuru=true}
   else if(e.target.classList.contains('al-ed')){o.jawaban[+e.target.closest('.item').dataset.j].alasan=e.target.value}
   else if(e.target.classList.contains('sk')){
     var item=e.target.closest('.item');var x=o.jawaban[+item.dataset.j];
@@ -3062,6 +3063,55 @@ $('#tab-hasil').addEventListener('input',function(e){
     hitung(o);card.querySelector('.tot').textContent=o.total;
   }
   store.set('hasil',hasil);
+});
+/* ---------- Nilai ulang satu soal yang ragu ---------- */
+function raguUntukNo(r,no){
+  var n=normNo(no);if(!n)return false;
+  return new RegExp('(^|[^A-Z0-9])'+n+'([^A-Z0-9]|$)','i').test(String(r));
+}
+var ulangSoal=null;
+$('#tab-hasil').addEventListener('click',function(e){
+  var b=e.target.closest('.ulang-soal');if(!b)return;
+  var card=b.closest('.sis');if(!card)return;
+  var item=b.closest('.item');if(!item)return;
+  if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+  ulangSoal={i:+card.dataset.i,j:+item.dataset.j};
+  $('#fileUlangSoal').value='';
+  $('#fileUlangSoal').click();
+});
+$('#fileUlangSoal').addEventListener('change',async function(){
+  var files=[].slice.call(this.files||[]),t=ulangSoal;ulangSoal=null;
+  if(!files.length||!t)return;
+  var o=hasil[t.i],x=o&&o.jawaban[t.j];
+  if(!x)return;
+  toast('Menilai ulang soal '+x.no+'...');
+  try{
+    var pages=[];
+    for(var f=0;f<files.length;f++)pages.push(await readBlobURL(files[f],maxSisi()));
+    var content=pages.map(function(d){return {type:'image',source:{type:'base64',media_type:'image/jpeg',data:d.split(',')[1]}}});
+    content.push({type:'text',text:'Nama siswa: '+o.nama+'. Nilai HANYA soal nomor '+x.no+' (skor maksimal '+x.skor_maks+'). Abaikan soal lain.'});
+    var sys=systemPrompt()+'\n\nPERINTAH KHUSUS: Nilai HANYA soal nomor '+x.no+' dari lembar ini. Balas JSON dengan satu objek siswa, dan array "jawaban" berisi satu item untuk nomor '+x.no+' saja.';
+    var model=store.get('model','claude-haiku-5-5');
+    var text=await apiText(sys,content,4000,0,model);
+    var hasilJson=parseJSON(text);
+    var r=((hasilJson.siswa||[])[0]||{jawaban:[]}).jawaban||[];
+    r=r.filter(function(y){return normNo(y.no)===normNo(x.no)})[0];
+    if(!r)throw new Error('AI tidak menemukan soal '+x.no+' di foto yang dipilih');
+    var v=(r.skor===null||r.skor===undefined||r.skor==='')?null:Number(r.skor);
+    if(v!==null&&(isNaN(v)||v<0))v=0;
+    if(v!==null&&x.skor_maks&&v>x.skor_maks)v=x.skor_maks;
+    x.transkripsi=String(r.transkripsi||x.transkripsi||'');
+    x.skor=v;
+    x.alasan=String(r.alasan||'');
+    x.diubahGuru=false;
+    o.ragu=(o.ragu||[]).filter(function(q){return !raguUntukNo(q,x.no)});
+    hitung(o);
+    store.set('hasil',hasil);
+    tutupSheet();renderHasil();bukaSheet(t.i);
+    toast('Soal '+x.no+' sudah dinilai ulang. Periksa hasilnya.');
+  }catch(err){
+    alert('Gagal menilai ulang soal: '+err.message);
+  }
 });
 /* ---------- Periksa yang ragu (berurutan) ---------- */
 var periksaPos=0;
@@ -3636,9 +3686,7 @@ var tulisQueue=[],tulisIdx=0,tulisVar=[];
 function kalimatStatus(o){return statusSiswa(o)==='ok'?'Masya Allah, pertahankan ya.':'Insya Allah, dengan latihan pasti bisa.'}
 async function buatVarianCatatan(o,jumlah){
   jumlah=jumlah||3;
-  var pembaca=$('#tulisPembaca').value==='siswa'
-    ?'siswa (sapaan kamu, kalimat sederhana dan ramah)'
-    :'orang tua (sapaan Ananda, bahasa netral, tanpa istilah penilaian)';
+  var pembaca='orang tua (sapaan Ananda, bahasa netral, tanpa istilah penilaian)';
   var sys='Kamu menulis catatan perbaikan untuk hasil belajar siswa SD dengan gaya hangat. '+
     'Mulai dengan hal yang sudah benar, lalu satu hal yang perlu diperbaiki, lalu satu langkah latihan yang konkret. '+
     'Maksimal 3 kalimat per versi. Pembaca: '+pembaca+'. '+
