@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v157</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v158</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -4757,15 +4757,29 @@ $('#grafWord').addEventListener('click',async function(){
     msg.textContent='';
   }catch(e){msg.textContent=e.message||'Gagal membuat Word'}
 });
-async function docxGrafik(judul,list){
+async function docxGrafik(judul,list,opsi){
+  opsi=opsi||{};
   var Z=window.JSZip;
   if(!Z)throw new Error('Pembuat Word belum termuat. Periksa koneksi internet.');
   var zip=new Z(),body='',rels='';
-  body+='<w:p><w:r><w:rPr><w:b/><w:sz w:val="32"/></w:rPr><w:t xml:space="preserve">'+xmlEsc(judul)+'</w:t></w:r></w:p>';
+  if(opsi.kop){
+    var bin=atob(String(LOGO).split(',')[1]),bytes=new Uint8Array(bin.length);
+    for(var b=0;b<bin.length;b++)bytes[b]=bin.charCodeAt(b);
+    zip.file('word/media/logo.png',bytes,{binary:true,createFolders:false});
+    rels+='<Relationship Id="rIdLogo" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/logo.png"/>';
+    var logoXml='<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="495300" cy="495300"/><wp:docPr id="900" name="Logo"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="900" name="logo.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdLogo"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="495300" cy="495300"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+    body+='<w:p><w:pPr><w:spacing w:after="120"/></w:pPr>'+logoXml+'<w:r><w:rPr><w:b/><w:sz w:val="26"/></w:rPr><w:t xml:space="preserve">   '+xmlEsc(SEKOLAH)+'</w:t></w:r></w:p>';
+  }
+  if(judul)body+='<w:p><w:r><w:rPr><w:b/><w:sz w:val="32"/></w:rPr><w:t xml:space="preserve">'+xmlEsc(judul)+'</w:t></w:r></w:p>';
   list.forEach(function(g,i){
+    if(g.kop)return;
+    if(g.pagebreak){body+='<w:p><w:r><w:br w:type="page"/></w:r></w:p>';return}
     if(g.teks!==undefined){
-      if(g.judul)body+='<w:p><w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">'+xmlEsc(g.judul)+'</w:t></w:r></w:p>';
-      g.teks.split('\n').forEach(function(l){body+='<w:p><w:r><w:t xml:space="preserve">'+xmlEsc(l)+'</w:t></w:r></w:p>'});
+      if(g.judul)body+='<w:p><w:r><w:rPr><w:b/><w:sz w:val="'+(g.besar?'32':'22')+'"/></w:rPr><w:t xml:space="preserve">'+xmlEsc(g.judul)+'</w:t></w:r></w:p>';
+      g.teks.split('\n').forEach(function(l){
+        var tebal=/^[^-\s][^:]{0,60}:$/.test(l);
+        body+='<w:p><w:r>'+(tebal?'<w:rPr><w:b/></w:rPr>':'')+'<w:t xml:space="preserve">'+xmlEsc(l)+'</w:t></w:r></w:p>';
+      });
       return;
     }
     var rid='rIdG'+(i+1),nama='grafik'+(i+1)+'.png',cx=5486400,cy=Math.round(5486400*g.h/g.w);
@@ -4827,11 +4841,12 @@ async function laporanItems(){
   if(!grafTerakhir)throw new Error('Grafik untuk filter ini belum tersedia.');
   var a=store.get('analisis',{})[kunciAn()];
   var bab=anBabTeks()||'Semua bab',materi=$('#anMateri').value==='Semua'?'Semua materi':$('#anMateri').value;
-  var items=[{judul:'Laporan Analisis Hasil',teks:key+'\nBab: '+bab+'\nMateri: '+materi+'\nKKM '+KKM()+' · '+s.n+' siswa · rata-rata '+s.rata+' · tuntas '+s.tuntas+' dari '+s.n+' siswa'}];
-  items.push({judul:'Ringkasan Kelas',teks:ringkasanTeks(s)});
-  items.push({judul:'Analisis AI',teks:a?a.teks:'Analisis AI belum dibuat untuk filter ini. Tekan "Buat analisis AI", lalu buat laporan lagi.'});
+  var items=[{kop:true},{besar:true,judul:'Analisis Hasil Kelas',teks:key+' | bab: '+bab+'\n'+s.n+' siswa · dibuat '+tglIndo(new Date().toISOString())+'\nMateri: '+materi+' · KKM '+KKM()}];
+  items.push({judul:'Analisis',teks:a?a.teks:'Analisis belum dibuat untuk filter ini. Tekan "Buat analisis AI", lalu buat laporan lagi.'});
+  items.push({pagebreak:true});
   var grafik=await grafSiapCetak();
   grafik.forEach(function(g){items.push(g)});
+  items.push({judul:'Ringkasan Kelas',teks:ringkasanTeks(s)});
   return items;
 }
 $('#lapPdf').addEventListener('click',async function(){
@@ -4841,11 +4856,18 @@ $('#lapPdf').addEventListener('click',async function(){
     if(!J)throw new Error('Pembuat PDF belum termuat. Periksa koneksi internet.');
     var items=await laporanItems(),doc=new J({unit:'mm',format:'a4'}),y=15;
     items.forEach(function(it){
+      if(it.kop){
+        try{doc.addImage(LOGO,'PNG',10,y,16,16)}catch(e){}
+        doc.setFont(undefined,'bold');doc.setFontSize(13);doc.text(SEKOLAH,30,y+10);y+=20;
+        return;
+      }
+      if(it.pagebreak){doc.addPage();y=15;return}
       if(it.teks!==undefined){
         if(y+10>285){doc.addPage();y=15}
-        doc.setFont(undefined,'bold');doc.setFontSize(12);doc.text(it.judul,10,y+4);y+=8;
-        doc.setFont(undefined,'normal');doc.setFontSize(10);
+        doc.setFont(undefined,'bold');doc.setFontSize(it.besar?16:12);doc.text(it.judul,10,y+4);y+=it.besar?9:8;
+        doc.setFontSize(10);
         it.teks.split('\n').forEach(function(par){
+          doc.setFont(undefined,/^[^-\s][^:]{0,60}:$/.test(par)?'bold':'normal');
           doc.splitTextToSize(par||' ',190).forEach(function(l){if(y+5>285){doc.addPage();y=15}doc.text(l,10,y+4);y+=5});
         });
         y+=5;
@@ -4863,7 +4885,7 @@ $('#lapPdf').addEventListener('click',async function(){
 $('#lapWord').addEventListener('click',async function(){
   var msg=$('#anMsg');msg.textContent='Membuat laporan Word...';
   try{
-    var items=await laporanItems(),blob=await docxGrafik('Laporan Analisis · '+$('#anKelas').value,items);
+    var items=await laporanItems(),blob=await docxGrafik('',items,{kop:true});
     await kirimBerkas(blob,laporanNama('docx'),'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
     msg.textContent='';
   }catch(e){msg.textContent=e.message||'Gagal membuat laporan Word'}
