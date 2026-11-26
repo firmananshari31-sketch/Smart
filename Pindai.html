@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v153</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v154</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -782,7 +782,7 @@ nav button.nav-sembunyi{display:flex}
   </div>
   <div class="card" style="margin-bottom:12px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="checkbox" id="ulangSonnet" style="width:auto"> Nilai ulang siswa yang ragu dengan Sonnet (lebih teliti, biaya lebih besar)</label></div>
   <div class="msg" id="setmsg"></div>
-  <p class="hint" style="margin-top:16px">Versi aplikasi: 153 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
+  <p class="hint" style="margin-top:16px">Versi aplikasi: 154 (26 November 2026). Jika tampilannya belum berubah setelah update, tutup browser sepenuhnya lalu buka lagi.</p>
 
   <div class="card" style="margin-top:14px">
     <label for="pilihKamera">Kamera untuk memfoto lembar</label>
@@ -3688,8 +3688,7 @@ async function buatVarianCatatan(o,jumlah){
   jumlah=jumlah||3;
   var pembaca='orang tua (sapaan Ananda, bahasa netral, tanpa istilah penilaian)';
   var sys='Kamu menulis catatan perbaikan untuk hasil belajar siswa SD dengan gaya hangat. '+
-    'Mulai dengan hal yang sudah benar, lalu satu hal yang perlu diperbaiki, lalu satu langkah latihan yang konkret. '+
-    'Maksimal 3 kalimat per versi. Pembaca: '+pembaca+'. '+
+    'Mulai dengan hal yang sudah benar. Lalu untuk SETIAP soal yang keliru atau kurang tepat (skor di bawah maksimal), tulis satu bagian singkat berisi nomor soal, kekeliruannya, dan satu tips latihan yang sesuai TUJUAN PEMBELAJARAN. Jika tidak ada soal yang keliru, tulis satu tips pengayaan. Tiap bagian maksimal 2 kalimat, dan jangan menyalin alasan penilaian mentah-mentah. Pembaca: '+pembaca+'. '+
     'Jangan menulis doa, kutipan ayat atau hadits, maupun angka skor. Gunakan bahasa Indonesia. '+
     (jumlah===1?'Tulis SATU versi. ':'Tulis '+jumlah+' versi yang berbeda. Pisahkan tiap versi dengan satu baris yang hanya berisi ###. ')+
     'Jangan menulis judul, nomor, atau penjelasan lain. '+
@@ -3705,7 +3704,7 @@ async function buatVarianCatatan(o,jumlah){
   var model=store.get('model','claude-haiku-5-5');
   var v=[];
   for(var k=0;k<2&&!v.length;k++){
-    var text=await apiText(sys,isi,1500,0,model)||'';
+    var text=await apiText(sys,isi,4000,0,model)||'';
     v=text.split(/^\s*#{3}\s*$/m).map(function(x){return x.replace(/^\s*\d+[.)]\s*/,'').replace(/^["'\s]+|["'\s]+$/g,'').trim()}).filter(function(x){return x.length>10&&/(soal|nomor)\s*\d/i.test(x)});
   }
   if(!v.length)throw new Error('Jawaban AI kosong atau tidak terbaca. Lewati siswa ini atau coba lagi.');
