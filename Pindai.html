@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v166</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v167</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -3015,6 +3015,7 @@ function renderHasil(){
             '<textarea class="tr-ed" rows="2" aria-label="Bacaan tulisan siswa">'+esc(x.transkripsi)+'</textarea>'+
             '<textarea class="al-ed" rows="2" placeholder="Deskripsi penilaian">'+esc(x.alasan)+'</textarea>'+
             (x.tips?'<div class="small" style="margin:4px 0"><b>Tips:</b> '+esc(x.tips)+'</div>':'')+
+            usulanHTML(x,'')+
             '<button class="jdk" style="margin-top:4px">Jadikan contoh penilaian</button>'+(o.ragu&&o.ragu.some(function(r){return raguUntukNo(r,x.no)})?'<button class="ulang-soal" style="margin-top:4px;margin-left:6px">✨ Nilai ulang soal ini (AI)</button>':'')+'</div>';
         }).join('')+
         '<label style="margin-top:10px">Catatan perbaikan untuk siswa</label>'+
@@ -3090,8 +3091,39 @@ function raguUntukNo(r,no){
   var n=normNo(no);if(!n)return false;
   return new RegExp('(^|[^A-Z0-9])'+n+'([^A-Z0-9]|$)','i').test(String(r));
 }
+function kunciRubrik(id){var r=(store.get('rubriks',{})||{})[id];return r&&r.kunci?r.kunci:''}
+async function tulisUlangBacaan(kunci,no,skorMaks,transkripsi,model){
+  var sys='Kamu membantu guru menilai tulisan tangan siswa SD. Bacaan tulisan di bawah sudah dikoreksi guru dan harus dianggap benar. Nilai HANYA soal nomor '+no+' memakai kunci jawaban berikut. Skor maksimal soal ini '+skorMaks+'. Balas JSON saja dengan format {"skor": angka, "alasan": "satu sampai dua kalimat singkat dalam bahasa Indonesia yang menjelaskan apa yang sudah benar atau masih kurang"}. Jangan memakai tanda kutip ganda di dalam alasan.';
+  var isi='Kunci jawaban:\n'+String(kunci||'').slice(0,6000)+'\n\nBacaan tulisan siswa untuk soal nomor '+no+':\n'+(transkripsi||'(kosong)');
+  ketPotong=false;
+  var text=await apiText(sys,isi,800,0,model);
+  if(ketPotong)throw new Error('jawaban AI terpotong, coba lagi.');
+  var j=parseJSON(text);
+  var v=(j.skor===null||j.skor===undefined||j.skor==='')?null:Number(j.skor);
+  if(v!==null&&(isNaN(v)||v<0))v=0;
+  if(v!==null&&v>skorMaks)v=skorMaks;
+  return {skor:v,alasan:String(j.alasan||'').trim()};
+}
+function usulanHTML(x,attr){
+  if(x.usulan)return '<div class="flag">Usulan AI: skor '+(x.usulan.skor==null?'kosong':x.usulan.skor)+' (sekarang '+(x.skor==null?'kosong':x.skor)+'). Alasan: '+esc(x.usulan.alasan)+'</div>'+
+    '<div class="row" style="margin-top:4px"><button type="button" class="usul-terima" '+attr+'>Terima usulan</button><button type="button" class="usul-tolak" '+attr+'>Tolak</button></div>';
+  if(x.diubahGuru)return '<button type="button" class="tulis-ulang" '+attr+' style="margin-top:4px">✨ Tulis ulang alasan dan skor (AI)</button>';
+  return '';
+}
 var ulangSoal=null;
-$('#tab-hasil').addEventListener('click',function(e){
+$('#tab-hasil').addEventListener('click',async function(e){
+  var bu=e.target.closest('.tulis-ulang,.usul-terima,.usul-tolak');
+  if(bu){
+    var cu=bu.closest('.sis'),iu=bu.closest('.item');if(!cu||!iu)return;
+    var ou=hasil[+cu.dataset.i],xu=ou&&ou.jawaban[+iu.dataset.j];if(!xu)return;
+    if(bu.classList.contains('usul-terima')){xu.skor=xu.usulan.skor;xu.alasan=xu.usulan.alasan;xu.diubahGuru=false;delete xu.usulan;hitung(ou);store.set('hasil',hasil);renderHasil();toast('Skor dan alasan diperbarui');return}
+    if(bu.classList.contains('usul-tolak')){delete xu.usulan;store.set('hasil',hasil);renderHasil();return}
+    if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+    bu.disabled=true;toast('Menulis ulang soal '+xu.no+'...');
+    try{xu.usulan=await tulisUlangBacaan(kunciRubrik(ou.rubrikId),xu.no,xu.skor_maks||0,xu.transkripsi,store.get('model','claude-haiku-5-5'));store.set('hasil',hasil);renderHasil()}
+    catch(err){alert('Gagal: '+err.message);bu.disabled=false}
+    return;
+  }
   var b=e.target.closest('.ulang-soal');if(!b)return;
   var card=b.closest('.sis');if(!card)return;
   var item=b.closest('.item');if(!item)return;
@@ -5586,7 +5618,8 @@ function rmRincian(h){
     t+='<div class="rm-j"><b>No '+esc(x.no)+'</b>'+
       '<label class="small">Bacaan tulisan siswa</label><textarea rows="2" data-rm-tr="'+i+'">'+esc(x.transkripsi||'')+'</textarea>'+
       '<label class="small">Alasan (label rincian)</label><input type="text" data-rm-al="'+i+'" value="'+esc(x.alasan||'')+'">'+
-      '<span class="small">Skor <input type="number" step="0.5" min="0" max="'+(x.skor_maks||0)+'" value="'+(x.skor==null?'':x.skor)+'" data-rm-skor="'+i+'"> / '+(x.skor_maks||0)+'</span></div>';
+      '<span class="small">Skor <input type="number" step="0.5" min="0" max="'+(x.skor_maks||0)+'" value="'+(x.skor==null?'':x.skor)+'" data-rm-skor="'+i+'"> / '+(x.skor_maks||0)+'</span>'+
+      usulanHTML(x,'data-hid="'+esc(String(h.id))+'" data-i="'+i+'"')+'</div>';
   });
   return t+'<div class="row" style="margin-top:6px"><button type="button" data-rm="skor" data-hid="'+esc(String(h.id))+'">Simpan skor</button></div></div>';
 }
@@ -5856,6 +5889,20 @@ $('#tab-rm').addEventListener('change',function(e){
   var ctx=rmKonteks(),j=jejakAmbil();j[rmLabel(ctx)+'|'+sel.getAttribute('data-j')+'|'+sel.getAttribute('data-rm-jejak')]=sel.value;
   store.set('jejakRP',j);
 });
+$('#tab-rm').addEventListener('click',async function(e){
+  var bx=e.target.closest('.tulis-ulang,.usul-terima,.usul-tolak');
+  if(bx){
+    var allX=hasilRPAmbil(),hX=allX.filter(function(z){return String(z.id)===bx.getAttribute('data-hid')})[0];
+    var xX=hX&&hX.jawaban[+bx.getAttribute('data-i')];if(!xX)return;
+    if(bx.classList.contains('usul-terima')){xX.skor=xX.usulan.skor;xX.alasan=xX.usulan.alasan;xX.diubahGuru=false;delete xX.usulan;hitung(hX);store.set('hasilRP',allX);renderRM();toast('Skor dan alasan diperbarui');return}
+    if(bx.classList.contains('usul-tolak')){delete xX.usulan;store.set('hasilRP',allX);renderRM();return}
+    if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
+    bx.disabled=true;toast('Menulis ulang soal '+xX.no+'...');
+    try{xX.usulan=await tulisUlangBacaan(kunciRubrik(hX.rubrikId||store.get('rubrikAktif','')),xX.no,xX.skor_maks||0,xX.transkripsi,modelDefault('modelRemedial'));store.set('hasilRP',allX);renderRM()}
+    catch(err){alert('Gagal: '+err.message);bx.disabled=false}
+    return;
+  }
+});
 $('#tab-rm').addEventListener('click',function(e){
   var b=e.target.closest('button[data-rm]');if(!b)return;
   var act=b.getAttribute('data-rm'),j=b.getAttribute('data-j');
@@ -5876,7 +5923,7 @@ $('#tab-rm').addEventListener('click',function(e){
       var x=h.jawaban[parseInt(inp.getAttribute('data-rm-skor'),10)];if(!x)return;
       var v=inp.value===''?null:Math.max(0,Math.min(x.skor_maks||0,parseFloat(inp.value)||0));x.skor=v;
     });
-    kotak.querySelectorAll('textarea[data-rm-tr]').forEach(function(t){var x=h.jawaban[parseInt(t.getAttribute('data-rm-tr'),10)];if(x)x.transkripsi=t.value});
+    kotak.querySelectorAll('textarea[data-rm-tr]').forEach(function(t){var x=h.jawaban[parseInt(t.getAttribute('data-rm-tr'),10)];if(x){if(x.transkripsi!==t.value)x.diubahGuru=true;x.transkripsi=t.value}});
     kotak.querySelectorAll('input[data-rm-al]').forEach(function(t){var x=h.jawaban[parseInt(t.getAttribute('data-rm-al'),10)];if(x)x.alasan=t.value.trim()});
     hitung(h);h.ragu=[];h.diperiksa=true;h.diubahRP=new Date().toISOString();store.set('hasilRP',all);renderRM();toast('Koreksi tersimpan');return;
   }
