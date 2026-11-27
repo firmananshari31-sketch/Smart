@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v164</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v165</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -502,7 +502,7 @@ nav button.nav-sembunyi{display:flex}
     <button class="chip" data-f="belum">Belum diperiksa guru</button>
     <button class="chip" data-f="latihan">Ada latihan</button>
   </div>
-  <div class="row" style="margin-bottom:8px"><input type="search" id="cariHasil" placeholder="Cari nama siswa" style="flex:1"><select id="urutHasil" style="flex:1"><option value="nama">Urut: nama (A–Z)</option><option value="rendah">Urut: nilai terendah dulu</option><option value="tinggi">Urut: nilai tertinggi dulu</option><option value="terbaru">Urut: terbaru dinilai</option><option value="status">Urut: perlu dicek dulu</option></select></div>
+  <div class="row" style="margin-bottom:8px"><select id="cariHasil" style="flex:1"><option value="">Semua siswa</option></select><select id="urutHasil" style="flex:1"><option value="nama">Urut: nama (A–Z)</option><option value="rendah">Urut: nilai terendah dulu</option><option value="tinggi">Urut: nilai tertinggi dulu</option><option value="terbaru">Urut: terbaru dinilai</option><option value="status">Urut: perlu dicek dulu</option></select></div>
   </details>
   <div class="row">
       <details class="menu-ekspor"><summary>⬇ Ekspor &amp; cetak ⋯</summary><div><button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button><button id="btnCsv">📄 Unduh CSV</button><button id="btnPrintAll">🖨 Cetak semua (guru)</button><button id="btnPrintParent">🖨 Cetak semua (orang tua)</button><button id="btnPdfSemuaGuru">📤 PDF semua (guru)</button><button id="btnPdfSemuaOrtu">📤 PDF semua (orang tua)</button></div></details>
@@ -579,7 +579,7 @@ nav button.nav-sembunyi{display:flex}
     <label>Rekap nilai per kelas</label>
     <div class="row"><select id="rkKelas"></select><select id="rkMapel"></select></div>
     <div class="row" style="margin-top:8px"><select id="rkBab"></select><select id="rkMateri"></select><select id="rkJenis"><option value="asli">Nilai asli</option><option value="remedial">Nilai remedial</option><option value="akhir">Nilai akhir</option></select></div>
-    <input type="text" id="rkCari" placeholder="Cari nama siswa" style="margin-top:8px">
+    <select id="rkCari" style="margin-top:8px"><option value="">Semua siswa</option></select>
     <p class="hint" id="rkInfo"></p>
   </div>
   <div class="card" style="overflow-x:auto"><div id="rkTabel"></div></div>
@@ -627,8 +627,8 @@ nav button.nav-sembunyi{display:flex}
     <div class="msg" id="rpMsg"></div>
   </div>
   <div class="card">
-    <label for="rpCari">Cari dan saring</label>
-    <input type="text" id="rpCari" placeholder="Ketik nama siswa">
+    <label for="rpCari">Pilih siswa dan saring</label>
+    <select id="rpCari"><option value="">Semua siswa</option></select>
     <div class="row" style="margin-top:8px"><select id="rpStatus"><option value="semua">Semua status</option><option value="belum">Belum ada catatan</option><option value="sudah">Sudah ada catatan</option></select><select id="rpUrut"><option value="nama">Nama A–Z</option><option value="tinggi">Nilai tertinggi</option><option value="rendah">Nilai terendah</option></select></div>
     <div class="row" style="margin-top:8px"><button class="primary" id="rpPdfSatu">📄 PDF satu berkas</button><button id="rpZip">📦 ZIP per siswa</button><button id="rpXlsx">📊 Excel</button></div>
     <p class="hint" id="rpJumlah"></p>
@@ -1235,6 +1235,13 @@ isiGabung();
 
 /* ---------- Rekap nilai per kelas: filter, edit, ekspor ---------- */
 var rkTerakhir=null;
+function isiDaftarNama(sel,nama){
+  if(!sel)return '';
+  var kb=sel.value,daftar=rkUnik(nama.filter(Boolean));
+  sel.innerHTML='<option value="">Semua siswa</option>'+daftar.map(function(n){return '<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join('');
+  sel.value=daftar.indexOf(kb)>=0?kb:'';
+  return sel.value;
+}
 function rkUnik(a){return a.filter(function(x,i){return a.indexOf(x)===i}).sort(function(x,y){return x.localeCompare(y,'id')})}
 function rkNamaSiswa(o){return o.nama||'(tanpa nama)'}
 function rkIsiOpsi(sel,daftar,nilai){
@@ -1267,6 +1274,7 @@ function rkSel(items,nama,label){
 function rkKolomLabel(label){return label.split(' - ').slice(1).join(' · ')}
 var rkData=null;
 function renderRekap(){
+  isiDaftarNama($('#rkCari'),rkItems().map(rkNamaSiswa));
   var kelas=$('#rkKelas').value,jenis=$('#rkJenis').value,cari=($('#rkCari').value||'').toLowerCase().trim();
   var items=rkItems(),kkm=KKM(),batas=batasPengayaan();
   if(!items.length){
@@ -1274,7 +1282,7 @@ function renderRekap(){
     $('#rkTabel').innerHTML='';rkData=null;return;
   }
   var kolom=rkUnik(items.map(function(o){return o.label}));
-  var siswa=rkUnik(items.map(rkNamaSiswa)).filter(function(n){return !cari||n.toLowerCase().indexOf(cari)>=0});
+  var siswa=rkUnik(items.map(rkNamaSiswa)).filter(function(n){return !cari||n.toLowerCase()===cari});
   function nilaiSel(nama,label){
     var o=rkSel(items,nama,label);
     if(jenis==='remedial'){var r=rmHasilSiswa(nama,'remedial',label);return {v:r?nilai100(r):null,o:null,r:r}}
@@ -1327,7 +1335,7 @@ $('#rkMapel').addEventListener('change',function(){$('#rkBab').value='Semua';rkI
 $('#rkBab').addEventListener('change',function(){renderRekap();dorongRekap()});
 $('#rkMateri').addEventListener('change',function(){renderRekap();dorongRekap()});
 $('#rkJenis').addEventListener('change',renderRekap);
-$('#rkCari').addEventListener('input',renderRekap);
+$('#rkCari').addEventListener('change',renderRekap);
 $('#rkTabel').addEventListener('change',function(e){
   var inp=e.target.closest('input.rk-edit');if(!inp)return;
   var nama=inp.getAttribute('data-nama'),label=inp.getAttribute('data-label');
@@ -2799,11 +2807,12 @@ function cocokLembarHasil(o){
   if(a.materi&&a.materi!=='(tanpa materi)'&&materiDari(o)!==a.materi)return false;
   return true;
 }
+function daftarNamaHasil(){return hasil.filter(function(o){return cocokLembarHasil(o)}).map(function(o){return o.nama||''})}
 function indeksTampil(){
   var kata=filterCari.trim().toLowerCase(),idxs=[];
   hasil.forEach(function(o,i){
     if(!cocokLembarHasil(o))return;
-    if(kata&&String(o.nama||'').toLowerCase().indexOf(kata)<0)return;
+    if(kata&&String(o.nama||'').toLowerCase()!==kata)return;
     if(!cocokStatus(o,filterStatus))return;
     idxs.push(i);
   });
@@ -2825,7 +2834,7 @@ $('#chipStatus').addEventListener('click',function(e){
   this.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('on',c===b)});
   renderHasil();
 });
-$('#cariHasil').addEventListener('input',function(){filterCari=this.value;renderHasil()});
+$('#cariHasil').addEventListener('change',function(){filterCari=this.value;renderHasil()});
 $('#urutHasil').addEventListener('change',function(){urutHasil=this.value;renderHasil()});
 function isiFilterMapel(){
   var daftar=[];
@@ -2968,6 +2977,7 @@ function analisisHtml(list){
     '</tbody></table><p class="small">Soal dengan % benar rendah perlu diulang di kelas.</p></details>';
 }
 function renderHasil(){
+  filterCari=isiDaftarNama($('#cariHasil'),daftarNamaHasil());
   updatePeriksaLabel();
   var jumlahAktif=(filterAktif!==null?1:0)+(filterMapel!==null?1:0)+(filterStatus!=='semua'?1:0)+(filterCari.trim()?1:0)+(urutHasil!=='nama'?1:0);
   $('#panelSum').textContent='Filter & urutan'+(jumlahAktif?' · '+jumlahAktif+' aktif':'');
@@ -4969,7 +4979,7 @@ function raporTerfilter(){
   var list=siswaKM(kunci).filter(function(o){
     if(bb&&babDari(o)!==bb)return false;
     if(mm&&mm!=='Semua'&&materiDari(o)!==mm)return false;
-    if(cari&&String(o.nama||'').toLowerCase().indexOf(cari)<0)return false;
+    if(cari&&String(o.nama||'').toLowerCase()!==cari)return false;
     if(st==='belum')return !o.rapor;
     if(st==='sudah')return !!o.rapor;
     return true;
@@ -4983,8 +4993,9 @@ function raporTerfilter(){
 }
 function fitTA(t){t.style.height='auto';t.style.height=Math.min(t.scrollHeight+2,200)+'px'}
 function cekBukaSemua(t){var b=t.parentNode.querySelector('[data-rp-buka]');if(b)b.hidden=t.scrollHeight<=202}
+function namaRapor(){var bb=$('#rpBab').value,mm=$('#rpMateri').value;return siswaKM($('#rpKelas').value).filter(function(o){if(bb&&babDari(o)!==bb)return false;if(mm&&mm!=='Semua'&&materiDari(o)!==mm)return false;return true}).map(function(o){return o.nama||''})}
 function renderRapor(){
-  isiRpFilter();renderKatBox();
+  isiRpFilter();isiDaftarNama($('#rpCari'),namaRapor());renderKatBox();
   var semua=siswaKM($('#rpKelas').value),list=raporTerfilter(),w=$('#rpDaftar');
   var belum=semua.filter(function(o){return !o.rapor}).length;
   $('#rpJumlah').textContent=semua.length?(list.length+' dari '+semua.length+' siswa · belum ada catatan: '+belum):'';
@@ -5277,7 +5288,7 @@ async function jalankanRapor(list,btn){
   renderRapor();
 }
 $('#rpKelas').addEventListener('change',renderRapor);
-$('#rpCari').addEventListener('input',renderRapor);
+$('#rpCari').addEventListener('change',renderRapor);
 $('#rpStatus').addEventListener('change',renderRapor);
 $('#rpUrut').addEventListener('change',renderRapor);
 $('#rpBuat').addEventListener('click',function(){
