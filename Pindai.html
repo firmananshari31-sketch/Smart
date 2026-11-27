@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v165</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v166</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -5583,7 +5583,10 @@ function rmChips(arr){return arr.map(function(o){return '<span class="rm-chip">'
 function rmRincian(h){
   var t='<div class="rm-rincian">';
   (h.jawaban||[]).forEach(function(x,i){
-    t+='<div class="rm-j"><b>No '+esc(x.no)+'</b><span class="hint">'+esc(x.transkripsi||'')+'<br>'+esc(x.alasan||'')+'</span><span><input type="number" step="0.5" min="0" max="'+(x.skor_maks||0)+'" value="'+(x.skor==null?'':x.skor)+'" data-rm-skor="'+i+'"> / '+(x.skor_maks||0)+'</span></div>';
+    t+='<div class="rm-j"><b>No '+esc(x.no)+'</b>'+
+      '<label class="small">Bacaan tulisan siswa</label><textarea rows="2" data-rm-tr="'+i+'">'+esc(x.transkripsi||'')+'</textarea>'+
+      '<label class="small">Alasan (label rincian)</label><input type="text" data-rm-al="'+i+'" value="'+esc(x.alasan||'')+'">'+
+      '<span class="small">Skor <input type="number" step="0.5" min="0" max="'+(x.skor_maks||0)+'" value="'+(x.skor==null?'':x.skor)+'" data-rm-skor="'+i+'"> / '+(x.skor_maks||0)+'</span></div>';
   });
   return t+'<div class="row" style="margin-top:6px"><button type="button" data-rm="skor" data-hid="'+esc(String(h.id))+'">Simpan skor</button></div></div>';
 }
@@ -5606,9 +5609,11 @@ function rmBaris(o,jenis,ctx,item){
 function rmBandingHTML(jenis,ctx){
   var bd=(store.get('bandingRP',{})||{})[ctx.key+'|'+ctx.bab+'|'+jenis];
   if(!bd)return '';
-  var h='<div class="rm-edit"><label>Perkembangan (ditulis AI)</label><p>'+esc(bd.ringkasan)+'</p>';
-  Object.keys(bd.siswa||{}).forEach(function(n){h+='<p class="hint"><b>'+esc(n)+'</b>: '+esc(bd.siswa[n])+'</p>'});
-  return h+'<div class="row"><button type="button" data-rm="pdf-banding" data-j="'+jenis+'">PDF perkembangan</button></div><p class="hint">Dibuat '+esc(tglIndo(bd.waktu))+'.</p></div>';
+  var label=rmLabel(ctx),kor=hasilRPAmbil().some(function(x){return x.diubahRP&&x.diubahRP>bd.waktu&&(x.label||'')===label&&x.tahap===jenis});
+  var h='<div class="rm-edit"><label>Perkembangan (ditulis AI, bisa diedit)</label>'+(kor?'<div class="flag">Ada koreksi skor setelah perbandingan ini dibuat. Tekan "Bandingkan sebelum dan sesudah" untuk memperbarui teks.</div>':'')+
+    '<textarea rows="4" data-rm-bring="'+jenis+'">'+esc(bd.ringkasan)+'</textarea>';
+  Object.keys(bd.siswa||{}).forEach(function(n){h+='<label class="small" style="margin-top:6px">'+esc(n)+'</label><textarea rows="2" data-rm-bsis="'+jenis+'" data-nama="'+esc(n)+'">'+esc(bd.siswa[n])+'</textarea>'});
+  return h+'<div class="row" style="margin-top:8px"><button type="button" data-rm="simpan-banding" data-j="'+jenis+'">Simpan teks perkembangan</button><button type="button" data-rm="pdf-banding" data-j="'+jenis+'">PDF perkembangan</button></div><p class="hint">Dibuat '+esc(tglIndo(bd.waktu))+'.</p></div>';
 }
 function rmKartu(jenis,arr,judul,ikon,ctx,kosong){
   var id=ctx.key+'|'+ctx.bab+'|'+jenis,item=rmCari(id),label=rmLabel(ctx);
@@ -5857,13 +5862,23 @@ $('#tab-rm').addEventListener('click',function(e){
   if(act==='buat'){rmBuat(j,b);return}
   if(act==='pindai'){rmPindai(j,b);return}
   if(act==='banding'){rmBanding(j,b);return}
+  if(act==='simpan-banding'){
+    var c3=rmKonteks(),semuaBd=store.get('bandingRP',{})||{},bd2=semuaBd[c3.key+'|'+c3.bab+'|'+j];if(!bd2)return;
+    var kotakBd=b.closest('.rm-edit');
+    bd2.ringkasan=kotakBd.querySelector('textarea[data-rm-bring]').value.trim();
+    kotakBd.querySelectorAll('textarea[data-rm-bsis]').forEach(function(t){bd2.siswa[t.getAttribute('data-nama')]=t.value.trim()});
+    store.set('bandingRP',semuaBd);toast('Teks perkembangan tersimpan');return;
+  }
   if(act==='skor'){
     var all=hasilRPAmbil(),hid=b.getAttribute('data-hid'),h=all.filter(function(x){return String(x.id)===hid})[0];if(!h)return;
-    [].forEach.call(b.closest('.rm-rincian').querySelectorAll('input[data-rm-skor]'),function(inp){
+    var kotak=b.closest('.rm-rincian');
+    [].forEach.call(kotak.querySelectorAll('input[data-rm-skor]'),function(inp){
       var x=h.jawaban[parseInt(inp.getAttribute('data-rm-skor'),10)];if(!x)return;
       var v=inp.value===''?null:Math.max(0,Math.min(x.skor_maks||0,parseFloat(inp.value)||0));x.skor=v;
     });
-    hitung(h);h.ragu=[];h.diperiksa=true;store.set('hasilRP',all);renderRM();toast('Skor tersimpan');return;
+    kotak.querySelectorAll('textarea[data-rm-tr]').forEach(function(t){var x=h.jawaban[parseInt(t.getAttribute('data-rm-tr'),10)];if(x)x.transkripsi=t.value});
+    kotak.querySelectorAll('input[data-rm-al]').forEach(function(t){var x=h.jawaban[parseInt(t.getAttribute('data-rm-al'),10)];if(x)x.alasan=t.value.trim()});
+    hitung(h);h.ragu=[];h.diperiksa=true;h.diubahRP=new Date().toISOString();store.set('hasilRP',all);renderRM();toast('Koreksi tersimpan');return;
   }
   if(act==='hapus'){
     if(!confirm('Hapus lembar '+j+' ini?'))return;
