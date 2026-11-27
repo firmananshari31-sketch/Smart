@@ -1,5 +1,5 @@
 /* Service worker Penilai Lembar Jawaban. Naikkan VERSI setiap kali index.html diperbarui. */
-const VERSI = 'penilai-v161';
+const VERSI = 'penilai-v162';
 const CANGKANG = ['./', './Pindai.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function (event) {

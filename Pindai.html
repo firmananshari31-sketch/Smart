@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v161</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v162</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -646,7 +646,9 @@ nav button.nav-sembunyi{display:flex}
     <label for="rmBab" style="margin-top:8px">Bab</label>
     <select id="rmBab"></select>
     <label for="rmJumlah" style="margin-top:8px">Jumlah soal per lembar</label>
-    <select id="rmJumlah"><option value="3">3 soal</option><option value="5" selected>5 soal</option><option value="8">8 soal</option></select>
+    <select id="rmJumlah"><option value="auto" selected>Otomatis (saran)</option><option value="3">3 soal</option><option value="5">5 soal</option><option value="8">8 soal</option><option value="10">10 soal</option><option value="15">15 soal</option><option value="20">20 soal</option><option value="25">25 soal</option><option value="30">30 soal</option></select>
+    <label for="rmBahasa" style="margin-top:8px">Bahasa soal</label>
+    <select id="rmBahasa"><option value="campur" selected>Inggris dengan terjemahan Indonesia</option><option value="en">Bahasa Inggris saja</option><option value="id">Bahasa Indonesia saja</option></select>
     <p class="hint" id="rmInfo"></p>
     <p class="hint">Siswa dibagi menurut nilai. Nama siswa tidak dikirim ke AI, hanya pola soal yang sering salah.</p>
     <div class="msg" id="rmMsg"></div>
@@ -5610,6 +5612,7 @@ function rmKartu(jenis,arr,judul,ikon,ctx,kosong){
   return h+rmBandingHTML(jenis,ctx);
 }
 function renderRM(){
+  rmIsiSaran();
   var ctx=rmKonteks();
   var tanpa=ctx.semua.length-ctx.list.length;
   $('#rmInfo').textContent=ctx.semua.length?('KKM '+ctx.kkm+' · batas pengayaan '+ctx.batas+' · aturan nilai akhir: '+({kkm:'dibatasi KKM',tertinggi:'nilai tertinggi',asli:'nilai asli tetap'})[aturanAkhir()]+' (ubah di Pengaturan). '+ctx.semua.length+' siswa pada bab ini'+(tanpa?', '+tanpa+' tanpa data jawaban tidak ikut.':'.')):'Belum ada hasil penilaian untuk pilihan ini.';
@@ -5632,6 +5635,33 @@ function rmSalah(o){
   var w=(o.jawaban||[]).filter(function(x){return x.skor==null||x.skor<x.skor_maks}).slice(0,3).map(function(x){return 'no '+x.no+': '+String(x.alasan||'belum tepat').slice(0,90)});
   return w.length?w.join(' | '):'tidak ada';
 }
+function rmSaranN(arr){
+  if(!arr||!arr.length)return 3;
+  var salah=statKM(arr).soal.filter(function(x){return x.persen<100}).length;
+  return Math.max(3,Math.min(30,salah*2));
+}
+function rmJumlahPilih(arr,jenis){
+  var v=$('#rmJumlah').value;
+  if(v==='auto')return jenis==='pengayaan'?5:rmSaranN(arr);
+  return parseInt(v,10)||5;
+}
+function rmIsiSaran(){
+  var sel=$('#rmJumlah');if(!sel)return;
+  var ctx=rmKonteks(),opt=sel.querySelector('option[value="auto"]');
+  if(opt)opt.textContent='Otomatis (saran '+rmSaranN(ctx.R)+' soal)';
+}
+function rmBahasaInstr(b){
+  if(b==='en')return 'Tulis soal dan kunci dalam bahasa Inggris sederhana sesuai kelas SD.';
+  if(b==='id')return 'Tulis soal dan kunci dalam bahasa Indonesia.';
+  return 'Tulis setiap soal dalam bahasa Inggris. Di baris berikutnya setelah soal, tulis Terjemahan: diikuti terjemahan pertanyaan dalam bahasa Indonesia. Pilihan jawaban tetap dalam bahasa Inggris. Kunci dan penjelasan ditulis dalam bahasa Indonesia.';
+}
+function rmNomorUlang(teks){
+  var c=0;
+  return String(teks||'').split('\n').map(function(l){
+    if(/^\s*\d+\.\s/.test(l)){c++;return l.replace(/^(\s*)\d+\./,'$1'+c+'.')}
+    return l;
+  }).join('\n');
+}
 function rmBlokAI(text,nama){var b=parseSoalAI(text).filter(function(x){return x.nama===nama})[0];return b?b.isi:''}
 async function rmBuat(jenis,btn){
   if(!store.get('key','')){alert('Isi API key dulu di tab Pengaturan.');return}
@@ -5639,7 +5669,7 @@ async function rmBuat(jenis,btn){
   if(!arr.length)return;
   var id=ctx.key+'|'+ctx.bab+'|'+jenis;
   if(rmCari(id)&&!confirm('Lembar yang sudah ada akan diganti. Lanjut?'))return;
-  var n=parseInt($('#rmJumlah').value,10)||5;
+  var n=rmJumlahPilih(arr,jenis),bahasa=$('#rmBahasa').value||'campur';
   var tp=(store.get('labelDetail',null)||{}).tp||'';
   var isi='Materi: '+label+(tp?'\nTujuan pembelajaran: '+tp:'')+'\nJumlah soal: '+n;
   var format='Tulis dengan format persis ini dan tanpa teks lain di luar format:\n### SOAL\n1. ...\n2. ...\n### KUNCI\n1. ...\n2. ...'+(jenis==='remedial2'?'\n### SARAN\n1. ...\n2. ...\n3. ...':'')+'\nJangan memakai tanda kutip ganda. Untuk pilihan ganda, tulis pilihan A sampai D pada baris berikutnya.';
@@ -5660,21 +5690,32 @@ async function rmBuat(jenis,btn){
   }else{
     sys='Kamu menyusun lembar pengayaan untuk siswa SD di Indonesia sesuai Kurikulum Merdeka, untuk siswa yang sudah menguasai materi. Buat soal tantangan penalaran (menganalisis, mengevaluasi, mencipta) dalam konteks baru yang dekat dengan kehidupan anak, tanpa mengulang soal asli. Sekitar dua pertiga berupa pilihan ganda atau isian bernalar, sisanya uraian singkat. Kunci memuat jawaban atau poin jawaban yang diharapkan. '+format;
   }
+  sys+=' '+rmBahasaInstr(bahasa);
   var model=store.get('modelRemedial','claude-haiku-5-5');
   $('#rmMsg').textContent='Claude sedang menyusun lembar '+TAHAP_LABEL[jenis].toLowerCase()+'...';
   if(btn)btn.disabled=true;
   try{
-    var hasilAI=null;
-    for(var k=0;k<2&&!hasilAI;k++){
-      ketPotong=false;
-      var text=await apiText(sys,isi,2800,0,model)||'';
-      if(ketPotong)throw new Error('lembar terlalu panjang. Kurangi jumlah soal lalu coba lagi.');
-      var so=rmBlokAI(text,'SOAL'),ku=rmBlokAI(text,'KUNCI');
-      if(so.length>10&&ku.length>3)hasilAI={soal:so,kunci:ku,saran:rmBlokAI(text,'SARAN')};
+    var BAGIAN=10,soalBag=[],kunciBag=[],saranBag='';
+    var jumlahBag=Math.ceil(n/BAGIAN);
+    for(var bg=0;bg<jumlahBag;bg++){
+      var kBg=Math.min(BAGIAN,n-bg*BAGIAN),awal=bg*BAGIAN+1,akhir=bg*BAGIAN+kBg;
+      var lalu=soalBag.join('\n').slice(-700);
+      var isiBg=isi.replace('Jumlah soal: '+n,'Jumlah soal bagian ini: '+kBg+' (soal ke-'+awal+' sampai ke-'+akhir+' dari '+n+')')+
+        (lalu?'\nSoal sebelumnya (jangan diulang, lanjutkan dengan konsep lain yang tetap menarget kesalahan):\n'+lalu:'');
+      var hBg=null;
+      for(var k=0;k<2&&!hBg;k++){
+        ketPotong=false;
+        var text=await apiText(sys,isiBg,3500,0,model)||'';
+        if(ketPotong)throw new Error('lembar terlalu panjang. Kurangi jumlah soal lalu coba lagi.');
+        var so=rmBlokAI(text,'SOAL'),ku=rmBlokAI(text,'KUNCI');
+        if(so.length>10&&ku.length>3)hBg={soal:so,kunci:ku,saran:rmBlokAI(text,'SARAN')};
+      }
+      if(!hBg)throw new Error('format jawaban AI tidak sesuai di bagian '+(bg+1)+'. Coba lagi.');
+      soalBag.push(hBg.soal);kunciBag.push(hBg.kunci);if(bg===0)saranBag=hBg.saran||'';
     }
-    if(!hasilAI)throw new Error('format jawaban AI tidak sesuai. Coba lagi.');
+    var hasilAI={soal:rmNomorUlang(soalBag.join('\n')),kunci:rmNomorUlang(kunciBag.join('\n')),saran:saranBag};
     var a=rmAmbil().filter(function(x){return x.id!==id});
-    a.push({id:id,jenis:jenis,kunciKM:ctx.key,bab:ctx.bab,soal:hasilAI.soal,kunci:hasilAI.kunci,saran:hasilAI.saran||'',
+    a.push({id:id,bahasa:bahasa,jumlah:n,jenis:jenis,kunciKM:ctx.key,bab:ctx.bab,soal:hasilAI.soal,kunci:hasilAI.kunci,saran:hasilAI.saran||'',
       siswa:arr.map(function(o){return o.nama||'(tanpa nama)'}),waktu:new Date().toISOString()});
     store.set(RM_KEY,a);
     renderRM();
