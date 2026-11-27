@@ -291,7 +291,7 @@ nav button.nav-sembunyi{display:flex}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#38e1ff"/></linearGradient><linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#fbbf24"/></linearGradient><filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
-<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v163</span></div></header>
+<header><img class="logo" id="logo" alt="Logo SDIT Qardhan Hasana"><div class="htxt"><h1>Penilai Lembar Jawaban</h1><div class="sub">SDIT Qardhan Hasana</div></div><div class="hbtns"><button id="btnTema" type="button" aria-label="Pilih tampilan" aria-haspopup="true" aria-expanded="false" title="Pilih tampilan">🎨</button><button id="btnBantuan" class="btn-panduan" type="button" aria-label="Panduan dan cara cepat" title="Panduan dan cara cepat">📖 Panduan</button><span class="badge">v164</span></div></header>
 <div id="menuTema" class="menu-tema" role="menu" hidden><button type="button" role="menuitemradio" data-tema="neon" data-neon="cyan">✨ Neon Biru</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="ungu">✨ Neon Ungu</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="hijau">✨ Neon Hijau</button><button type="button" role="menuitemradio" data-tema="neon" data-neon="merah">✨ Neon Merah</button><button type="button" role="menuitemradio" data-tema="light">☀ Terang</button><button type="button" role="menuitemradio" data-tema="dark">🌙 Gelap</button></div>
 <div id="panduan" class="pd" role="dialog" aria-modal="true" aria-labelledby="pdJudul" hidden>
 <div class="pd-top"><button id="pdKembali" type="button">← Kembali</button><b id="pdJudul">Panduan Penilai</b></div>
@@ -505,7 +505,7 @@ nav button.nav-sembunyi{display:flex}
   <div class="row" style="margin-bottom:8px"><input type="search" id="cariHasil" placeholder="Cari nama siswa" style="flex:1"><select id="urutHasil" style="flex:1"><option value="nama">Urut: nama (A–Z)</option><option value="rendah">Urut: nilai terendah dulu</option><option value="tinggi">Urut: nilai tertinggi dulu</option><option value="terbaru">Urut: terbaru dinilai</option><option value="status">Urut: perlu dicek dulu</option></select></div>
   </details>
   <div class="row">
-      <details class="menu-ekspor"><summary>⬇ Ekspor &amp; cetak ⋯</summary><div><button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button><button id="btnCsv">📄 Unduh CSV</button><button id="btnPrintAll">🖨 Cetak semua (guru)</button><button id="btnPrintParent">🖨 Cetak semua (orang tua)</button><button id="btnPdfSemuaGuru">📤 PDF semua (guru)</button><button id="btnPdfSemuaOrtu">📤 PDF semua (orang tua)</button><button id="btnIslami">✨ Tambahkan kalimat islami</button></div></details>
+      <details class="menu-ekspor"><summary>⬇ Ekspor &amp; cetak ⋯</summary><div><button class="primary" id="btnXlsx">⬇ Unduh Excel (.xlsx)</button><button id="btnCsv">📄 Unduh CSV</button><button id="btnPrintAll">🖨 Cetak semua (guru)</button><button id="btnPrintParent">🖨 Cetak semua (orang tua)</button><button id="btnPdfSemuaGuru">📤 PDF semua (guru)</button><button id="btnPdfSemuaOrtu">📤 PDF semua (orang tua)</button></div></details>
   <button id="btnLatihan">📝 Lembar latihan (AI)</button> <button id="btnTulis">🪄 Tulis ulang catatan (AI)</button>  
     
   </div>
@@ -758,6 +758,7 @@ nav button.nav-sembunyi{display:flex}
   <div class="card" style="margin-bottom:12px"><label for="batasPengayaan">Batas nilai pengayaan (%)</label><input type="number" id="batasPengayaan" min="0" max="100" step="1"><p class="hint">Siswa dengan nilai sama dengan atau di atas angka ini masuk daftar pengayaan. Yang di bawah KKM masuk daftar remedial.</p></div>
   <div class="card" style="margin-bottom:12px"><label for="tema">Tampilan</label><select id="tema"><option value="neon">Futuristik neon</option><option value="">Ikuti pengaturan HP</option><option value="light">Terang</option><option value="dark">Gelap</option></select><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px"><input type="checkbox" id="kurangiAnimasi" style="width:auto;margin:0">Kurangi animasi dan efek cahaya (lebih ringan untuk HP lama)</label></div>
   <div class="card" style="margin-bottom:12px"><label for="namaGuru">Nama guru (untuk kop cetak dan Excel)</label><input type="text" id="namaGuru" placeholder="Contoh: Ust. Ahmad, S.Pd."></div>
+<div class="card" style="margin-bottom:12px"><b>Apresiasi di laporan</b><p class="hint small">Kalimat dipilih otomatis dari nilai siswa, lalu ditulis dengan kata tayyibah di depannya.</p><div class="row"><label>Batas 1 (nilai)</label><input type="number" id="apBatas1" min="0" max="100"><label>Batas 2 (nilai)</label><input type="number" id="apBatas2" min="0" max="100"></div><div style="margin-top:8px"><b class="small">Baris 1: nilai mulai dari batas 1</b><div class="row"><input type="text" id="apTay0" placeholder="Tayyibah, mis. Masya Allah"><input type="text" id="apKal0" placeholder="Kalimat apresiasi"></div></div><div style="margin-top:8px"><b class="small">Baris 2: nilai mulai dari batas 2</b><div class="row"><input type="text" id="apTay1" placeholder="Tayyibah, mis. Masya Allah"><input type="text" id="apKal1" placeholder="Kalimat apresiasi"></div></div><div style="margin-top:8px"><b class="small">Baris 3: nilai mulai dari KKM</b><div class="row"><input type="text" id="apTay2" placeholder="Tayyibah, mis. Masya Allah"><input type="text" id="apKal2" placeholder="Kalimat apresiasi"></div></div><div style="margin-top:8px"><b class="small">Baris 4: nilai di bawah KKM</b><div class="row"><input type="text" id="apTay3" placeholder="Tayyibah, mis. Masya Allah"><input type="text" id="apKal3" placeholder="Kalimat apresiasi"></div></div></div>
   <div class="card" style="margin-bottom:12px"><h3>Gabungkan kelompok</h3>
   <p class="hint">Dipakai untuk menyambung hasil yang terpisah karena label kelas, mapel, bab, atau materi berbeda. Pilih asal sampai materi (kosongkan materi untuk semua materi), lalu pilih tujuan. Cadangkan data dulu.</p>
   <p class="hint"><b>Asal (yang salah)</b></p>
@@ -1507,6 +1508,7 @@ function isiForm(){
   $('#batasPengayaan').value=store.get('batasPengayaan',90);
   $('#aturanAkhir').value=store.get('aturanAkhir','kkm');
   $('#namaGuru').value=store.get('namaGuru','');
+  apresiasiIsi();
   $('#ulangSonnet').checked=modelDefault('ulangSonnet');
   $('#modelDraf').value=modelDefault('modelDraf');
   $('#modelPeriksa').value=modelDefault('modelPeriksa');
@@ -1780,6 +1782,7 @@ $('#ulangSonnet').addEventListener('change',function(){store.set('ulangSonnet',t
   $('#'+id).addEventListener('change',function(){store.set(id,this.value)});
 });
 $('#namaGuru').addEventListener('input',function(){store.set('namaGuru',this.value.trim())});
+['#apBatas1','#apBatas2','#apTay0','#apKal0','#apTay1','#apKal1','#apTay2','#apKal2','#apTay3','#apKal3'].forEach(function(s){$(s).addEventListener('input',apresiasiSimpan)});
 $('#kkm').addEventListener('change',function(){store.set('kkm',Math.max(0,Math.min(100,+this.value||70)));renderHasil()});
 $('#roster').addEventListener('input',function(){
   var m=rosterKelasObj();m[kunciKelasAktif()]=this.value;store.set('rosterKelas',m);
@@ -3722,7 +3725,25 @@ async function kirimWa(o){
   catch(e){prompt('Salin teks ini lalu tempel di WhatsApp:',t)}
 }
 var tulisQueue=[],tulisIdx=0,tulisVar=[];
-function kalimatStatus(o){return statusSiswa(o)==='ok'?'Masya Allah, pertahankan ya.':'Insya Allah, dengan latihan pasti bisa.'}
+var APRESIASI_DEF={b1:90,b2:80,baris:[{tay:'Masya Allah',kal:'luar biasa, pertahankan ya!'},{tay:'Barakallah',kal:'bagus sekali, terus tingkatkan.'},{tay:'Alhamdulillah',kal:'sudah baik, sedikit lagi lebih teliti.'},{tay:'Insya Allah',kal:'kita latihan bersama ya.'}]};
+function apresiasiAmbil(){
+  var d=APRESIASI_DEF,s=store.get('apresiasi',null);
+  if(!s||typeof s!=='object')return d;
+  return {b1:+s.b1||d.b1,b2:+s.b2||d.b2,baris:d.baris.map(function(x,i){var y=(s.baris&&s.baris[i])||{};return {tay:typeof y.tay==='string'?y.tay:x.tay,kal:typeof y.kal==='string'?y.kal:x.kal}})};
+}
+function apresiasiIsi(){
+  var a=apresiasiAmbil();$('#apBatas1').value=a.b1;$('#apBatas2').value=a.b2;
+  a.baris.forEach(function(x,i){$('#apTay'+i).value=x.tay;$('#apKal'+i).value=x.kal});
+}
+function apresiasiSimpan(){
+  store.set('apresiasi',{b1:+$('#apBatas1').value||90,b2:+$('#apBatas2').value||80,
+    baris:[0,1,2,3].map(function(i){return {tay:$('#apTay'+i).value.trim(),kal:$('#apKal'+i).value.trim()}})});
+}
+function apresiasiUntuk(o){
+  var a=apresiasiAmbil(),n=nilai100(o),k=KKM(),i=n>=a.b1?0:n>=a.b2?1:n>=k?2:3,b=a.baris[i];
+  if(!b.tay&&!b.kal)return '';
+  return (b.tay?b.tay+', ':'')+b.kal;
+}
 async function buatVarianCatatan(o,jumlah){
   jumlah=jumlah||3;
   var pembaca='orang tua (sapaan Ananda, bahasa netral, tanpa istilah penilaian)';
@@ -3820,7 +3841,6 @@ $('#tulisOpsi').addEventListener('click',function(e){
   var o=tulisQueue[tulisIdx];
   o.perbaikan=tulisVar[+b.dataset.i];
   o.jawaban.forEach(function(x){if(tulisTips[normNo(x.no)])x.tips=tulisTips[normNo(x.no)]});
-  o.islami=kalimatStatus(o);
   store.set('hasil',hasil);
   tulisIdx++;tulisNext();
 });
@@ -3828,16 +3848,9 @@ $('#tulisLewati').addEventListener('click',function(){tulisIdx++;tulisNext()});
 $('#tulisBatal').addEventListener('click',function(){$('#tulisBox').hidden=true;tulisQueue=[];tulisIdx=0;renderHasil()});
 
 function kalimatIslamiUntuk(o){
-  return o.islami?[o.islami]:[];
+  var t=apresiasiUntuk(o);
+  return t?[t]:[];
 }
-$('#btnIslami').addEventListener('click',function(){
-  var list=filteredHasil();
-  if(!list.length){alert('Belum ada hasil.');return}
-  list.forEach(function(o){o.islami=kalimatStatus(o)});
-  store.set('hasil',hasil);
-  renderHasil();
-  toast('Kalimat islami ditambahkan ke '+list.length+' hasil');
-});
 function sheetHTML(o,mode){
   var parent=mode==='orangtua';
   var head='<img class="pa-logo" src="'+LOGO+'" alt="">'+(parent?'<p class="pa-sekolah">'+esc(SEKOLAH)+'</p><h2>Hasil Penilaian</h2>':'<h2>Hasil Penilaian (untuk guru)</h2>');
@@ -3872,13 +3885,13 @@ function buildRows(list){
   var nos=[];
   list.forEach(function(o){o.jawaban.forEach(function(x){var n=normNo(x.no);if(nos.indexOf(n)<0)nos.push(n)})});
   nos.sort(urutNo);
-  var head=['Label','Kunci','Nama'].concat(nos.map(function(n){return 'Soal '+n}),['Total','Maks','Nilai (0-100)'],nos.map(function(n){return 'Deskripsi Soal '+n}),['Catatan perbaikan','Kalimat islami','Catatan untuk guru','Perlu dicek','Sudah diperiksa']);
+  var head=['Label','Kunci','Nama'].concat(nos.map(function(n){return 'Soal '+n}),['Total','Maks','Nilai (0-100)'],nos.map(function(n){return 'Deskripsi Soal '+n}),['Catatan perbaikan','Apresiasi','Catatan untuk guru','Perlu dicek','Sudah diperiksa']);
   var rekap=[head].concat(list.map(function(o){
     var map={},des={};o.jawaban.forEach(function(x){var n=normNo(x.no);map[n]=x.skor;des[n]=x.alasan});
     return [o.label,o.rubrik||'',o.nama].concat(nos.map(function(n){return map[n]!==undefined&&map[n]!==null?map[n]:''}),
       [o.total,o.maks,nilai100(o)],
       nos.map(function(n){return des[n]!==undefined?des[n]:''}),
-      [o.perbaikan||'',o.islami||'',o.catatan||'',(o.ragu||[]).join('; '),o.diperiksa?'Ya':'Belum']);
+      [o.perbaikan||'',apresiasiUntuk(o),o.catatan||'',(o.ragu||[]).join('; '),o.diperiksa?'Ya':'Belum']);
   }));
   var detail=[['Label','Kunci','Nama','No soal','Skor','Skor maks','Tulisan siswa (hasil baca)','Deskripsi penilaian','Catatan perbaikan','Perlu dicek']];
   list.forEach(function(o){
